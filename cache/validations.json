@@ -1,0 +1,114 @@
+{
+  "version": "3.2",
+  "log": [
+    {
+      "Token": {
+        "src": "contracts/Token.sol:7",
+        "version": {
+          "withMetadata": "5f0378b9c89c13271d6f1ca037f753f2a4a5a2b0095d7a18b90bac98893c539e",
+          "withoutMetadata": "28e6f7ca10537a6d9721931209b131afba768cc51a99d976cfb326299f4395f4",
+          "linkedWithoutMetadata": "28e6f7ca10537a6d9721931209b131afba768cc51a99d976cfb326299f4395f4"
+        },
+        "inherit": [],
+        "libraries": [
+          "console"
+        ],
+        "methods": [
+          "()",
+          "transfer(address,uint256)",
+          "balanceOf(address)"
+        ],
+        "linkReferences": [],
+        "errors": [
+          {
+            "kind": "constructor",
+            "contract": "Token",
+            "src": "contracts/Token.sol:27"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "name",
+            "src": "contracts/Token.sol:10"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "symbol",
+            "src": "contracts/Token.sol:11"
+          },
+          {
+            "kind": "state-variable-assignment",
+            "name": "totalSupply",
+            "src": "contracts/Token.sol:14"
+          }
+        ],
+        "layout": {
+          "storage": [
+            {
+              "contract": "Token",
+              "label": "name",
+              "type": "t_string_storage",
+              "src": "contracts/Token.sol:10"
+            },
+            {
+              "contract": "Token",
+              "label": "symbol",
+              "type": "t_string_storage",
+              "src": "contracts/Token.sol:11"
+            },
+            {
+              "contract": "Token",
+              "label": "totalSupply",
+              "type": "t_uint256",
+              "src": "contracts/Token.sol:14"
+            },
+            {
+              "contract": "Token",
+              "label": "owner",
+              "type": "t_address",
+              "src": "contracts/Token.sol:17"
+            },
+            {
+              "contract": "Token",
+              "label": "balances",
+              "type": "t_mapping(t_address,t_uint256)",
+              "src": "contracts/Token.sol:20"
+            }
+          ],
+          "types": {
+            "t_string_storage": {
+              "label": "string"
+            },
+            "t_uint256": {
+              "label": "uint256"
+            },
+            "t_address": {
+              "label": "address"
+            },
+            "t_mapping(t_address,t_uint256)": {
+              "label": "mapping(address => uint256)"
+            }
+          },
+          "layoutVersion": "1.1"
+        }
+      },
+      "console": {
+        "src": "hardhat/console.sol:4",
+        "version": {
+          "withMetadata": "af4d581d920c527a692ef54709d4a6c0807a76ab179073a52bc17fe46d54b724",
+          "withoutMetadata": "aaa148c474cd10e1a6cd0a52c0b55f1aa9b7bb7b42d7f1cb5acaea4f42f04bc8",
+          "linkedWithoutMetadata": "aaa148c474cd10e1a6cd0a52c0b55f1aa9b7bb7b42d7f1cb5acaea4f42f04bc8"
+        },
+        "inherit": [],
+        "libraries": [],
+        "methods": [],
+        "linkReferences": [],
+        "errors": [],
+        "layout": {
+          "storage": [],
+          "types": {},
+          "layoutVersion": "1.1"
+        }
+      }
+    }
+  ]
+}

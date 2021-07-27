@@ -1,0 +1,7 @@
+(await ethers.getSigner()).address
+(await ethers.getSigner())
+(await ethers.getSigner())[0]
+await ethers.getSigner()
+ethers.getSigner()
+ethers
+account
