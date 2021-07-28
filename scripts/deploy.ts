@@ -1,4 +1,4 @@
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 // npx hardhat run scripts/deploy.js --network
 async function main() {
@@ -8,8 +8,11 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const Token = await ethers.getContractFactory("Token");
-  const token = await Token.deploy();
+  const Token = await ethers.getContractFactory("DiversifyToken");
+
+  const mc = await upgrades.deployProxy(Token);
+
+  const token = await mc.deployed();
 
   console.log("Token address:", token.address);
 }
