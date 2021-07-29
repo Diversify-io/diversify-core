@@ -9,7 +9,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 // This is the main building block for smart contracts.
 contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
-    event FoundationWalletChanged(address indexed previousOwner, address indexed newOwner);
+    event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
     event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
 
     uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;
@@ -79,10 +79,10 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     /**
      * @dev Sets the address of the foundation wallet.
      */
-    function setFoundationWallet(address newFoundationWallet) public onlyOwner {
+    function setFoundationWallet(address newWallet) public onlyOwner {
         address oldWallet = _foundationWallet;
-        _foundationWallet = newFoundationWallet;
-        emit FoundationWalletChanged(oldWallet, newFoundationWallet);
+        _foundationWallet = newWallet;
+        emit FoundationWalletChanged(oldWallet, newWallet);
     }
 
     /**

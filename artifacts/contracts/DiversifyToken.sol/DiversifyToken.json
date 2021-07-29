@@ -53,13 +53,13 @@
         {
           "indexed": true,
           "internalType": "address",
-          "name": "previousOwner",
+          "name": "previousWallet",
           "type": "address"
         },
         {
           "indexed": true,
           "internalType": "address",
-          "name": "newOwner",
+          "name": "newWallet",
           "type": "address"
         }
       ],
@@ -327,7 +327,7 @@
       "inputs": [
         {
           "internalType": "address",
-          "name": "newFoundationWallet",
+          "name": "newWallet",
           "type": "address"
         }
       ],
