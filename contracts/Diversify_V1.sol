@@ -39,6 +39,19 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     }
 
     /**
+     * Extend burn with  burn limit
+     */
+    function _burn(address account, uint256 amount) internal override {
+        require(totalSupply() > BURN_STOP_SUPPLY);
+
+        // Reduce max burn to burn limit
+        if (totalSupply() < BURN_STOP_SUPPLY + amount) {
+            amount = totalSupply() - BURN_STOP_SUPPLY;
+        }
+        super._burn(account, amount);
+    }
+
+    /**
      * Calculates the transfer and burnamount
      *
      * `tAmount` transaction amount
@@ -53,15 +66,8 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         )
     {
         uint256 tTransferAmount = tAmount;
-        uint256 tBurn = 0;
+        uint256 tBurn = tAmount / 100;
         uint256 tFound = 0;
-
-        if (totalSupply() > BURN_STOP_SUPPLY) {
-            tBurn = tAmount / 100;
-            if (totalSupply() < BURN_STOP_SUPPLY + tBurn) {
-                tBurn = totalSupply() - BURN_STOP_SUPPLY;
-            }
-        }
 
         tFound = (tAmount * _foundationRate) / 10**4;
         tTransferAmount = tTransferAmount - tFound - tBurn;
@@ -99,5 +105,12 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         uint256 oldRate = _foundationRate;
         _foundationRate = newRate;
         emit FoundationRateChanged(oldRate, newRate);
+    }
+
+    /**
+     * @dev Returns the burn stop supply.
+     */
+    function burnStopSupply() public pure returns (uint256) {
+        return BURN_STOP_SUPPLY;
     }
 }

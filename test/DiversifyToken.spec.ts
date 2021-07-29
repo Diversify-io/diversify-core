@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import { BigNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
+import { DiversifyBurn } from '../typechain/DiversifyBurn.d'
 import { DiversifyV1 } from '../typechain/DiversifyV1.d'
 import { DiversifyV2 } from '../typechain/DiversifyV2.d'
 
@@ -99,29 +100,18 @@ describe('DiversifyToken', function () {
       console.log('found:\t\t' + balance4after.sub(balance4before).toString())
     })
 
-    /*  it('should stop burning tokens as soon as the total amount reaches 1% of the initial', async function () {
-      let _totalSupply = await divToken.totalSupply()
-      let _burnStopSupply = _totalSupply.div(100)
-      let currentAmount = _totalSupply
-      let isTransferA = true
-      while (_totalSupply.gt(_burnStopSupply)) {
-        if (isTransferA) {
-          await divToken.connect(addr1).transfer(addr2.address, currentAmount)
-        } else {
-          await divToken.connect(addr2).transfer(addr1.address, currentAmount)
-        }
-        currentAmount = currentAmount.sub(currentAmount.div(100).mul(2))
-        isTransferA = !isTransferA
-        _totalSupply = await divToken.totalSupply()
-      }
-      _totalSupply = await divToken.totalSupply()
-
-      expect(_totalSupply).is.equal(_burnStopSupply)
+    it('should stop burning tokens as soon as the total amount reaches 10% of the initial', async function () {
+      const divBurn = await ethers.getContractFactory('Diversify_Burn')
+      const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyBurn
+      const initialTotalSupply = await divBurnMock.totalSupply()
+      const initialBalance = await divBurnMock.balanceOf(addr1.address)
+      const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
+      await divBurnMock.burn(addr1.address, initialTotalSupply)
+      const finalTotalSupply = await divBurnMock.totalSupply()
+      const finalBalance = await divBurnMock.balanceOf(addr1.address)
+      expect(finalTotalSupply).eq(burnStopSupply)
+      expect(finalBalance).eq(initialBalance.sub(initialTotalSupply.sub(burnStopSupply)))
     })
-    /*
-    it("should burn the correct amount of tokens when reaching the auto-burn limit", async function () {
-    
-    });*/
   })
 
   describe('Foundation', function () {
