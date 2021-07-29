@@ -3,10 +3,11 @@ import { expect } from 'chai'
 import { BigNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
-import { DiversifyToken } from '../typechain/DiversifyToken.d'
+import { DiversifyV1 } from '../typechain/DiversifyV1.d'
+import { DiversifyV2 } from '../typechain/DiversifyV2.d'
 
 describe('DiversifyToken', function () {
-  let divToken: DiversifyToken
+  let divToken: DiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
   let addr3: SignerWithAddress
@@ -17,8 +18,8 @@ describe('DiversifyToken', function () {
     addr2 = a2
     addr3 = a3
     addr4 = a4
-    const Token = await ethers.getContractFactory('DiversifyToken')
-    divToken = (await upgrades.deployProxy(Token, [addr4.address])) as DiversifyToken
+    const Token = await ethers.getContractFactory('Diversify_V1')
+    divToken = (await upgrades.deployProxy(Token, [addr4.address])) as DiversifyV1
   })
 
   describe('Deployment', function () {
@@ -29,6 +30,22 @@ describe('DiversifyToken', function () {
 
     it('should assign the foundation wallet to the constructor', async function () {
       expect(await divToken.foundationWallet()).to.equal(addr4.address)
+    })
+
+    describe('Deploy and upgrade token contract to V2', () => {
+      it('Deploy and upgrade V2', async () => {
+        const divV2 = await ethers.getContractFactory('Diversify_V2')
+        const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as DiversifyV2
+
+        const amountBeforeUpgrade = await divTokenV2.balanceOf(addr1.address)
+        const supplyBeforeUpgrade = await divTokenV2.totalSupply()
+        await divTokenV2.exampleFunction()
+        const amountAfterUpgrade = await divTokenV2.balanceOf(addr1.address)
+        const supplyAfterUpgrade = await divTokenV2.totalSupply()
+
+        expect(amountBeforeUpgrade.add(500)).equals(amountAfterUpgrade)
+        expect(supplyBeforeUpgrade.add(500)).equals(supplyAfterUpgrade)
+      })
     })
   })
 
