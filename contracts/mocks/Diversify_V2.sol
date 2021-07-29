@@ -10,8 +10,4 @@ contract Diversify_V2 is Diversify_V1 {
     function exampleFunction() public {
         _mint(msg.sender, 500);
     }
-
-    function bun(address account, uint256 amount) public {
-        _burn(account, amount);
-    }
 }

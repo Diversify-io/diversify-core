@@ -100,17 +100,31 @@ describe('DiversifyToken', function () {
       console.log('found:\t\t' + balance4after.sub(balance4before).toString())
     })
 
-    it('should stop burning tokens as soon as the total amount reaches 10% of the initial', async function () {
+    it('should stop burning tokens as soon as the total amount reaches 10% of the initial supply', async function () {
+      // Arrange
       const divBurn = await ethers.getContractFactory('Diversify_Burn')
       const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyBurn
       const initialTotalSupply = await divBurnMock.totalSupply()
       const initialBalance = await divBurnMock.balanceOf(addr1.address)
       const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
+
+      // Act
       await divBurnMock.burn(addr1.address, initialTotalSupply)
+
       const finalTotalSupply = await divBurnMock.totalSupply()
       const finalBalance = await divBurnMock.balanceOf(addr1.address)
+
+      // Assert
       expect(finalTotalSupply).eq(burnStopSupply)
       expect(finalBalance).eq(initialBalance.sub(initialTotalSupply.sub(burnStopSupply)))
+
+      // Recheck Lock
+      await expect(divBurnMock.burn(addr1.address, finalBalance)).to.be.reverted
+
+      // Check transfer
+      await divBurnMock.setFoundationRate(0) // sake of simplicity, disable foundation
+      await divBurnMock.transfer(addr2.address, finalBalance)
+      expect(await divBurnMock.balanceOf(addr2.address)).equals(finalBalance)
     })
   })
 

@@ -32,47 +32,37 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         address to,
         uint256 value
     ) internal override {
-        (uint256 tTransferAmount, uint256 tFound, uint256 tBurn) = _getTValues(value);
-        _burn(from, tBurn);
-        super._transfer(from, _foundationWallet, tFound);
-        super._transfer(from, to, tTransferAmount);
+        uint256 tFound = (value * _foundationRate) / 10**4;
+        uint256 tBurn = 0;
+        if (totalSupply() != BURN_STOP_SUPPLY) {
+            tBurn = value / 100;
+            // Reduce burn amount to burn limit
+            if (totalSupply() < BURN_STOP_SUPPLY + value) {
+                tBurn = totalSupply() - BURN_STOP_SUPPLY;
+            }
+            _burn(from, tBurn);
+        }
+
+        if (tFound > 0) {
+            super._transfer(from, _foundationWallet, tFound);
+        }
+
+        value = value - tFound - tBurn;
+        super._transfer(from, to, value);
     }
 
     /**
      * Extend burn with  burn limit
      */
     function _burn(address account, uint256 amount) internal override {
-        require(totalSupply() > BURN_STOP_SUPPLY);
+        require(totalSupply() > BURN_STOP_SUPPLY, 'burn amount reached');
 
-        // Reduce max burn to burn limit
+        // Reduce burn amount to burn limit
         if (totalSupply() < BURN_STOP_SUPPLY + amount) {
             amount = totalSupply() - BURN_STOP_SUPPLY;
         }
+
         super._burn(account, amount);
-    }
-
-    /**
-     * Calculates the transfer and burnamount
-     *
-     * `tAmount` transaction amount
-     */
-    function _getTValues(uint256 tAmount)
-        private
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
-    {
-        uint256 tTransferAmount = tAmount;
-        uint256 tBurn = tAmount / 100;
-        uint256 tFound = 0;
-
-        tFound = (tAmount * _foundationRate) / 10**4;
-        tTransferAmount = tTransferAmount - tFound - tBurn;
-
-        return (tTransferAmount, tFound, tBurn);
     }
 
     /**
