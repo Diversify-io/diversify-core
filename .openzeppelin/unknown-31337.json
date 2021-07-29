@@ -7,7 +7,7 @@
       "hash": "0xa22e0353aca806bcadb1bc1e34dca681299d494689643efc414c2370ac21769b",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x251388cb6f6688a630b17abd781029ed587a7220f821a4c2d061031e55be9298",
+      "blockHash": "0x5301de786dbb0d391b229199545a00cf75433e3ac74683155589bd8fafaa2d11",
       "blockNumber": 2,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -42,12 +42,12 @@
     },
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0xcae1db6238005c82dfe35a6097d3bb9b558e49c38fcab03caedc2923bf401176",
+      "txHash": "0x907f0cca963bb8506d293d87070d41dbff3df1474fc86cdb1f2878230518aa2b",
       "kind": "transparent"
     },
     {
       "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0xe6a9bc6396fe80fd4ac5fede1adf00135d64bf177937d40a1826321f40c9c5cd",
+      "txHash": "0xb230e5834c7a36e2522094ea8180b48205a11cac88cd2f72ab1b556be874554b",
       "kind": "transparent"
     }
   ],
@@ -155,9 +155,9 @@
         }
       }
     },
-    "982b164fc2c02f8402ed03419303b1f35f0ef239016bea4ebc19f584c2d4a779": {
+    "a16edf1a443bbdd3bdf3ab4808cf1970fc7097091ebaa412027a46d8061193bb": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xb47799bbd212648033b42cf774a2078c3aef051a806aa4a0e23224b9edd5285d",
+      "txHash": "0xd001fd558a8ae59c9d7869d5edcfeb09d9747aa10c0ec5725f8c80be4b438c0d",
       "layout": {
         "storage": [
           {
@@ -225,6 +225,12 @@
             "label": "__gap",
             "type": "t_array(t_uint256)49_storage",
             "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:77"
+          },
+          {
+            "contract": "DiversifyToken",
+            "label": "_foundationWallet",
+            "type": "t_address",
+            "src": "contracts/DiversifyToken.sol:16"
           }
         ],
         "types": {

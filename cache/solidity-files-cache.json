@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/vital/Desktop/hardhat/contracts/DiversifyToken.sol": {
-      "lastModificationDate": 1627557338458,
-      "contentHash": "9b1e3e48f902b9f64939cf54a07c5c7a",
+      "lastModificationDate": 1627566291049,
+      "contentHash": "3c1afc4d340fc44fe7f2e604a808643f",
       "sourceName": "contracts/DiversifyToken.sol",
       "solcConfig": {
         "version": "0.8.4",
@@ -37,7 +37,7 @@
         "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
       ],
       "versionPragmas": [
-        "^0.8.4"
+        "^0.8.0"
       ],
       "artifacts": [
         "DiversifyToken"
