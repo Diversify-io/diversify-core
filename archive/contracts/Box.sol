@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 // Import Ownable from the OpenZeppelin Contracts library
-import "@openzeppelin/contracts/access/Ownable.sol";
+import '@openzeppelin/contracts/access/Ownable.sol';
 
 // Make Box inherit from the Ownable contract
 contract Box is Ownable {
