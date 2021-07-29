@@ -107,16 +107,18 @@ describe('DiversifyToken', function () {
       const initialTotalSupply = await divBurnMock.totalSupply()
       const initialBalance = await divBurnMock.balanceOf(addr1.address)
       const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
+      const maxTokenToBurn = initialTotalSupply.sub(burnStopSupply)
+      // Check for overburning
+      await expect(divBurnMock.burn(addr1.address, initialTotalSupply)).to.be.reverted
 
-      // Act
-      await divBurnMock.burn(addr1.address, initialTotalSupply)
-
+      // Normal burn
+      await divBurnMock.burn(addr1.address, maxTokenToBurn)
       const finalTotalSupply = await divBurnMock.totalSupply()
       const finalBalance = await divBurnMock.balanceOf(addr1.address)
 
       // Assert
       expect(finalTotalSupply).eq(burnStopSupply)
-      expect(finalBalance).eq(initialBalance.sub(initialTotalSupply.sub(burnStopSupply)))
+      expect(finalBalance).eq(initialBalance.sub(maxTokenToBurn))
 
       // Recheck Lock
       await expect(divBurnMock.burn(addr1.address, finalBalance)).to.be.reverted

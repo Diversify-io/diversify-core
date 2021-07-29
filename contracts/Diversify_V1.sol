@@ -42,26 +42,15 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
             }
             _burn(from, tBurn);
         }
-
-        if (tFound > 0) {
-            super._transfer(from, _foundationWallet, tFound);
-        }
-
-        value = value - tFound - tBurn;
-        super._transfer(from, to, value);
+        super._transfer(from, _foundationWallet, tFound);
+        super._transfer(from, to, value - tFound - tBurn);
     }
 
     /**
      * Extend burn with  burn limit
      */
     function _burn(address account, uint256 amount) internal override {
-        require(totalSupply() > BURN_STOP_SUPPLY, 'burn amount reached');
-
-        // Reduce burn amount to burn limit
-        if (totalSupply() < BURN_STOP_SUPPLY + amount) {
-            amount = totalSupply() - BURN_STOP_SUPPLY;
-        }
-
+        require(!(totalSupply() < BURN_STOP_SUPPLY + amount), 'burn overreches burn stop supply');
         super._burn(account, amount);
     }
 
