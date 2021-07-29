@@ -7,7 +7,7 @@
       "hash": "0xa22e0353aca806bcadb1bc1e34dca681299d494689643efc414c2370ac21769b",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x5301de786dbb0d391b229199545a00cf75433e3ac74683155589bd8fafaa2d11",
+      "blockHash": "0x03572758dd350c8929f9dbb273036a6c3bca4ec9d2ad97441cdeec6b3d2e572e",
       "blockNumber": 2,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -42,12 +42,17 @@
     },
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0x907f0cca963bb8506d293d87070d41dbff3df1474fc86cdb1f2878230518aa2b",
+      "txHash": "0x126bd81496aaf79f02325c773e779271cd6829cec531d0b3c34496723676e47c",
       "kind": "transparent"
     },
     {
       "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0xb230e5834c7a36e2522094ea8180b48205a11cac88cd2f72ab1b556be874554b",
+      "txHash": "0x20ec7042e91f0772ac9b5b8178e72937737b900d442c5f38e72711d7e050fb62",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "txHash": "0xb4f7a759beb95705d48dbbe677c56993fa2fdc5e5dcb2a6f76311ab07016fca6",
       "kind": "transparent"
     }
   ],
@@ -155,9 +160,9 @@
         }
       }
     },
-    "a16edf1a443bbdd3bdf3ab4808cf1970fc7097091ebaa412027a46d8061193bb": {
+    "1c13fd67e15fa21f3f0dbbf3c10d5d047793b24b840dd31155b27f3b35ccf01f": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0xd001fd558a8ae59c9d7869d5edcfeb09d9747aa10c0ec5725f8c80be4b438c0d",
+      "txHash": "0x7a1a9aeaa4683958aac321b8f0b33902d963d071964a78391583336c1924bb7c",
       "layout": {
         "storage": [
           {
@@ -231,17 +236,23 @@
             "label": "_foundationWallet",
             "type": "t_address",
             "src": "contracts/DiversifyToken.sol:16"
+          },
+          {
+            "contract": "DiversifyToken",
+            "label": "_foundationRate",
+            "type": "t_uint256",
+            "src": "contracts/DiversifyToken.sol:17"
           }
         ],
         "types": {
           "t_address": {
             "label": "address"
           },
-          "t_array(t_uint256)49_storage": {
-            "label": "uint256[49]"
-          },
           "t_uint256": {
             "label": "uint256"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
           },
           "t_mapping(t_address,t_uint256)": {
             "label": "mapping(address => uint256)"

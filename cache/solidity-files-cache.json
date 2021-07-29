@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/Users/vital/Desktop/hardhat/contracts/DiversifyToken.sol": {
-      "lastModificationDate": 1627566291049,
-      "contentHash": "3c1afc4d340fc44fe7f2e604a808643f",
+      "lastModificationDate": 1627569968903,
+      "contentHash": "4e07c50769f823c869d5a5431fb6e707",
       "sourceName": "contracts/DiversifyToken.sol",
       "solcConfig": {
         "version": "0.8.4",

@@ -9,15 +9,19 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 // This is the main building block for smart contracts.
 contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
-    event FoundationWalletTransfered(address indexed previousOwner, address indexed newOwner);
+    event FoundationWalletChanged(address indexed previousOwner, address indexed newOwner);
+    event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
 
     uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;
     address private _foundationWallet;
+    uint256 private _foundationRate;
 
-    function initialize() public initializer {
+    function initialize(address fWallet) public initializer {
         __ERC20_init('Diversify', 'DIV');
         __Ownable_init();
         _mint(msg.sender, 1000000000 * 10**decimals());
+        _foundationRate = 0.25 * 100;
+        _foundationWallet = fWallet;
     }
 
     /**
@@ -28,8 +32,9 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         address to,
         uint256 value
     ) internal override {
-        (uint256 tTransferAmount, uint256 tBurn) = _getTValues(value);
+        (uint256 tTransferAmount, uint256 tFound, uint256 tBurn) = _getTValues(value);
         _burn(from, tBurn);
+        super._transfer(from, _foundationWallet, tFound);
         super._transfer(from, to, tTransferAmount);
     }
 
@@ -38,7 +43,15 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
      *
      * `tAmount` transaction amount
      */
-    function _getTValues(uint256 tAmount) private view returns (uint256, uint256) {
+    function _getTValues(uint256 tAmount)
+        private
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
         uint256 tTransferAmount = tAmount;
         uint256 tBurn = 0;
         uint256 tFound = 0;
@@ -48,10 +61,12 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
             if (totalSupply() < BURN_STOP_SUPPLY + tBurn) {
                 tBurn = totalSupply() - BURN_STOP_SUPPLY;
             }
-            tTransferAmount = tTransferAmount - tBurn;
         }
 
-        return (tTransferAmount, tBurn);
+        tFound = (tAmount * _foundationRate) / 10**4;
+        tTransferAmount = tTransferAmount - tFound - tBurn;
+
+        return (tTransferAmount, tFound, tBurn);
     }
 
     /**
@@ -61,9 +76,28 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         return _foundationWallet;
     }
 
+    /**
+     * @dev Sets the address of the foundation wallet.
+     */
     function setFoundationWallet(address newFoundationWallet) public onlyOwner {
-        address oldWallet = newFoundationWallet;
+        address oldWallet = _foundationWallet;
         _foundationWallet = newFoundationWallet;
-        emit FoundationWalletTransfered(oldWallet, newFoundationWallet);
+        emit FoundationWalletChanged(oldWallet, newFoundationWallet);
+    }
+
+    /**
+     * @dev Returns the rate of the foundation.
+     */
+    function foundationRate() public view returns (uint256) {
+        return _foundationRate;
+    }
+
+    /**
+     * @dev Sets the address of the foundation wallet.
+     */
+    function setFoundationRate(uint256 newRate) public onlyOwner {
+        uint256 oldRate = _foundationRate;
+        _foundationRate = newRate;
+        emit FoundationRateChanged(oldRate, newRate);
     }
 }

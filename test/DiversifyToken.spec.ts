@@ -1,65 +1,84 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { expect } from "chai";
-import { BigNumber } from "ethers";
-import { ethers, upgrades } from "hardhat";
-import { DiversifyToken } from "../typechain/DiversifyToken.d";
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { expect } from 'chai'
+import { BigNumber } from 'ethers'
+import { ethers, upgrades } from 'hardhat'
+import { DiversifyToken } from '../typechain/DiversifyToken.d'
 
-describe("DiversifyToken", function () {
-  let divToken: DiversifyToken;
-  let addr1: SignerWithAddress;
-  let addr2: SignerWithAddress;
-  let addr3: SignerWithAddress;
-
+describe('DiversifyToken', function () {
+  let divToken: DiversifyToken
+  let addr1: SignerWithAddress // owner Wallet
+  let addr2: SignerWithAddress
+  let addr3: SignerWithAddress
+  let addr4: SignerWithAddress // foundationWallet
   this.beforeEach(async () => {
-    const [a1, a2, a3] = await ethers.getSigners();
-    addr1 = a1;
-    addr2 = a2;
-    addr3 = a3;
-    const Token = await ethers.getContractFactory("DiversifyToken");
-    divToken = (await upgrades.deployProxy(Token)) as DiversifyToken;
-  });
+    const [a1, a2, a3, a4] = await ethers.getSigners()
+    addr1 = a1
+    addr2 = a2
+    addr3 = a3
+    addr4 = a4
+    const Token = await ethers.getContractFactory('DiversifyToken')
+    divToken = (await upgrades.deployProxy(Token, [addr4.address])) as DiversifyToken
+  })
 
-  describe("Deployment", function () {
-    it("should assign the total supply of tokens to the owner", async function () {
-      const ownerBalance = await divToken.balanceOf(addr1.address);
-      expect(await divToken.totalSupply()).to.equal(ownerBalance);
-    });
-  });
+  describe('Deployment', function () {
+    it('should assign the total supply of tokens to the owner', async function () {
+      const ownerBalance = await divToken.balanceOf(addr1.address)
+      expect(await divToken.totalSupply()).to.equal(ownerBalance)
+    })
 
-  describe("Transactions", function () {
-    it("should transfer tokens correctly between two accounts", async function () {
+    it('should assign the foundation wallet to the constructor', async function () {
+      expect(await divToken.foundationWallet()).to.equal(addr4.address)
+    })
+  })
+
+  describe('Transactions', function () {
+    it('should transfer tokens correctly between two accounts', async function () {
       // Arrange
-      const tokensToSend = BigNumber.from(1749);
-      const tokensToReceive = tokensToSend.sub(tokensToSend.div(BigNumber.from(100)));
-      const totalSupplyBefore = await divToken.totalSupply();
+      const tokensToSend = BigNumber.from(1749)
+      const tokenToBurn = tokensToSend.div(BigNumber.from(100))
+      const tokenToFound = tokensToSend.mul(await divToken.foundationRate()).div(10 ** 4)
+      const tokensToReceive = tokensToSend.sub(tokenToBurn).sub(tokenToFound)
+      const totalSupplyBefore = await divToken.totalSupply()
 
-      const balance1before = await divToken.balanceOf(addr1.address);
-      const balance2before = await divToken.balanceOf(addr2.address);
+      const balance1before = await divToken.balanceOf(addr1.address)
+      const balance2before = await divToken.balanceOf(addr2.address)
+      const balance3before = await divToken.balanceOf(addr3.address)
+      const balance4before = await divToken.balanceOf(addr4.address)
 
       // Act
-      await divToken.transfer(addr2.address, tokensToSend);
-      const totalSupplyAfter = await divToken.totalSupply();
-      const balance1after = await divToken.balanceOf(addr1.address);
-      const balance2after = await divToken.balanceOf(addr2.address);
+      await divToken.transfer(addr2.address, tokensToSend)
+      const totalSupplyAfter = await divToken.totalSupply()
+      const balance1after = await divToken.balanceOf(addr1.address)
+      const balance2after = await divToken.balanceOf(addr2.address)
+      const balance3after = await divToken.balanceOf(addr3.address)
+      const balance4after = await divToken.balanceOf(addr4.address)
 
       // Assert
-      expect(balance2after).to.be.equal(tokensToReceive);
-      expect(balance1after).to.be.equal(balance1before.sub(tokensToSend));
+      expect(balance1after).to.be.equal(balance1before.sub(tokensToSend))
+      expect(balance2after).to.be.equal(tokensToReceive)
+      expect(balance4after).to.be.equal(balance4before.add(tokenToFound))
 
       // Log
-      console.log("------------");
-      console.log("BEFORE");
-      console.log("total:\t\t" + totalSupplyBefore.toString());
-      console.log("balance1:\t" + balance1before.toString());
-      console.log("balance2:\t" + balance2before.toString());
-      console.log("------------");
-      console.log("AFTER");
-      console.log("total:\t\t" + totalSupplyAfter.toString());
-      console.log("balance1:\t" + balance1after.toString());
-      console.log("balance2:\t" + balance2after.toString());
-      console.log("------------");
-      console.log("burnt:\t\t" + totalSupplyBefore.sub(totalSupplyAfter).toString());
-    });
+      console.log('------------')
+      console.log('BEFORE')
+      console.log('total:\t\t' + totalSupplyBefore.toString())
+      console.log('balance1:\t' + balance1before.toString())
+      console.log('balance2:\t' + balance2before.toString())
+      console.log('balance3:\t' + balance3before.toString())
+      console.log('balance4:\t' + balance4before.toString())
+      console.log('------------')
+      console.log('transfered:\t' + tokensToSend)
+      console.log('------------')
+      console.log('AFTER')
+      console.log('total:\t\t' + totalSupplyAfter.toString())
+      console.log('balance1:\t' + balance1after.toString())
+      console.log('balance2:\t' + balance2after.toString())
+      console.log('balance3:\t' + balance3after.toString())
+      console.log('balance4:\t' + balance4after.toString())
+      console.log('------------')
+      console.log('burnt:\t\t' + totalSupplyBefore.sub(totalSupplyAfter).toString())
+      console.log('found:\t\t' + balance4after.sub(balance4before).toString())
+    })
 
     /*
      TODO:
@@ -104,5 +123,5 @@ describe("DiversifyToken", function () {
       const balance1 = await divToken.balanceOf(account1);
       expect(balanceAfterBurn).to.be.bignumber.equal(balance1.add(expectingBurningAmount));
     });*/
-  });
-});
+  })
+})
