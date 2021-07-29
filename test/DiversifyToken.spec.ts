@@ -82,48 +82,28 @@ describe('DiversifyToken', function () {
       console.log('found:\t\t' + balance4after.sub(balance4before).toString())
     })
 
-    /*
-     TODO:
-    it("should stop burning tokens as soon as the total amount reaches 1% of the initial", async function () {
-      await divToken.burn(SUPPLY1, { from: account1 });
-      await divToken.burn(SUPPLY3, { from: account3 });
-      const balanceBeforeBurn = await divToken.balanceOf(account2);
-      expect(balanceBeforeBurn).to.be.equal(SUPPLY2);
-      await divToken.burn(balanceBeforeBurn.sub(BURN_STOP_SUPPLY), { from: account2 });
-      const balanceAfterBurn = await divToken.balanceOf(account2);
-      const totalSupplyBeforeSend = await divToken.totalSupply();
-      await divToken.transfer(account1, ether("1000"), { from: account2 });
-      const totalSupplyAfterSend = await divToken.totalSupply();
-      expect(totalSupplyAfterSend).to.be.bignumber.equal(totalSupplyBeforeSend);
-      const balance1 = await divToken.balanceOf(account1);
-      const balance2 = await divToken.balanceOf(account2);
-      expect(balanceAfterBurn).to.be.bignumber.equal(balance1.add(balance2).addn(1));
-    });
+    /*  it('should stop burning tokens as soon as the total amount reaches 1% of the initial', async function () {
+      let _totalSupply = await divToken.totalSupply()
+      let _burnStopSupply = _totalSupply.div(100)
+      let currentAmount = _totalSupply
+      let isTransferA = true
+      while (_totalSupply.gt(_burnStopSupply)) {
+        if (isTransferA) {
+          await divToken.connect(addr1).transfer(addr2.address, currentAmount)
+        } else {
+          await divToken.connect(addr2).transfer(addr1.address, currentAmount)
+        }
+        currentAmount = currentAmount.sub(currentAmount.div(100).mul(2))
+        isTransferA = !isTransferA
+        _totalSupply = await divToken.totalSupply()
+      }
+      _totalSupply = await divToken.totalSupply()
 
+      expect(_totalSupply).is.equal(_burnStopSupply)
+    })
+    /*
     it("should burn the correct amount of tokens when reaching the auto-burn limit", async function () {
-      await divToken.burn(SUPPLY1, { from: account1 });
-      await divToken.burn(SUPPLY3, { from: account3 });
-      const balanceBeforeBurn = await divToken.balanceOf(account2);
-      expect(balanceBeforeBurn).to.be.bignumber.equal(SUPPLY2);
-      const amountToBurn = balanceBeforeBurn.sub(BURN_STOP_SUPPLY).sub(ether("3333"));
-      await divToken.burn(amountToBurn, { from: account2 });
-      const balanceAfterBurn = await divToken.balanceOf(account2);
-      // just to make this test case clearer
-      // the user's balance is 3333 tokens larger than the auto-burn limit
-      // we must not burn more than this amount
-      expect(balanceAfterBurn).to.be.bignumber.equal(ether("2103333"));
-      const expectingBurningAmount = ether("3333");
-      const totalSupplyBeforeSend = await divToken.totalSupply();
-      const {
-        receipt: { transactionHash },
-      } = await divToken.transfer(account1, balanceAfterBurn, { from: account2 });
-      const events = await getEvents(transactionHash, token, "Transfer", web3);
-      const actualBurningAmount = new BN(events[0].args.value);
-      const totalSupplyAfterSend = await divToken.totalSupply();
-      expect(actualBurningAmount).to.be.bignumber.equal(expectingBurningAmount);
-      expect(totalSupplyAfterSend).to.be.bignumber.equal(totalSupplyBeforeSend.sub(expectingBurningAmount));
-      const balance1 = await divToken.balanceOf(account1);
-      expect(balanceAfterBurn).to.be.bignumber.equal(balance1.add(expectingBurningAmount));
+    
     });*/
   })
 
