@@ -12,9 +12,7 @@ async function main() {
 
   const mc = await upgrades.deployProxy(Token);
 
-  const token = await mc.deployed();
-
-  console.log("Token address:", token.address);
+  console.log("Token address:", mc.address);
 }
 
 main()

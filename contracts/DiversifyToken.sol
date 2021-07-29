@@ -9,8 +9,10 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 // This is the main building block for smart contracts.
 contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
+    uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;
+
     function initialize() public initializer {
-        __ERC20_init("DiversifyToken", "DIV");
+        __ERC20_init("Diversify", "DIV");
         __Ownable_init();
         _mint(msg.sender, 1000000000 * 10**decimals());
     }
@@ -20,9 +22,26 @@ contract DiversifyToken is Initializable, ERC20Upgradeable, OwnableUpgradeable {
         address to,
         uint256 value
     ) internal override {
-        uint256 tokensToBurn = (value / 100);
-        uint256 tokensToTransfer = value - tokensToBurn;
-        _burn(from, tokensToBurn);
-        super._transfer(from, to, tokensToTransfer);
+        (uint256 tTransferAmount, uint256 tBurn) = _getTValues(value);
+        console.log(tBurn);
+        _burn(from, tBurn);
+        super._transfer(from, to, tTransferAmount);
+    }
+
+    function _getTValues(uint256 tAmount)
+        private
+        view
+        returns (uint256, uint256)
+    {
+        uint256 tTransferAmount = tAmount;
+        uint256 tBurn = 0;
+        if (totalSupply() > BURN_STOP_SUPPLY) {
+            tBurn = tAmount / 100;
+            if (totalSupply() < BURN_STOP_SUPPLY + tBurn) {
+                tBurn = totalSupply() - BURN_STOP_SUPPLY;
+            }
+            tTransferAmount = tTransferAmount - tBurn;
+        }
+        return (tTransferAmount, tBurn);
     }
 }
