@@ -191,9 +191,9 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @param investor Investor address
+     * @dev Investors can claim refunds here if crowdsale is unsuccessful
      */
-    function refund(address payable investor) public {
+    function claimRefund(address payable investor) public {
         require(_state == State.Refunding);
         uint256 balanceValue = _balances[investor];
         _balances[investor] = 0;

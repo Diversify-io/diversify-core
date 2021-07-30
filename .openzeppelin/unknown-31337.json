@@ -7,7 +7,7 @@
       "hash": "0xa22e0353aca806bcadb1bc1e34dca681299d494689643efc414c2370ac21769b",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x2f280108fd1c58aa49232169dbd1e71ecf61229b69ddff04850dbf85f0a6ab9f",
+      "blockHash": "0x46856b126d1998a62ed154d60b79a91ccffbbaff183dc4f4f19706cfca928585",
       "blockNumber": 2,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -320,13 +320,13 @@
             "contract": "Diversify_V1",
             "label": "_foundationWallet",
             "type": "t_address",
-            "src": "contracts/Diversify_V1.sol:13"
+            "src": "contracts/token/Diversify_V1.sol:13"
           },
           {
             "contract": "Diversify_V1",
             "label": "_foundationRate",
             "type": "t_uint256",
-            "src": "contracts/Diversify_V1.sol:14"
+            "src": "contracts/token/Diversify_V1.sol:14"
           }
         ],
         "types": {
@@ -435,13 +435,13 @@
             "contract": "Diversify_V1",
             "label": "_foundationWallet",
             "type": "t_address",
-            "src": "contracts/Diversify_V1.sol:13"
+            "src": "contracts/token/Diversify_V1.sol:13"
           },
           {
             "contract": "Diversify_V1",
             "label": "_foundationRate",
             "type": "t_uint256",
-            "src": "contracts/Diversify_V1.sol:14"
+            "src": "contracts/token/Diversify_V1.sol:14"
           }
         ],
         "types": {
