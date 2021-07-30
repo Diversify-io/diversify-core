@@ -6,10 +6,9 @@
 - `hh node`
 - `hh test`
 
-
-
 Sample ICO
-```
+
+````
 
 
     function buy() public payable returns(bool sucess) {
@@ -21,3 +20,4 @@ Sample ICO
 
 
     ```
+````
