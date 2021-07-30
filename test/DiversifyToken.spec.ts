@@ -35,7 +35,7 @@ describe('DiversifyToken', function () {
 
     describe('Deploy and upgrade token contract to V2', () => {
       it('Deploy and upgrade V2', async () => {
-        const divV2 = await ethers.getContractFactory('Diversify_V2')
+        const divV2 = await ethers.getContractFactory('Diversify_Mock')
         const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as DiversifyV2
 
         const amountBeforeUpgrade = await divTokenV2.balanceOf(addr1.address)
@@ -102,7 +102,7 @@ describe('DiversifyToken', function () {
 
     it('should stop burning tokens as soon as the total amount reaches 10% of the initial supply', async function () {
       // Arrange
-      const divBurn = await ethers.getContractFactory('Diversify_Burn')
+      const divBurn = await ethers.getContractFactory('Diversify_Mock')
       const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyBurn
       const initialTotalSupply = await divBurnMock.totalSupply()
       const initialBalance = await divBurnMock.balanceOf(addr1.address)
