@@ -5,7 +5,7 @@ pragma solidity ^0.8.0;
 import '../utils/RetrieveTokensFeature.sol';
 
 /**
- * Contract to handle a seed sale round
+ * Contract to handle a seed sale of diversify
  */
 contract SeedSaleRound is RetrieveTokensFeature {
     using SafeERC20 for IERC20;
@@ -21,36 +21,57 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // ERC20 basic token contract being held
     IERC20 private immutable _token;
 
-    // beneficiary of tokens after the sale ends
+    // beneficiary of tokens (weis) after the sale ends
     address private immutable _beneficiary;
 
-    // the duration of the lock / end date
+    // the duration of the seed sale in days
     uint256 private immutable _duration;
-
-    // Invested gweis
-    mapping(address => uint256) private _balances;
 
     // Tracks the state of the seedsale
     State private _state;
 
+    // Balance sheet of the invested weis
+    mapping(address => uint256) private _balances;
+
     // How many token units a buyer gets per wei
     uint256 private _rate;
 
-    // Amount of coins to sell in momos
+    // Amount of wei to reach
     uint256 private _goal;
 
-    // startDate of the lock
+    //  Start date of seedsale
     uint256 private _startDate;
 
     // Amount of wei raised
     uint256 private _weiRaised;
 
-    // Locking period of tokens in days after successful round
+    // Locking period of tokens in days if sale was successful
     uint256 private _lockingPeriod;
 
+    /*
+     * Event seedsale start logging
+     * @param rate How many token units a buyer gets per wei
+     * @param goal amount of wei to reach
+     * @param duration the duration of the seed sale in days
+     * @param lockingPeriod Locking period of tokens in days if sale was successful
+     */
     event Started(uint256 rate, uint256 goal, uint256 duration, uint256 lockingPeriod);
+
+    /*
+     * Event for seedsale closed logging
+     */
     event Closed();
+
+    /*
+     * Event for refunds enabled
+     */
     event RefundsEnabled();
+
+    /*
+     * Event for logging the refund
+     * @param beneficiary who get the refund
+     * @param weiAmount weis refunded
+     */
     event Refunded(address indexed beneficiary, uint256 weiAmount);
 
     /*
@@ -58,13 +79,15 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @param purchaser who paid for the tokens
      * @param value weis paid for purchase
      * @param amount amount of tokens purchased
-     * @param _openingTime Crowdsale opening time
-     * @param _closingTime Crowdsale closing time
      */
     event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
 
     /**
-     * Lorem
+     * Create a new instance of the seed sale
+     * @param token_ The div token
+     * @param beneficiary_ beneficiary of tokens (weis) after the sale ends
+     * @param duration_ the duration of the seed sale in days
+     * @param lockingPeriod_ Locking period of tokens in days if sale was successful
      */
     constructor(
         IERC20 token_,
@@ -86,6 +109,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
     /**
      * @dev starts the vault
+     * @param rate_ How many token units a buyer gets per wei
      */
     function start(uint256 rate_) public onlyOwner {
         require(_token.balanceOf(address(this)) > 0);
@@ -207,7 +231,6 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @dev Override to extend the way in which ether is converted to tokens.
      * @param _weiAmount Value in wei to be converted into tokens
      * @return Number of tokens (momo's) that can be purchased with the specified _weiAmount
      */

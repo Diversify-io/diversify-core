@@ -3,7 +3,7 @@
 // It will be used by the Solidity compiler to validate its version.
 pragma solidity ^0.8.0;
 import 'hardhat/console.sol';
-import '../Diversify_V1.sol';
+import '../token/Diversify_V1.sol';
 
 // MOCK TOKEN FOR UNIT TESTING
 contract Diversify_Mock is Diversify_V1 {
