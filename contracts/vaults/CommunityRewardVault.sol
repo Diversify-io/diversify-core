@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
-import './utils/UpgradableRetrieveTokensFeature.sol';
+import '../utils/UpgradableRetrieveTokensFeature.sol';
 
 /**
  *
  */
-contract PublicSaleVault is UpgradableRetrieveTokensFeature {
+contract CommunityRewardVault is UpgradableRetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held

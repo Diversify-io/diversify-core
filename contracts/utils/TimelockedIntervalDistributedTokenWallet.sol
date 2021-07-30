@@ -7,7 +7,7 @@ import './RetrieveTokensFeature.sol';
 /**
  * Contract to handle timelocked interval based capital releases to an immuatable beneficiary
  */
-contract FreezeTokenWallet is RetrieveTokensFeature {
+contract TimelockedIntervalDistributedTokenWallet is RetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held
@@ -94,7 +94,7 @@ contract FreezeTokenWallet is RetrieveTokensFeature {
      * @dev payout the freezed amount of token
      */
     function retrieveWalletTokens() public onlyOwner {
-        require(_started && block.timestamp >= _startDate, 'Lock not started yet');
+        require(_started && block.timestamp >= _startDate, 'Lock not started');
         if (block.timestamp >= _startDate + _duration) {
             _token.safeTransfer(beneficiary(), _token.balanceOf(address(this)));
         } else {
