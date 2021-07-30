@@ -1,14 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import '@openzeppelin/contracts/utils/Context.sol';
-import '@openzeppelin/contracts/access/Ownable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * A wallet like contract that allows owner to collect all tokens that the contract holds
  */
-contract RetrieveTokensFeature is Context, Ownable {
+contract UpgradableRetrieveTokensFeature is Initializable, ContextUpgradeable, OwnableUpgradeable {
     using SafeERC20 for IERC20;
+
+    function initialize() public initializer {
+        __Ownable_init();
+    }
 
     function retrieveTokens(address to, address anotherToken) public virtual onlyOwner {
         IERC20 alienToken = IERC20(anotherToken);

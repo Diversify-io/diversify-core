@@ -13,6 +13,9 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     address private _foundationWallet;
     uint256 private _foundationRate;
 
+    /**
+     * Initialize
+     */
     function initialize(address fWallet) public initializer {
         __ERC20_init('Diversify', 'DIV');
         __Ownable_init();
