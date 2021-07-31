@@ -25,11 +25,13 @@
     "ethereum-waffle": "^3.4.0",
     "ethers": "^5.4.2",
     "hardhat": "^2.5.0",
+    "hardhat-gas-reporter": "^1.0.4",
     "mocha": "^9.0.3",
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.17",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
+    "solidity-coverage": "^0.7.16",
     "ts-node": "^10.1.0",
     "typechain": "^5.1.2",
     "typescript": "^4.3.5"
