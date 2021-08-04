@@ -1,5 +1,5 @@
 import { ethers, upgrades } from 'hardhat'
-import { DiversifyToken } from '../typechain/DiversifyToken'
+import { DiversifyV1 } from '../typechain/DiversifyV1'
 
 // npx hardhat run scripts/deploy.js --network
 async function main() {
@@ -10,7 +10,7 @@ async function main() {
   console.log('Account balance:', (await deployer.getBalance()).toString())
 
   const Token = await ethers.getContractFactory('DiversifyToken')
-  const mc = (await upgrades.deployProxy(Token, [foundationWallet])) as DiversifyToken
+  const mc = (await upgrades.deployProxy(Token, [foundationWallet])) as DiversifyV1
   console.log('Token address:', mc.address)
 
   // Transfer ownership to gnosisSafe
