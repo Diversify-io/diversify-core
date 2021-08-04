@@ -4,7 +4,7 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '../utils/UpgradableRetrieveTokensFeature.sol';
 
 /**
- *
+ * Upgradable Contract that will be used in futuere for the community rewards
  */
 contract CommunityRewardVault is UpgradableRetrieveTokensFeature {
     using SafeERC20 for IERC20;

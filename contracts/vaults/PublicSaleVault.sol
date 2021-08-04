@@ -4,7 +4,7 @@ import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 import '../utils/UpgradableRetrieveTokensFeature.sol';
 
 /**
- *
+ * Upgradable Contract on which the PublicSale will be built
  */
 contract PublicSaleVault is UpgradableRetrieveTokensFeature {
     using SafeERC20 for IERC20;
