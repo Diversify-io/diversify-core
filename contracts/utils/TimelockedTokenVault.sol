@@ -5,35 +5,38 @@ pragma solidity ^0.8.0;
 import './RetrieveTokensFeature.sol';
 
 /**
- * Contract that acts as a freeze (timelocked) vault with the support to release the capital
- * based on a predefiend interval to an immuntable beneficiary.
+ * Contract that acts as a freeze (timelocked) vault to an immuntable beneficiary.
  */
-contract TimelockedIntervalDistributedTokenVault is RetrieveTokensFeature {
+contract TimelockedTokenVault is RetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held
-    IERC20 private immutable _token;
+    IERC20 internal immutable _token;
 
     // beneficiary of tokens after they are released
-    address private immutable _beneficiary;
+    address internal immutable _beneficiary;
 
     // startDate of the lock
-    uint256 private immutable _startDate;
+    uint256 internal immutable _startDate;
 
     // the duration of the lock / end date
-    uint256 private immutable _duration;
-
-    // the interval
-    uint256 private immutable _interval;
-
-    // the amount of tokens already retrieved
-    uint256 private _retrievedTokens;
+    uint256 internal immutable _duration;
 
     // initial start balance
-    uint256 private _startBalance;
+    uint256 internal _startBalance;
 
     // indiacted wheter vault started or not
-    bool private _started;
+    bool internal _started;
+
+    // the amount of tokens already retrieved
+    uint256 internal _retrievedTokens;
+
+    /*
+     * Event for logging the collection
+     * @param beneficiary who get the refund
+     * @param token amount collected
+     */
+    event Collected(address indexed beneficiary, uint256 amount);
 
     /**
      * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
@@ -41,16 +44,14 @@ contract TimelockedIntervalDistributedTokenVault is RetrieveTokensFeature {
     constructor(
         IERC20 token_,
         address beneficiary_,
-        uint256 duration_,
-        uint256 interval_,
-        uint256 startDate_
+        uint256 startDate_,
+        uint256 duration_
     ) {
         require(startDate_ + duration_ > block.timestamp, 'TokenTimelock: release time is before current time');
         _token = token_;
         _beneficiary = beneficiary_;
         _startDate = startDate_;
         _duration = duration_ * 1 days;
-        _interval = interval_ * 1 days;
         _retrievedTokens = 0;
     }
 
@@ -78,13 +79,6 @@ contract TimelockedIntervalDistributedTokenVault is RetrieveTokensFeature {
     }
 
     /**
-     * @return the retrieved tokens
-     */
-    function retrievedTokens() public view returns (uint256) {
-        return _retrievedTokens;
-    }
-
-    /**
      * @return the start balance
      */
     function startBalance() public view returns (uint256) {
@@ -94,21 +88,20 @@ contract TimelockedIntervalDistributedTokenVault is RetrieveTokensFeature {
     /**
      * @dev payout the freezed amount of token
      */
-    function retrieveWalletTokens() public onlyOwner {
+    function retrieveWalletTokens() public virtual onlyOwner {
         require(_started && block.timestamp >= _startDate, 'Lock not started');
         if (block.timestamp >= _startDate + _duration) {
-            _token.safeTransfer(beneficiary(), _token.balanceOf(address(this)));
-        } else {
-            uint256 parts = _duration / _interval;
-            uint256 tokensByPart = _startBalance / parts;
-            uint256 timeSinceStart = block.timestamp - _startDate;
-            uint256 pastParts = timeSinceStart / _interval;
-            uint256 tokensToRetrieveSinceStart = pastParts * tokensByPart;
-            uint256 tokensToRetrieve = tokensToRetrieveSinceStart - _retrievedTokens;
-            require(tokensToRetrieve > 0, 'No tokens available for retrieving at this moment.');
-            _retrievedTokens = _retrievedTokens + tokensToRetrieve;
+            uint256 tokensToRetrieve = _token.balanceOf(address(this));
             _token.safeTransfer(beneficiary(), tokensToRetrieve);
+            emit Collected(beneficiary(), tokensToRetrieve);
         }
+    }
+
+    /**
+     * @return the retrieved tokens
+     */
+    function retrievedTokens() public view returns (uint256) {
+        return _retrievedTokens;
     }
 
     /**

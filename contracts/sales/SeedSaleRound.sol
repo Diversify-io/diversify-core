@@ -95,7 +95,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         uint256 duration_,
         uint256 lockingPeriod_
     ) {
-        // note: we allow a lockingPeriod
+        // note: we allow a zero lockingPeriod
         require(beneficiary_ != address(0));
         require(duration_ > 0);
         require(address(token_) != address(0));
