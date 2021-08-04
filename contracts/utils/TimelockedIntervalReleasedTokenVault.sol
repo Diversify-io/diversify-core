@@ -18,12 +18,11 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
      * @dev Initalizes a new instanc of the TimelockedIntervaldReleased Vault
      */
     constructor(
-        IERC20 token_,
         address beneficiary_,
         uint256 startDate_,
         uint256 duration_,
         uint256 interval_
-    ) TimelockedTokenVault(token_, beneficiary_, startDate_, duration_) {
+    ) TimelockedTokenVault(beneficiary_, startDate_, duration_) {
         _interval = interval_ * 1 days;
     }
 
