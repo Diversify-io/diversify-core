@@ -95,7 +95,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         uint256 duration_,
         uint256 lockingPeriod_
     ) {
-        // note: we allow a zero lockingPeriod
+        // note: we allow a zero lockingPeriod by design
         require(beneficiary_ != address(0));
         require(duration_ > 0);
         require(address(token_) != address(0));
@@ -108,7 +108,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @dev starts the vault
+     * @dev starts the sale
      * @param rate_ How many token units a buyer gets per wei
      */
     function start(uint256 rate_) public onlyOwner {
