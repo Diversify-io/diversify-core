@@ -146,7 +146,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @return the balance of div tokens of the given address
+     * @return the balance of div tokens for the given address
      */
     function balanceOf(address address_) public view returns (uint256) {
         return _balances[address_];

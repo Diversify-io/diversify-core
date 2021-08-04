@@ -5,9 +5,10 @@ pragma solidity ^0.8.0;
 import './RetrieveTokensFeature.sol';
 
 /**
- * Contract to handle timelocked interval based capital releases to an immuatable beneficiary
+ * Contract that acts as a freeze (timelocked) vault with the support to release the capital
+ * based on a predefiend interval to an immuntable beneficiary.
  */
-contract TimelockedIntervalDistributedTokenWallet is RetrieveTokensFeature {
+contract TimelockedIntervalDistributedTokenVault is RetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held
@@ -25,7 +26,7 @@ contract TimelockedIntervalDistributedTokenWallet is RetrieveTokensFeature {
     // the interval
     uint256 private immutable _interval;
 
-    // the retrieved tokens
+    // the amount of tokens already retrieved
     uint256 private _retrievedTokens;
 
     // initial start balance
@@ -35,7 +36,7 @@ contract TimelockedIntervalDistributedTokenWallet is RetrieveTokensFeature {
     bool private _started;
 
     /**
-     * Lorem
+     * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
      */
     constructor(
         IERC20 token_,
@@ -114,7 +115,7 @@ contract TimelockedIntervalDistributedTokenWallet is RetrieveTokensFeature {
      * @dev retrieve wrongly assigned tokens
      */
     function retrieveTokens(address to, address anotherToken) public override onlyOwner {
-        require(address(_token) != anotherToken, 'You should only use this method to withdraw extraneous tokens.');
+        require(address(_token) != anotherToken, 'The withdraw is restriected to extraneous tokens.');
         super.retrieveTokens(to, anotherToken);
     }
 }

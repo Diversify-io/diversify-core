@@ -5,12 +5,20 @@ import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
+/**
+ * Contract for the ERC20 Diversify token
+ */
 contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
     event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
 
+    // Immutable burn stop supply
     uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;
+
+    // the address of the foundation wallet
     address private _foundationWallet;
+
+    // the rate that goes to the foundation
     uint256 private _foundationRate;
 
     /**

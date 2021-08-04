@@ -5,16 +5,22 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
- * A wallet like contract that allows owner to collect all tokens that the contract holds
+ * Contract that provides ETC and ERC20 token retrieval authorised by the owner
  */
 contract RetrieveTokensFeature is Context, Ownable {
     using SafeERC20 for IERC20;
 
+    /**
+     * @dev Allows to transfer the whole amount of the given token to a receiver
+     */
     function retrieveTokens(address to, address anotherToken) public virtual onlyOwner {
         IERC20 alienToken = IERC20(anotherToken);
         alienToken.safeTransfer(to, alienToken.balanceOf(address(this)));
     }
 
+    /**
+     * @dev Allows to transfer contract's ETH to a receiver
+     */
     function retrieveETH(address payable to) public virtual onlyOwner {
         to.transfer(address(this).balance);
     }
