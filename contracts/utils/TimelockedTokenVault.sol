@@ -11,7 +11,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held
-    IERC20 internal immutable _token;
+    IERC20 internal _token;
 
     // beneficiary of tokens after they are released
     address internal immutable _beneficiary;
@@ -42,13 +42,11 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
      */
     constructor(
-        IERC20 token_,
         address beneficiary_,
         uint256 startDate_,
         uint256 duration_
     ) {
         require(startDate_ + duration_ > block.timestamp, 'TokenTimelock: release time is before current time');
-        _token = token_;
         _beneficiary = beneficiary_;
         _startDate = startDate_;
         _duration = duration_ * 1 days;
@@ -58,8 +56,10 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     /**
      * @dev starts the vault
      */
-    function start() public onlyOwner {
+    function start(IERC20 token_) public onlyOwner {
         require(!_started, 'Lock already started');
+        require(address(token_) != address(0), 'Token must be set');
+        _token = token_;
         _startBalance = _token.balanceOf(address(this));
         _started = true;
     }
