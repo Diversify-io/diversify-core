@@ -6,7 +6,9 @@ import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
 
 /**
- * Contract for the ERC20 Diversify token
+ * @title Contract for the ERC20 Diversify token
+ * @author Diversify.io
+ * @notice This contract handles the implementation fo the Diversify token
  */
 contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
@@ -24,10 +26,21 @@ contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     /**
      * Initialize
      */
-    function initialize(address fWallet) public initializer {
+    function initialize(
+        address[] memory addresses,
+        uint256[] memory amounts,
+        address fWallet
+    ) public initializer {
         __ERC20_init('Diversify', 'DIV');
         __Ownable_init();
-        _mint(msg.sender, 1000000000 * 10**decimals());
+
+        // loop through the addresses array and send tokens to each address
+        // the corresponding amount to sent is taken from the amounts array
+        for (uint8 i = 0; i < addresses.length; i++) {
+            _mint(addresses[i], amounts[i] * 10**decimals());
+        }
+
+        // Set foundation rate
         _foundationRate = 0.25 * 100;
         _foundationWallet = fWallet;
     }
