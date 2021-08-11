@@ -7,7 +7,7 @@
       "hash": "0xa22e0353aca806bcadb1bc1e34dca681299d494689643efc414c2370ac21769b",
       "type": 0,
       "accessList": null,
-      "blockHash": "0x1237f469c9e7df13b29e2a019397219bd72fb20abbae0c871b0a3dc61418e898",
+      "blockHash": "0x6c4b1924110d42cbd84f87d1cd5b4a144672f71cf7a5e1e2e75fec9d7ca341f1",
       "blockNumber": 2,
       "transactionIndex": 0,
       "confirmations": 1,
@@ -43,11 +43,6 @@
     {
       "address": "0x0165878A594ca255338adfa4d48449f69242Eb8F",
       "txHash": "0xe6faec33e5a90e50aed7edefce637b9b447899c5167bbb0aabcfb9f10839f641",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      "txHash": "0x2543469b09fc09b9e77048fe2751dfdc4c6bdc856f41ede2d74cdf4bb7a2468c",
       "kind": "transparent"
     },
     {
@@ -96,48 +91,58 @@
       "kind": "transparent"
     },
     {
-      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0xdf50a9912069077c23c3b8bae323bfc97a3070353160aeb8769ff2fff8d421cb",
+      "address": "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+      "txHash": "0xeb3678344e13e7fd42594c2bf0a7e4b6e60a81c8f643ed5dc0b2888e768f221c",
       "kind": "transparent"
     },
     {
-      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
-      "txHash": "0x29d3db3728f91b2d0c128536c48c1b0e332da90e678753aea42c352ffc284583",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
-      "txHash": "0x60fcd652ec8c4c427b2abf34fc19b3a2671483158231d6b7abaa2caaee39bb17",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
-      "txHash": "0x8098003ae6a5053bbb83b8e6c5b52433362280f086b2d6f6b17034fd3b64a483",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
-      "txHash": "0xe3bc45c0ac0b4eceaa197da6487e43cbeaac17fba775c5ff245a714a20389a8b",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
-      "txHash": "0x59069598cb1ca52e53cd1b6b2e6d87e09c1662c88df4e436cdedfc52326ab9c5",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
-      "txHash": "0xc39f2b755873f7a55a1297c0b401f6a2660189e203fa0918bdd2c8b6634a9d7d",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
-      "txHash": "0x03d1eed56a217779796be131f8aaa89918f442a0ac82e0d70665fc85e83649d9",
+      "address": "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      "txHash": "0x042aedd9f4d920df831d0f1bcac3aca677961249e64cfbb7b78c037bcda6ba68",
       "kind": "transparent"
     },
     {
       "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
-      "txHash": "0x918e0149904a975624baf65c273e838f6e1ac1959d84540a71714b8e9532e92e",
+      "txHash": "0x274c910acfac95b7c72c15d21013e6c3ddda371e87ddfe01c47f54393aa836ea",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
+      "txHash": "0x2607b01d7e51e5d1292f59b745c6cf960ef5478ca5538d207da613ad49cfb191",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+      "txHash": "0xa37a8e09015589de3960c8680ceaae958fcf65cdc51379e89d624387bbee5c3a",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x2279B7A0a67DB372996a5FaB50D91eAA73d2eBe6",
+      "txHash": "0x07159022aefe6a6e0ad313c3fdfa8ee6bca96055c4b3c9523b47a0534f5f089c",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x610178dA211FEF7D417bC0e6FeD39F05609AD788",
+      "txHash": "0xdfe6de79fa20d8980535a4aeeb42f5cb52bee697b6c0ee2647b990758ea7db81",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x9A9f2CCfdE556A7E9Ff0848998Aa4a0CFD8863AE",
+      "txHash": "0x24cd9ccea9414260fc5d54518f2e61f157a15db97e0041abcb371ae440cf444a",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x3Aa5ebB10DC797CAC828524e59A333d0A371443c",
+      "txHash": "0x8c712a72e293a70f511542b08c645786c23aaeb060550bbdc9538f69b5e0168d",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x59b670e9fA9D0A427751Af201D676719a970857b",
+      "txHash": "0xa6be462a0c8f9a69726076cdd16241b6bf0f0a01835cf149b8e72f0aaf8fe22f",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+      "txHash": "0x6f189b40020a9b760f7730cec14119bc37e2c80254bf86db03f06ad50ecf53aa",
       "kind": "transparent"
     }
   ],
@@ -245,9 +250,9 @@
         }
       }
     },
-    "95a76afea3d80bd309a606ed1aaa148f63fe6b86ba984c4aafd38696ce527a5b": {
+    "1aaa422aa8721278622adc8540746d0eb8cf8a42d920a5b0654c8355403d5117": {
       "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-      "txHash": "0x2bf6cf4c5a2ccea2d7a22101dfe701fb227134b46ddc27dcf9c8f2f4fee34922",
+      "txHash": "0x16afda2cffb6f7d7880adfcf691585cda070f7f9d9b2967d5bb9c27ab842e254",
       "layout": {
         "storage": [
           {
@@ -320,13 +325,13 @@
             "contract": "Diversify_V1",
             "label": "_foundationWallet",
             "type": "t_address",
-            "src": "contracts/token/Diversify_V1.sol:19"
+            "src": "contracts/token/Diversify_V1.sol:21"
           },
           {
             "contract": "Diversify_V1",
             "label": "_foundationRate",
             "type": "t_uint256",
-            "src": "contracts/token/Diversify_V1.sol:22"
+            "src": "contracts/token/Diversify_V1.sol:24"
           }
         ],
         "types": {
@@ -360,9 +365,9 @@
         }
       }
     },
-    "2e7b2d0429f793ff457b947efa348722a267520bd9572eeb228951cc13e7160f": {
-      "address": "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
-      "txHash": "0x645739c4f5f77490b806e3a71110722d5ce9b19de97feceb90444d54ac71763e",
+    "edad3359f25cb9562a61d7d564b0d8abf4b46e154c8ac680f90a35079759cf37": {
+      "address": "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707",
+      "txHash": "0xcc963e2cd522cef12467d12aef368302f810501a3c9b72ec532d6e637980c828",
       "layout": {
         "storage": [
           {
@@ -435,13 +440,13 @@
             "contract": "Diversify_V1",
             "label": "_foundationWallet",
             "type": "t_address",
-            "src": "contracts/token/Diversify_V1.sol:19"
+            "src": "contracts/token/Diversify_V1.sol:21"
           },
           {
             "contract": "Diversify_V1",
             "label": "_foundationRate",
             "type": "t_uint256",
-            "src": "contracts/token/Diversify_V1.sol:22"
+            "src": "contracts/token/Diversify_V1.sol:24"
           }
         ],
         "types": {

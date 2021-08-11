@@ -20,7 +20,7 @@ describe('DiversifyToken', function () {
     addr3 = a3
     addr4 = a4
     const Token = await ethers.getContractFactory('Diversify_V1')
-    divToken = (await upgrades.deployProxy(Token, [addr4.address])) as DiversifyV1
+    divToken = (await upgrades.deployProxy(Token, [[addr1.address], [1000000000], addr4.address])) as DiversifyV1
   })
 
   describe('Deployment', function () {
