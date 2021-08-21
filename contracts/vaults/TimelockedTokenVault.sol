@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.0;
 
-import './RetrieveTokensFeature.sol';
+import '../utils/RetrieveTokensFeature.sol';
 
 /**
  * Contract that acts as a freeze (timelocked) vault to an immuntable beneficiary.
