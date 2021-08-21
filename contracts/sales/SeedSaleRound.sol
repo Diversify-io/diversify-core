@@ -18,9 +18,6 @@ contract SeedSaleRound is RetrieveTokensFeature {
         Closed
     }
 
-    // ERC20 basic token contract being held
-    IERC20 private immutable _token;
-
     // beneficiary of tokens (weis) after the sale ends
     address private immutable _beneficiary;
 
@@ -32,6 +29,9 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
     // Balance sheet of the invested weis
     mapping(address => uint256) private _balances;
+
+    // ERC20 basic token contract being held
+    IERC20 private _token;
 
     // How many token units a buyer gets per wei
     uint256 private _rate;
@@ -84,13 +84,11 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
     /**
      * Create a new instance of the seed sale
-     * @param token_ The div token
      * @param beneficiary_ beneficiary of tokens (weis) after the sale ends
      * @param duration_ the duration of the seed sale in days
      * @param lockingPeriod_ Locking period of tokens in days if sale was successful
      */
     constructor(
-        IERC20 token_,
         address beneficiary_,
         uint256 duration_,
         uint256 lockingPeriod_
@@ -98,9 +96,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         // note: we allow a zero lockingPeriod by design
         require(beneficiary_ != address(0));
         require(duration_ > 0);
-        require(address(token_) != address(0));
 
-        _token = token_;
         _beneficiary = beneficiary_;
         _duration = duration_ * 1 days;
         _state = State.Setup;
@@ -110,12 +106,15 @@ contract SeedSaleRound is RetrieveTokensFeature {
     /**
      * @dev starts the sale
      * @param rate_ How many token units a buyer gets per wei
+     * @param token_ The div token
      */
-    function start(uint256 rate_) public onlyOwner {
-        require(_token.balanceOf(address(this)) > 0);
+    function start(uint256 rate_, IERC20 token_) public onlyOwner {
+        require(address(token_) != address(0), 'Token must be set');
+        require(token_.balanceOf(address(this)) > 0);
         require(_state == State.Setup, 'Seed already started');
         require(_rate > 0);
 
+        _token = token_;
         _rate = rate_;
         _state = State.Active;
         _startDate = block.timestamp;

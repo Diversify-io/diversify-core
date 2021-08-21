@@ -1,4 +1,5 @@
 import { ethers, upgrades } from 'hardhat'
+import { SeedSaleRound__factory } from '../typechain/factories/SeedSaleRound__factory'
 import { TimelockedIntervalReleasedTokenVault__factory } from '../typechain/factories/TimelockedIntervalReleasedTokenVault__factory'
 import { TimelockedTokenVault__factory } from '../typechain/factories/TimelockedTokenVault__factory'
 import { UpgradableCommunityRewardDistributorV1__factory } from '../typechain/factories/UpgradableCommunityRewardDistributorV1__factory'
@@ -38,6 +39,7 @@ async function deploy() {
   const publicSaleDistributor = (await ethers.getContractFactory(
     'UpgradablePublicSaleDistributorV1'
   )) as UpgradablePublicSaleDistributorV1__factory
+  const seedSaleRoundFactory = (await ethers.getContractFactory('SeedSaleRound')) as SeedSaleRound__factory
 
   // Deploy: PR Vault (TimelockedIntervalReleasedTokenVault)
   // TODO: Set startdate, duration, interval
@@ -71,6 +73,11 @@ async function deploy() {
   )
 
   // Deploy: SeedSale Round 1-4
+  // TODO: -> Set: Params
+  const deployedSeedSaleRound1 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
+  const deployedSeedSaleRound2 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
+  const deployedSeedSaleRound3 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
+  const deployedSeedSaleRound4 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
 
   // Deploy: PrivateSale
   // TODO: set duration
@@ -91,6 +98,8 @@ async function deploy() {
   console.log('Token address:', deployedTokenProxy.address)
 
   /*
+  TODO: Arrange initial amount
+  TODO: Start Vault, and other stuff
   TODO: Transfer Ownership
     // Transfer ownership to gnosisSafe
     const gnosisSafe = '0x3Bc4f238330CfB5D0767722Ad1f092c806AB7a2b'

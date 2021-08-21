@@ -24,7 +24,7 @@ export default {
     },
   },
   gasReporter: {
-    enabled: true,
+    enabled: false,
     currency: 'EUR',
     coinmarketcap: '65ffafbd-6108-491c-8be3-b858dfa4e9e1',
     gasPrice: 21,

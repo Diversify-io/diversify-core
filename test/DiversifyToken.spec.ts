@@ -3,12 +3,11 @@ import { expect } from 'chai'
 import { BigNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
-import { DiversifyBurn } from '../typechain/DiversifyBurn.d'
-import { DiversifyV1 } from '../typechain/DiversifyV1.d'
-import { DiversifyV2 } from '../typechain/DiversifyV2.d'
+import { DiversifyMock } from '../typechain/DiversifyMock.d'
+import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
 
 describe('DiversifyToken', function () {
-  let divToken: DiversifyV1
+  let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
   let addr3: SignerWithAddress
@@ -19,8 +18,12 @@ describe('DiversifyToken', function () {
     addr2 = a2
     addr3 = a3
     addr4 = a4
-    const Token = await ethers.getContractFactory('Diversify_V1')
-    divToken = (await upgrades.deployProxy(Token, [[addr1.address], [1000000000], addr4.address])) as DiversifyV1
+    const Token = await ethers.getContractFactory('UpgradableDiversify_V1')
+    divToken = (await upgrades.deployProxy(Token, [
+      [addr1.address],
+      [1000000000],
+      addr4.address,
+    ])) as UpgradableDiversifyV1
   })
 
   describe('Deployment', function () {
@@ -36,7 +39,7 @@ describe('DiversifyToken', function () {
     describe('Deploy and upgrade token contract to V2', () => {
       it('Deploy and upgrade V2', async () => {
         const divV2 = await ethers.getContractFactory('Diversify_Mock')
-        const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as DiversifyV2
+        const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as DiversifyMock
 
         const amountBeforeUpgrade = await divTokenV2.balanceOf(addr1.address)
         const supplyBeforeUpgrade = await divTokenV2.totalSupply()
@@ -103,7 +106,7 @@ describe('DiversifyToken', function () {
     it('should stop burning tokens as soon as the total amount reaches 10% of the initial supply', async function () {
       // Arrange
       const divBurn = await ethers.getContractFactory('Diversify_Mock')
-      const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyBurn
+      const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyMock
       const initialTotalSupply = await divBurnMock.totalSupply()
       const initialBalance = await divBurnMock.balanceOf(addr1.address)
       const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
