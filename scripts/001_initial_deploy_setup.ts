@@ -1,12 +1,12 @@
 import { ethers, upgrades } from 'hardhat'
-import { CommunityRewardDistributor } from '../typechain/CommunityRewardDistributor.d'
-import { DiversifyV1 } from '../typechain/DiversifyV1'
-import { CommunityRewardDistributor__factory } from '../typechain/factories/CommunityRewardDistributor__factory'
-import { DiversifyTokenV1__factory } from '../typechain/factories/DiversifyTokenV1__factory'
-import { PublicSaleDistributor__factory } from '../typechain/factories/PublicSaleDistributor__factory'
 import { TimelockedIntervalReleasedTokenVault__factory } from '../typechain/factories/TimelockedIntervalReleasedTokenVault__factory'
 import { TimelockedTokenVault__factory } from '../typechain/factories/TimelockedTokenVault__factory'
-import { PublicSaleDistributor } from '../typechain/PublicSaleDistributor.d'
+import { UpgradableCommunityRewardDistributorV1__factory } from '../typechain/factories/UpgradableCommunityRewardDistributorV1__factory'
+import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
+import { UpgradablePublicSaleDistributorV1__factory } from '../typechain/factories/UpgradablePublicSaleDistributorV1__factory'
+import { UpgradableCommunityRewardDistributorV1 } from '../typechain/UpgradableCommunityRewardDistributorV1.d'
+import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
+import { UpgradablePublicSaleDistributorV1 } from '../typechain/UpgradablePublicSaleDistributorV1.d'
 
 /**
  * Workflow:
@@ -23,9 +23,6 @@ async function deploy() {
   console.log('Account balance:', (await deployer.getBalance()).toString())
 
   // Factories
-  const timelockedokenVaultFactory = (await ethers.getContractFactory(
-    'TimelockedTokenVault'
-  )) as TimelockedTokenVault__factory
   const timelockedIntervalReleasedTokenVaultFactory = (await ethers.getContractFactory(
     'TimelockedIntervalReleasedTokenVault'
   )) as TimelockedIntervalReleasedTokenVault__factory
@@ -33,10 +30,14 @@ async function deploy() {
     'TimelockedTokenVault'
   )) as TimelockedTokenVault__factory
   const communityRewardDistributorFactory = (await ethers.getContractFactory(
-    'CommunityRewardDistributor'
-  )) as CommunityRewardDistributor__factory
-  const diversifyTokenV1Factory = (await ethers.getContractFactory('DiversifyToken')) as DiversifyTokenV1__factory
-  const publicSaleDistributor = (await ethers.getContractFactory('PublicSaleVault')) as PublicSaleDistributor__factory
+    'UpgradableCommunityRewardDistributorV1'
+  )) as UpgradableCommunityRewardDistributorV1__factory
+  const diversifyTokenV1Factory = (await ethers.getContractFactory(
+    'UpgradableDiversifyV1'
+  )) as UpgradableDiversifyV1__factory
+  const publicSaleDistributor = (await ethers.getContractFactory(
+    'UpgradablePublicSaleDistributorV1'
+  )) as UpgradablePublicSaleDistributorV1__factory
 
   // Deploy: PR Vault (TimelockedIntervalReleasedTokenVault)
   // TODO: Set startdate, duration, interval
@@ -60,7 +61,7 @@ async function deploy() {
   // Deploy: CommunityRewardVault (TimelockedIntervalReleasedTokenVault)
   const deployedCommunityRewardDistributorProxy = (await upgrades.deployProxy(
     communityRewardDistributorFactory
-  )) as CommunityRewardDistributor
+  )) as UpgradableCommunityRewardDistributorV1
 
   const deployedCommunityTokenLockVault = await timelockedIntervalReleasedTokenVaultFactory.deploy(
     deployedCommunityRewardDistributorProxy.address,
@@ -76,7 +77,9 @@ async function deploy() {
   const deployedPrivateSaleTokenLockVault = await timelockedTokenVaultFactory.deploy(PRIVATE_SALE_WALLET, 2323, 2323)
 
   // Deploy: PublicSaleVault
-  const deployedPublicSaleVaultProxy = (await upgrades.deployProxy(publicSaleDistributor)) as PublicSaleDistributor
+  const deployedPublicSaleVaultProxy = (await upgrades.deployProxy(
+    publicSaleDistributor
+  )) as UpgradablePublicSaleDistributorV1
   const deployedPublicSaleTokenLockVault = await timelockedTokenVaultFactory.deploy(
     deployedPublicSaleVaultProxy.address,
     2323,
@@ -84,7 +87,7 @@ async function deploy() {
   )
 
   // Deploy: Token
-  const deployedTokenProxy = (await upgrades.deployProxy(diversifyTokenV1Factory, [])) as DiversifyV1
+  const deployedTokenProxy = (await upgrades.deployProxy(diversifyTokenV1Factory, [])) as UpgradableDiversifyV1
   console.log('Token address:', deployedTokenProxy.address)
 
   /*

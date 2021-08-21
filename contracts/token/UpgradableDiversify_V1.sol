@@ -10,7 +10,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
  * @author Diversify.io
  * @notice This contract handles the implementation fo the Diversify token
  */
-contract Diversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
+contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
     event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
     event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
 
