@@ -32,21 +32,6 @@ describe('RetrieveTokensFeature', function () {
     ])) as UpgradableDiversifyV1
   })
 
-  it('should collect ETH', async function () {
-    const senderBefore = await addr1.getBalance()
-
-    await addr1.sendTransaction({
-      to: retrieveTokenFeature.address,
-      value: ethers.utils.parseEther('100.0'),
-    })
-
-    expect(await addr1.getBalance()).equals(senderBefore.sub(ethers.utils.parseEther('100.0')))
-  })
-
-  it('should retrieve ETH', async function () {
-    // const senderBefore = addr1.getBalance();
-  })
-
   it('should retrieve div token and transfer correctly', async function () {
     // Arrange
     const rtfBalanceBefore = await divToken.balanceOf(retrieveTokenFeature.address)
