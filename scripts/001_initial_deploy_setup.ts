@@ -15,8 +15,18 @@ import { UpgradablePublicSaleDistributorV1 } from '../typechain/UpgradablePublic
  */
 
 async function deploy() {
+  const TOTAL_SUPPLY = 1000000000
+  const PR_SUPPLY_PERCENTAGE = 10
+  const TA_SUPPLY_PERCENTAGE = 10
+  const COMMUNITY_SUPPLY_PERCENTAGE = 17.5
+  const SEED_SALE_ROUND_1_SUPPLY_PERCENTAGE = 1.25
+  const SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE = 1.25
+  const PRIVATE_SALE_SUPPLY_PERCENTAGE = 10
+  const PUBLIC_SALE_SUPPLY_PERCENTAGE = 50
+
   const COMPANY_WALLET = ''
   const PRIVATE_SALE_WALLET = ''
+  const FOUNDATION_WALLET = ''
   const VAULT_START_DATE = 34334
   const [deployer] = await ethers.getSigners()
 
@@ -72,12 +82,10 @@ async function deploy() {
     360
   )
 
-  // Deploy: SeedSale Round 1-4
+  // Deploy: SeedSale Round 1-2
   // TODO: -> Set: Params
   const deployedSeedSaleRound1 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
   const deployedSeedSaleRound2 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
-  const deployedSeedSaleRound3 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
-  const deployedSeedSaleRound4 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
 
   // Deploy: PrivateSale
   // TODO: set duration
@@ -94,12 +102,34 @@ async function deploy() {
   )
 
   // Deploy: Token
-  const deployedTokenProxy = (await upgrades.deployProxy(diversifyTokenV1Factory, [])) as UpgradableDiversifyV1
-  console.log('Token address:', deployedTokenProxy.address)
+  const totalSupplyPercentage = TOTAL_SUPPLY / 100
+  const supplyMap = new Map([
+    [deployedPrTokenLockVault.address, totalSupplyPercentage * PR_SUPPLY_PERCENTAGE],
+    [deployedTaTokenLockVault.address, totalSupplyPercentage * TA_SUPPLY_PERCENTAGE],
+    [deployedCommunityTokenLockVault.address, totalSupplyPercentage * COMMUNITY_SUPPLY_PERCENTAGE],
+    [deployedPublicSaleTokenLockVault.address, totalSupplyPercentage * PUBLIC_SALE_SUPPLY_PERCENTAGE],
+    [deployedPrivateSaleTokenLockVault.address, totalSupplyPercentage * PRIVATE_SALE_SUPPLY_PERCENTAGE],
+    [deployedSeedSaleRound1.address, totalSupplyPercentage * SEED_SALE_ROUND_1_SUPPLY_PERCENTAGE],
+    [deployedSeedSaleRound2.address, totalSupplyPercentage * SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE],
+  ])
+
+  const deployedTokenProxy = (await upgrades.deployProxy(diversifyTokenV1Factory, [
+    [...supplyMap.keys()],
+    [...supplyMap.values()],
+    FOUNDATION_WALLET,
+  ])) as UpgradableDiversifyV1
+
+  const DIV_TOKEN_ADDRESS = deployedTokenProxy.address
+  console.log('Token address:', DIV_TOKEN_ADDRESS)
+
+  // Start vaults
+  await deployedPrTokenLockVault.start(DIV_TOKEN_ADDRESS)
+  await deployedTaTokenLockVault.start(DIV_TOKEN_ADDRESS)
+  await deployedCommunityTokenLockVault.start(DIV_TOKEN_ADDRESS)
+  await deployedPrivateSaleTokenLockVault.start(DIV_TOKEN_ADDRESS)
+  await deployedPublicSaleTokenLockVault.start(DIV_TOKEN_ADDRESS)
 
   /*
-  TODO: Arrange initial amount
-  TODO: Start Vault, and other stuff
   TODO: Transfer Ownership
     // Transfer ownership to gnosisSafe
     const gnosisSafe = '0x3Bc4f238330CfB5D0767722Ad1f092c806AB7a2b'

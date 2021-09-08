@@ -71,7 +71,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
      * Extend burn with  burn limit
      */
     function _burn(address account, uint256 amount) internal override {
-        require(!(totalSupply() < BURN_STOP_SUPPLY + amount), 'burn overreches burn stop supply');
+        require(!(totalSupply() < BURN_STOP_SUPPLY + amount), 'burn overreaches burn stop supply');
         super._burn(account, amount);
     }
 
