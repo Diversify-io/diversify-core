@@ -32,18 +32,36 @@ describe('RetrieveTokensFeature', function () {
     ])) as UpgradableDiversifyV1
   })
 
-  // TODO: Implement this test case
-  /*it('should retrieve ETH', async function () {
-    const ownerBalance = await divToken.balanceOf(addr1.address)
-    expect(await divToken.totalSupply()).to.equal(ownerBalance)
-  })*/
+  it('should collect ETH', async function () {
+    const senderBefore = await addr1.getBalance()
+
+    await addr1.sendTransaction({
+      to: retrieveTokenFeature.address,
+      value: ethers.utils.parseEther('100.0'),
+    })
+
+    expect(await addr1.getBalance()).equals(senderBefore.sub(ethers.utils.parseEther('100.0')))
+  })
+
+  it('should retrieve ETH', async function () {
+    // const senderBefore = addr1.getBalance();
+  })
 
   it('should retrieve div token and transfer correctly', async function () {
+    // Arrange
+    const rtfBalanceBefore = await divToken.balanceOf(retrieveTokenFeature.address)
+    const ownerBalanceBefore = await divToken.balanceOf(addr1.address)
+
+    // We need to keep in mind the burn function
+    const amountToReceive = rtfBalanceBefore.div(100 * 10 ** 4).mul(98.75 * 10 ** 4)
+
+    // Act
     await retrieveTokenFeature.retrieveTokens(addr1.address, divToken.address)
-    const retrieveTokenFeatureBalance = await divToken.balanceOf(retrieveTokenFeature.address)
-    const ownerBalance = await divToken.balanceOf(addr1.address)
-    expect(retrieveTokenFeatureBalance).equals(0)
-    // TODO: check for owner balacne
-    // expect(ownerBalance).greaterThan(1000000000)
+    const rtfBalanceAfter = await divToken.balanceOf(retrieveTokenFeature.address)
+    const ownerBalanceAfter = await divToken.balanceOf(addr1.address)
+
+    // Assert
+    expect(rtfBalanceAfter).equals(0)
+    expect(ownerBalanceAfter).equals(ownerBalanceBefore.add(amountToReceive))
   })
 })
