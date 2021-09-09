@@ -36,17 +36,20 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // How many token units a buyer gets per wei
     uint256 private _rate;
 
-    // Amount of wei to reach
-    uint256 private _goal;
-
     //  Start date of seedsale
     uint256 private _startDate;
 
-    // Initial supply of seed round
+    // Initial supply of seed round in momos
     uint256 private _totalSupply;
+
+    // The total supply in wei
+    uint256 private _weiTotalSupply;
 
     // Amount of wei raised
     uint256 private _weiRaised;
+
+    // Amount of wei to raise
+    uint256 private _weiGoal;
 
     // Locking period of tokens in days if sale was successful
     uint256 private _lockingPeriod;
@@ -54,12 +57,12 @@ contract SeedSaleRound is RetrieveTokensFeature {
     /*
      * Event seedsale start logging
      * @param rate How many token units a buyer gets per wei
-     * @param goal amount of wei to reach
-     * @param totalSupply of the round
+     * @param weiGoal amount of wei to reach for success
+     * @param totalSupply of momos in the round
      * @param duration the duration of the seed sale in days
      * @param lockingPeriod Locking period of tokens in days if sale was successful
      */
-    event Started(uint256 rate, uint256 goal, uint256 totalSupply, uint256 duration, uint256 lockingPeriod);
+    event Started(uint256 rate, uint256 weiGoal, uint256 totalSupply, uint256 duration, uint256 lockingPeriod);
 
     /*
      * Event for seedsale closed logging
@@ -109,23 +112,30 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
     /**
      * @dev starts the sale
-     * @param rate_ How many token units a buyer gets per wei
+     * @param rate_ How many momos a buyer gets per wei
+     * @param weiGoal_ The goal in wei to reach for round success
      * @param token_ The div token
      */
-    function start(uint256 rate_, IERC20UpgradeableBurnable token_) public onlyOwner {
+    function start(
+        uint256 rate_,
+        uint256 weiGoal_,
+        IERC20UpgradeableBurnable token_
+    ) public onlyOwner {
         require(address(token_) != address(0), 'Token must be set');
         require(token_.balanceOf(address(this)) > 0);
         require(_state == State.Setup, 'Seed already started');
-        require(_rate > 0);
+        require(rate_ > 0);
+        require(weiGoal_ > 0);
 
         _token = token_;
         _rate = rate_;
         _state = State.Active;
         _startDate = block.timestamp;
         _totalSupply = _token.balanceOf(address(this));
-        _goal = _totalSupply / _rate;
+        _weiTotalSupply = _totalSupply / _rate;
+        _weiGoal = weiGoal_;
 
-        emit Started(_rate, _goal, _totalSupply, _duration, _lockingPeriod);
+        emit Started(_rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
     }
 
     /**
@@ -164,7 +174,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @dev low level token purchase ***DO NOT OVERRIDE***
+     * @dev token purchase
      */
     function buyTokens() public payable {
         uint256 weiAmount = msg.value;
@@ -172,13 +182,13 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(block.timestamp < _startDate + _duration, 'End duration reached');
         require(_msgSender() != address(0));
         require(weiAmount != 0);
-        require(_weiRaised + weiAmount <= _goal);
+        require(_weiRaised + weiAmount <= _weiTotalSupply);
 
         // calculate token amount for event
         uint256 tokens = _getMomoAmount(weiAmount);
 
         // update state
-        _weiRaised = _weiRaised + weiAmount;
+        _weiRaised += weiAmount;
 
         _balances[_msgSender()] = _balances[_msgSender()] + msg.value;
         emit TokenPurchase(_msgSender(), weiAmount, tokens);
@@ -191,10 +201,13 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(_state == State.Active);
         require(block.timestamp >= _startDate + _duration, 'End duration not reached');
 
-        if (_weiRaised >= _totalSupply) {
+        if (_weiRaised >= _weiGoal) {
             _state = State.Closed;
             emit Closed();
             retrieveETH(payable(beneficiary()));
+            // Burn remaining tokens
+            uint256 momosSold = _getMomoAmount(_weiRaised);
+            _token.burn(_totalSupply - momosSold);
         } else {
             _state = State.Refunding;
             emit RefundsEnabled();
@@ -216,7 +229,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev payout the freezed amount of token
      */
     function retrieveFreezedTokens() public {
-        require(_state == State.Closed, 'Not closed');
+        require(_state == State.Closed, 'Sale is still open');
         require(block.timestamp >= (_startDate + _duration + _lockingPeriod), 'Seed locking period not ended');
         uint256 momoAmount = _getMomoAmount(_balances[_msgSender()]);
         _balances[_msgSender()] = 0;
