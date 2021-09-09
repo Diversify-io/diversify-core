@@ -207,7 +207,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
             retrieveETH(payable(beneficiary()));
             // Burn remaining tokens
             uint256 momosSold = _getMomoAmount(_weiRaised);
-            _token.burn(_totalSupply - momosSold);
+            _token.burn(totalSupply() - momosSold);
         } else {
             _state = State.Refunding;
             emit RefundsEnabled();
