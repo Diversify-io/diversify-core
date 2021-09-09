@@ -24,6 +24,12 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     // the rate that goes to the foundation
     uint256 private _foundationRate;
 
+    // total burned amount
+    uint256 private _amountBurned;
+
+    // total amount transfered to foundation
+    uint256 private _amountFounded;
+
     /**
      * Initialize
      */
@@ -92,6 +98,20 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
+     * @dev Returns the amount of tokens, transfered to the foundation
+     */
+    function amountFounded() public view returns (uint256) {
+        return _amountFounded;
+    }
+
+    /**
+     * @dev Returns the amount of burned tokens
+     */
+    function amountBurned() public view returns (uint256) {
+        return _amountBurned;
+    }
+
+    /**
      * @dev Sets the address of the foundation wallet.
      */
     function setFoundationWallet(address newWallet) public onlyOwner {
@@ -136,6 +156,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         }
         super._transfer(from, _foundationWallet, tFound);
         super._transfer(from, to, value - tFound - tBurn);
+        _amountFounded += tFound;
     }
 
     /**
@@ -144,5 +165,6 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     function _burn(address account, uint256 amount) internal override {
         require(!(totalSupply() < BURN_STOP_SUPPLY + amount), 'burn overreaches burn stop supply');
         super._burn(account, amount);
+        _amountBurned += amount;
     }
 }

@@ -42,6 +42,9 @@ contract SeedSaleRound is RetrieveTokensFeature {
     //  Start date of seedsale
     uint256 private _startDate;
 
+    // Initial supply of seed round
+    uint256 private _totalSupply;
+
     // Amount of wei raised
     uint256 private _weiRaised;
 
@@ -52,10 +55,11 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * Event seedsale start logging
      * @param rate How many token units a buyer gets per wei
      * @param goal amount of wei to reach
+     * @param totalSupply of the round
      * @param duration the duration of the seed sale in days
      * @param lockingPeriod Locking period of tokens in days if sale was successful
      */
-    event Started(uint256 rate, uint256 goal, uint256 duration, uint256 lockingPeriod);
+    event Started(uint256 rate, uint256 goal, uint256 totalSupply, uint256 duration, uint256 lockingPeriod);
 
     /*
      * Event for seedsale closed logging
@@ -118,9 +122,10 @@ contract SeedSaleRound is RetrieveTokensFeature {
         _rate = rate_;
         _state = State.Active;
         _startDate = block.timestamp;
-        _goal = _token.balanceOf(address(this)) / _rate;
+        _totalSupply = _token.balanceOf(address(this));
+        _goal = _totalSupply / _rate;
 
-        emit Started(_rate, _goal, _duration, _lockingPeriod);
+        emit Started(_rate, _goal, _totalSupply, _duration, _lockingPeriod);
     }
 
     /**
@@ -142,6 +147,13 @@ contract SeedSaleRound is RetrieveTokensFeature {
      */
     function rate() public view returns (uint256) {
         return _rate;
+    }
+
+    /**
+     * @return the amount of the seed round
+     */
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
     }
 
     /**
@@ -179,7 +191,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(_state == State.Active);
         require(block.timestamp >= _startDate + _duration, 'End duration not reached');
 
-        if (_weiRaised >= _goal) {
+        if (_weiRaised >= _totalSupply) {
             _state = State.Closed;
             emit Closed();
             retrieveETH(payable(beneficiary()));
