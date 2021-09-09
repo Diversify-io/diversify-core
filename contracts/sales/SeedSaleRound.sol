@@ -255,8 +255,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @param _weiAmount Value in wei to be converted into tokens
-     * @return Number of tokens (momo's) that can be purchased with the specified _weiAmount
+     * @param _weiAmount Value in wei to momos
+     * @return Number of token (momo's) one receives for the _weiAmount
      */
     function _getMomoAmount(uint256 _weiAmount) internal view returns (uint256) {
         return _weiAmount * rate();
