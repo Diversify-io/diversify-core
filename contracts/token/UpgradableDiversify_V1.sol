@@ -4,13 +4,14 @@ import 'hardhat/console.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '../interfaces/IERC20UpgradeableBurnable.sol';
 
 /**
  * @title Contract for the ERC20 Diversify token
  * @author Diversify.io
  * @notice This contract handles the implementation fo the Diversify token
  */
-contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable {
+contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable, IERC20UpgradeableBurnable {
     event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
     event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
 
@@ -50,8 +51,9 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
      *
      * See {ERC20-_burn}.
      */
-    function burn(uint256 amount) public virtual {
+    function burn(uint256 amount) public virtual override returns (bool) {
         _burn(_msgSender(), amount);
+        return true;
     }
 
     /**
@@ -65,13 +67,14 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
      * - the caller must have allowance for ``accounts``'s tokens of at least
      * `amount`.
      */
-    function burnFrom(address account, uint256 amount) public virtual {
+    function burnFrom(address account, uint256 amount) public virtual override returns (bool) {
         uint256 currentAllowance = allowance(account, _msgSender());
         require(currentAllowance >= amount, 'ERC20: burn amount exceeds allowance');
         unchecked {
             _approve(account, _msgSender(), currentAllowance - amount);
         }
         _burn(account, amount);
+        return true;
     }
 
     /**

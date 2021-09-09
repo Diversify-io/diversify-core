@@ -3,15 +3,13 @@
 pragma solidity ^0.8.0;
 
 import '../utils/RetrieveTokensFeature.sol';
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '../interfaces/IERC20UpgradeableBurnable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * Contract to handle a seed sale of diversify
  */
 contract SeedSaleRound is RetrieveTokensFeature {
-    using SafeERC20 for IERC20;
-
     // The State of the seed sale
     enum State {
         Setup,
@@ -33,7 +31,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     mapping(address => uint256) private _balances;
 
     // ERC20 basic token contract being held
-    IERC20 private _token;
+    IERC20UpgradeableBurnable private _token;
 
     // How many token units a buyer gets per wei
     uint256 private _rate;
@@ -110,7 +108,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @param rate_ How many token units a buyer gets per wei
      * @param token_ The div token
      */
-    function start(uint256 rate_, IERC20 token_) public onlyOwner {
+    function start(uint256 rate_, IERC20UpgradeableBurnable token_) public onlyOwner {
         require(address(token_) != address(0), 'Token must be set');
         require(token_.balanceOf(address(this)) > 0);
         require(_state == State.Setup, 'Seed already started');
@@ -128,7 +126,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     /**
      * @return the token being held.
      */
-    function token() public view returns (IERC20) {
+    function token() public view returns (IERC20UpgradeableBurnable) {
         return _token;
     }
 
@@ -210,7 +208,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(block.timestamp >= (_startDate + _duration + _lockingPeriod), 'Seed locking period not ended');
         uint256 momoAmount = _getMomoAmount(_balances[_msgSender()]);
         _balances[_msgSender()] = 0;
-        _token.safeTransfer(_msgSender(), momoAmount);
+        _token.transfer(_msgSender(), momoAmount);
     }
 
     /**
