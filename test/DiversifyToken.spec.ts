@@ -105,51 +105,48 @@ describe('DiversifyToken', function () {
 
     it('should stop burning tokens as soon as the total amount reaches 10% of the initial supply', async function () {
       // Arrange
-      const divBurn = await ethers.getContractFactory('Diversify_Mock')
-      const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyMock
-      const initialTotalSupply = await divBurnMock.totalSupply()
-      const initialBalance = await divBurnMock.balanceOf(addr1.address)
-      const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
+      const initialTotalSupply = await divToken.totalSupply()
+      const initialBalance = await divToken.balanceOf(addr1.address)
+      const burnStopSupply = await divToken.burnStopSupply() // @dev constant set to 10% of initial supply
       const maxTokenToBurn = initialTotalSupply.sub(burnStopSupply)
 
       // Check for overburning
-      await expect(divBurnMock.burn(addr1.address, initialTotalSupply)).to.be.reverted
+      await expect(divToken.burn(initialTotalSupply)).to.be.reverted
 
       // Normal burn
-      await divBurnMock.burn(addr1.address, maxTokenToBurn)
-      const finalTotalSupply = await divBurnMock.totalSupply()
-      const finalBalance = await divBurnMock.balanceOf(addr1.address)
+      await divToken.burn(maxTokenToBurn)
+      const finalTotalSupply = await divToken.totalSupply()
+      const finalBalance = await divToken.balanceOf(addr1.address)
 
       // Assert
       expect(finalTotalSupply).eq(burnStopSupply)
       expect(finalBalance).eq(initialBalance.sub(maxTokenToBurn))
 
       // Recheck Lock
-      await expect(divBurnMock.burn(addr1.address, finalBalance)).to.be.reverted
+      await expect(divToken.burn(finalBalance)).to.be.reverted
 
       // Check transfer
-      await divBurnMock.setFoundationRate(0) // sake of simplicity, disable foundation
-      await divBurnMock.transfer(addr2.address, finalBalance)
-      expect(await divBurnMock.balanceOf(addr2.address)).equals(finalBalance)
+      await divToken.setFoundationRate(0) // sake of simplicity, disable foundation
+      await divToken.transfer(addr2.address, finalBalance)
+      expect(await divToken.balanceOf(addr2.address)).equals(finalBalance)
     })
 
     it('should adjust transfer burn amount, if it exceeds the total burn amount', async function () {
       // Arrange
-      const divBurn = await ethers.getContractFactory('Diversify_Mock')
-      const divBurnMock = (await upgrades.upgradeProxy(divToken.address, divBurn)) as DiversifyMock
-      const initialTotalSupply = await divBurnMock.totalSupply()
-      const initialBalanceAcc2 = await divBurnMock.balanceOf(addr2.address)
-      const burnStopSupply = await divBurnMock.burnStopSupply() // @dev constant set to 10% of initial supply
+      const initialTotalSupply = await divToken.totalSupply()
+      const initialBalanceAcc2 = await divToken.balanceOf(addr2.address)
+      const burnStopSupply = await divToken.burnStopSupply() // @dev constant set to 10% of initial supply
       const maxTokenToBurn = initialTotalSupply.sub(burnStopSupply)
-      const addr1Amountd = await divBurnMock.balanceOf(addr1.address)
+      const addr1Amountd = await divToken.balanceOf(addr1.address)
+
       // Burn down near the supply
-      await divBurnMock.burn(addr1.address, maxTokenToBurn.sub(50))
-      const addr1Amount = await divBurnMock.balanceOf(addr1.address)
-      await divBurnMock.setFoundationRate(0) // sake of simplicity, disable foundation
-      await divBurnMock.transfer(addr2.address, addr1Amount)
+      await divToken.burn(maxTokenToBurn.sub(50))
+      const addr1Amount = await divToken.balanceOf(addr1.address)
+      await divToken.setFoundationRate(0) // sake of simplicity, disable foundation
+      await divToken.transfer(addr2.address, addr1Amount)
 
       // Assert
-      expect(await divBurnMock.balanceOf(addr2.address)).equals(addr1Amount.add(initialBalanceAcc2).sub(50))
+      expect(await divToken.balanceOf(addr2.address)).equals(addr1Amount.add(initialBalanceAcc2).sub(50))
     })
   })
 
