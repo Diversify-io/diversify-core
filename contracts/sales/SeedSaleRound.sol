@@ -3,6 +3,8 @@
 pragma solidity ^0.8.0;
 
 import '../utils/RetrieveTokensFeature.sol';
+import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
+import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
  * Contract to handle a seed sale of diversify

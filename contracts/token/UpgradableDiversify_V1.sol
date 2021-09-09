@@ -46,6 +46,74 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
+     * @dev Destroys `amount` tokens from the caller.
+     *
+     * See {ERC20-_burn}.
+     */
+    function burn(uint256 amount) public virtual {
+        _burn(_msgSender(), amount);
+    }
+
+    /**
+     * @dev Destroys `amount` tokens from `account`, deducting from the caller's
+     * allowance.
+     *
+     * See {ERC20-_burn} and {ERC20-allowance}.
+     *
+     * Requirements:
+     *
+     * - the caller must have allowance for ``accounts``'s tokens of at least
+     * `amount`.
+     */
+    function burnFrom(address account, uint256 amount) public virtual {
+        uint256 currentAllowance = allowance(account, _msgSender());
+        require(currentAllowance >= amount, 'ERC20: burn amount exceeds allowance');
+        unchecked {
+            _approve(account, _msgSender(), currentAllowance - amount);
+        }
+        _burn(account, amount);
+    }
+
+    /**
+     * @dev Returns the address of the foundation wallet.
+     */
+    function foundationWallet() public view returns (address) {
+        return _foundationWallet;
+    }
+
+    /**
+     * @dev Returns the rate of the foundation.
+     */
+    function foundationRate() public view returns (uint256) {
+        return _foundationRate;
+    }
+
+    /**
+     * @dev Sets the address of the foundation wallet.
+     */
+    function setFoundationWallet(address newWallet) public onlyOwner {
+        address oldWallet = _foundationWallet;
+        _foundationWallet = newWallet;
+        emit FoundationWalletChanged(oldWallet, newWallet);
+    }
+
+    /**
+     * @dev Sets the address of the foundation wallet.
+     */
+    function setFoundationRate(uint256 newRate) public onlyOwner {
+        uint256 oldRate = _foundationRate;
+        _foundationRate = newRate;
+        emit FoundationRateChanged(oldRate, newRate);
+    }
+
+    /**
+     * @dev Returns the burn stop supply.
+     */
+    function burnStopSupply() public pure returns (uint256) {
+        return BURN_STOP_SUPPLY;
+    }
+
+    /**
      * Extend transfer with limit burn and governance wallet
      */
     function _transfer(
@@ -73,44 +141,5 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     function _burn(address account, uint256 amount) internal override {
         require(!(totalSupply() < BURN_STOP_SUPPLY + amount), 'burn overreaches burn stop supply');
         super._burn(account, amount);
-    }
-
-    /**
-     * @dev Returns the address of the foundation wallet.
-     */
-    function foundationWallet() public view returns (address) {
-        return _foundationWallet;
-    }
-
-    /**
-     * @dev Sets the address of the foundation wallet.
-     */
-    function setFoundationWallet(address newWallet) public onlyOwner {
-        address oldWallet = _foundationWallet;
-        _foundationWallet = newWallet;
-        emit FoundationWalletChanged(oldWallet, newWallet);
-    }
-
-    /**
-     * @dev Returns the rate of the foundation.
-     */
-    function foundationRate() public view returns (uint256) {
-        return _foundationRate;
-    }
-
-    /**
-     * @dev Sets the address of the foundation wallet.
-     */
-    function setFoundationRate(uint256 newRate) public onlyOwner {
-        uint256 oldRate = _foundationRate;
-        _foundationRate = newRate;
-        emit FoundationRateChanged(oldRate, newRate);
-    }
-
-    /**
-     * @dev Returns the burn stop supply.
-     */
-    function burnStopSupply() public pure returns (uint256) {
-        return BURN_STOP_SUPPLY;
     }
 }
