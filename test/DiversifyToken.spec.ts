@@ -5,7 +5,7 @@ import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
 import { DiversifyMock } from '../typechain/DiversifyMock.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
-import { calculateFoundationAmount } from './utils/testHelper'
+import { calculateBurnAmount, calculateFoundationAmount } from './utils/testHelper'
 
 describe('DiversifyToken', function () {
   let divToken: UpgradableDiversifyV1
@@ -104,6 +104,119 @@ describe('DiversifyToken', function () {
       console.log('found:\t\t' + balance4after.sub(balance4before).toString())
     })
 
+    it('should update the views amountBurned and amountFounded', async function () {
+      // Arrange
+      const amountToTransfer = BigNumber.from(500)
+      const amountToBeFounded = calculateFoundationAmount(amountToTransfer)
+      const amountToBeBurned = calculateBurnAmount(amountToTransfer)
+
+      // Act
+      await divToken.transfer(addr2.address, amountToTransfer)
+
+      // Assert
+      expect(await divToken.amountBurned()).to.be.equal(amountToBeBurned)
+      expect(await divToken.amountFounded()).to.be.equal(amountToBeFounded)
+    })
+  })
+
+  describe('Foundation', function () {
+    describe('Change Wallet', function () {
+      it('should change address', async function () {
+        // Arrange
+        const oldFoundationWallet = await divToken.foundationWallet()
+        // Act
+        await divToken.setFoundationWallet(addr2.address)
+        const newFoundationWallet = await divToken.foundationWallet()
+
+        // Assert
+        expect(newFoundationWallet).to.be.equal(addr2.address)
+
+        // Log
+        console.log('------------')
+        console.log('Old Wallet:\t' + oldFoundationWallet)
+        console.log('New Wallet:\t' + newFoundationWallet)
+        console.log('------------')
+      })
+      it('should raise event', async function () {
+        // Assert
+        await expect(divToken.setFoundationWallet(addr2.address))
+          .to.emit(divToken, 'FoundationWalletChanged')
+          .withArgs(addr4.address, addr2.address)
+      })
+    })
+    describe('Change rate', function () {
+      it('should change rate and update view', async function () {
+        // Arrange
+        const foundationRate = 50 // basis points eq 0.5 pct
+        const oldFoundationRate = (await divToken.foundationRate()).toNumber()
+
+        // Act
+        await divToken.setFoundationRate(foundationRate)
+        const newFoundationRate = (await divToken.foundationRate()).toNumber()
+
+        // Assert
+        expect(newFoundationRate).to.be.equal(foundationRate)
+
+        // Log
+        console.log('------------')
+        console.log('Old Rate:\t' + oldFoundationRate / 100 + '%')
+        console.log('New Rate:\t' + newFoundationRate / 100 + '%')
+        console.log('------------')
+      })
+
+      it('should reverte if rate too height', async function () {
+        // Arrange
+        const foundationRate = 500 // basis points eq 0.5 pct
+
+        // Assert
+        expect(divToken.setFoundationRate(foundationRate)).to.be.reverted
+      })
+
+      it('should raise event', async function () {
+        // Assert
+        const oldFoundationRate = divToken.foundationRate
+        const foundationRate = 0.5 * 100 // change to 0.5%
+        await expect(divToken.setFoundationRate(foundationRate))
+          .to.emit(divToken, 'FoundationRateChanged')
+          .withArgs(oldFoundationRate, foundationRate)
+      })
+    })
+  })
+
+  describe('Burn', function () {
+    it('should burn and update amountBurned', async function () {
+      // Arrange
+      const amountToBurn = 500
+      // Act
+      await divToken.burn(500)
+      // Assert
+      expect(await divToken.amountBurned()).to.be.equal(amountToBurn)
+    })
+
+    it('should revert if burn from other account', async function () {
+      // Arrange
+      const amountToBurn = 500
+
+      // Assert
+      await expect(divToken.connect(addr2).burnFrom(addr1.address, amountToBurn)).to.be.revertedWith(
+        'ERC20: burn amount exceeds allowance'
+      )
+    })
+
+    it('should transfer burn allowance and burn from account', async function () {
+      // Arrange
+      const amountToBurn = 500
+      const initialAmount = await divToken.balanceOf(addr1.address)
+      await divToken.increaseAllowance(addr2.address, amountToBurn)
+
+      // Act
+      await divToken.connect(addr2).burnFrom(addr1.address, amountToBurn)
+
+      // Assert
+      expect(await divToken.amountBurned()).to.be.equal(amountToBurn)
+      expect(await divToken.balanceOf(addr1.address)).to.be.equal(initialAmount.sub(amountToBurn))
+    })
+
     it('should stop burning tokens as soon as the total amount reaches 10% of the initial supply', async function () {
       // Arrange
       const initialTotalSupply = await divToken.totalSupply()
@@ -147,61 +260,6 @@ describe('DiversifyToken', function () {
       expect(await divToken.balanceOf(addr2.address)).equals(
         addr1Amount.add(initialBalanceAcc2).sub(50).sub(calculateFoundationAmount(addr1Amount))
       )
-    })
-  })
-
-  describe('Foundation', function () {
-    describe('Change Wallet', function () {
-      it('should change address', async function () {
-        // Arrange
-        const oldFoundationWallet = await divToken.foundationWallet()
-        // Act
-        await divToken.setFoundationWallet(addr2.address)
-        const newFoundationWallet = await divToken.foundationWallet()
-
-        // Assert
-        expect(newFoundationWallet).to.be.equal(addr2.address)
-
-        // Log
-        console.log('------------')
-        console.log('Old Wallet:\t' + oldFoundationWallet)
-        console.log('New Wallet:\t' + newFoundationWallet)
-        console.log('------------')
-      })
-      it('should raise event', async function () {
-        // Assert
-        await expect(divToken.setFoundationWallet(addr2.address))
-          .to.emit(divToken, 'FoundationWalletChanged')
-          .withArgs(addr4.address, addr2.address)
-      })
-    })
-    describe('change rate', function () {
-      it('should change rate', async function () {
-        // Arrange
-        const foundationRate = 50 // basis points eq 0.5 pct
-        const oldFoundationRate = (await divToken.foundationRate()).toNumber()
-
-        // Act
-        await divToken.setFoundationRate(foundationRate)
-        const newFoundationRate = (await divToken.foundationRate()).toNumber()
-
-        // Assert
-        expect(newFoundationRate).to.be.equal(foundationRate)
-
-        // Log
-        console.log('------------')
-        console.log('Old Rate:\t' + oldFoundationRate / 100 + '%')
-        console.log('New Rate:\t' + newFoundationRate / 100 + '%')
-        console.log('------------')
-      })
-      it('should raise event', async function () {
-        // Assert
-        const oldFoundationRate = divToken.foundationRate
-        const foundationRate = 0.5 * 100 // change to 0.5%
-        await expect(divToken.setFoundationRate(foundationRate))
-          .to.emit(divToken, 'FoundationRateChanged')
-          .withArgs(oldFoundationRate, foundationRate)
-      })
     })
   })
 })

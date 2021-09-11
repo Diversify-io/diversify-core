@@ -21,7 +21,7 @@ export default {
     },
   },
   gasReporter: {
-    enabled: true,
+    enabled: false,
     currency: 'EUR',
     coinmarketcap: `${process.env.COIN_MARKET_CAPI_KEY}`,
   },
