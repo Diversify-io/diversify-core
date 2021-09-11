@@ -9,8 +9,4 @@ contract Diversify_Mock is UpgradableDiversify_V1 {
     function exampleFunction() public {
         _mint(msg.sender, 500);
     }
-
-    function burn(address account, uint256 amount) public {
-        _burn(account, amount);
-    }
 }

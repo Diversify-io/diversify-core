@@ -50,4 +50,10 @@ describe('RetrieveTokensFeature', function () {
     expect(rtfBalanceAfter).equals(0)
     expect(ownerBalanceAfter).equals(ownerBalanceBefore.add(amountToReceive))
   })
+
+  it('should retrieve ETH token and transfer correctly', async function () {
+    // Arrange
+    //const rtfBalanceBefore = await retrieveTokenFeature.address
+    const ownerBalanceBefore = await addr1.getBalance()
+  })
 })
