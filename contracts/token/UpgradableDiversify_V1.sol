@@ -14,7 +14,7 @@ import '../interfaces/IERC20UpgradeableBurnable.sol';
  */
 contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable, IERC20UpgradeableBurnable {
     event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
-    event FoundationRateChanged(uint256 indexed previousRate, uint256 indexed newRate);
+    event FoundationRateChanged(uint256 previousRate, uint256 newRate);
 
     // Immutable burn stop supply
     uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;

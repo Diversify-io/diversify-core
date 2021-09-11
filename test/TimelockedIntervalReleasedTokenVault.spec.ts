@@ -75,9 +75,7 @@ describe('TimelockedIntervalReleasedTokenVault', function () {
       await increaseTimeAndMine(LOCK_TIME)
 
       // Act
-      expect(await vault.retrieveLockedTokens())
-        .to.emit(divToken, 'Collected')
-        .withArgs(beneficary.address, VAULT_START_BALANCE)
+      await vault.retrieveLockedTokens()
 
       // Assert
       expect(await divToken.balanceOf(vault.address)).to.be.equal(0)

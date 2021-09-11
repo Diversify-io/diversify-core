@@ -55,6 +55,5 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
         require(amountToTransfer > 0, 'No tokens available for retrieving at this moment.');
         _retrievedTokens = _retrievedTokens + amountToTransfer;
         _token.safeTransfer(beneficiary(), amountToTransfer);
-        emit Collected(beneficiary(), amountToTransfer);
     }
 }

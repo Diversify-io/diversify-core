@@ -31,13 +31,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // the amount of tokens already retrieved
     uint256 internal _retrievedTokens;
 
-    /*
-     * Event for logging the collection
-     * @param beneficiary who get the refund
-     * @param token amount collected
-     */
-    event Collected(address indexed beneficiary, uint256 amount);
-
     /**
      * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
      */
@@ -128,7 +121,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
 
         uint256 tokensToRetrieve = _token.balanceOf(address(this));
         _token.safeTransfer(beneficiary(), tokensToRetrieve);
-        emit Collected(beneficiary(), tokensToRetrieve);
     }
 
     /**
