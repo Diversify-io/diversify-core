@@ -5,7 +5,7 @@ import { RetrieveTokensFeature__factory } from '../typechain/factories/RetrieveT
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
 import { RetrieveTokensFeature } from '../typechain/RetrieveTokensFeature.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
-import { calculateReceivedAmount } from './utils/testHelper'
+import { calculateReceivedAmount } from './utils/testHelpers'
 
 describe('RetrieveTokensFeature', function () {
   let divToken: UpgradableDiversifyV1

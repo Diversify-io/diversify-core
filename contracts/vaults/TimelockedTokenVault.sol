@@ -86,6 +86,20 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     }
 
     /**
+     * @return the state of the vault
+     */
+    function started() public view returns (bool) {
+        return _started;
+    }
+
+    /**
+     * @return the retrieved tokens
+     */
+    function retrievedTokens() public view returns (uint256) {
+        return _retrievedTokens;
+    }
+
+    /**
      * @dev payout the freezed amount of token
      */
     function retrieveWalletTokens() public virtual onlyOwner {
@@ -95,13 +109,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
             _token.safeTransfer(beneficiary(), tokensToRetrieve);
             emit Collected(beneficiary(), tokensToRetrieve);
         }
-    }
-
-    /**
-     * @return the retrieved tokens
-     */
-    function retrievedTokens() public view returns (uint256) {
-        return _retrievedTokens;
     }
 
     /**
