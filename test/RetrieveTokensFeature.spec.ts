@@ -5,6 +5,7 @@ import { RetrieveTokensFeature__factory } from '../typechain/factories/RetrieveT
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
 import { RetrieveTokensFeature } from '../typechain/RetrieveTokensFeature.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
+import { calculateReceivedAmount } from './utils/testHelper'
 
 describe('RetrieveTokensFeature', function () {
   let divToken: UpgradableDiversifyV1
@@ -37,8 +38,8 @@ describe('RetrieveTokensFeature', function () {
     const rtfBalanceBefore = await divToken.balanceOf(retrieveTokenFeature.address)
     const ownerBalanceBefore = await divToken.balanceOf(addr1.address)
 
-    // We need to keep in mind the burn function
-    const amountToReceive = rtfBalanceBefore.mul(98.75 * 10 ** 2).div(10 ** 4)
+    // We need to keep in mind the burn an foundation function
+    const amountToReceive = calculateReceivedAmount(rtfBalanceBefore)
 
     // Act
     await retrieveTokenFeature.retrieveTokens(addr1.address, divToken.address)

@@ -44,11 +44,11 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         // loop through the addresses array and send tokens to each address
         // the corresponding amount to sent is taken from the amounts array
         for (uint8 i = 0; i < addresses.length; i++) {
-            _mint(addresses[i], amounts[i] * 10**decimals());
+            _mint(addresses[i], amounts[i] * 10**18);
         }
 
-        // Set foundation rate
-        _foundationRate = 0.25 * 10**2;
+        // Set foundation rate (25 basis points = 0.25 pct)
+        _foundationRate = 25;
         _foundationWallet = fWallet;
     }
 
@@ -121,13 +121,12 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
-     * @dev Sets the foundation rate, maximal allowance of two decimal places a.e. 1.33%
-     * newRate: foundation Rate * 10**2
+     * @dev Sets the foundation rate, maximal allowance of 250 basis points (2.5 pct)
      */
     function setFoundationRate(uint256 newRate) public onlyOwner {
-        require(newRate < 2.5 * 10**2);
+        require(newRate > 0 && newRate <= 250);
         uint256 oldRate = _foundationRate;
-        _foundationRate = newRate * 10**2;
+        _foundationRate = newRate;
         emit FoundationRateChanged(oldRate, newRate);
     }
 
@@ -146,7 +145,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         address to,
         uint256 value
     ) internal override {
-        uint256 tFound = (value * _foundationRate) / 10**2;
+        uint256 tFound = (value * _foundationRate) / 10**4;
         uint256 tBurn = 0;
         if (totalSupply() != BURN_STOP_SUPPLY) {
             tBurn = value / 100;

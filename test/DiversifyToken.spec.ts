@@ -5,6 +5,7 @@ import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
 import { DiversifyMock } from '../typechain/DiversifyMock.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
+import { calculateFoundationAmount } from './utils/testHelper'
 
 describe('DiversifyToken', function () {
   let divToken: UpgradableDiversifyV1
@@ -58,7 +59,7 @@ describe('DiversifyToken', function () {
       // Arrange
       const tokensToSend = parseEther('1749') // Convert momo's to tokens
       const tokenToBurn = tokensToSend.div(BigNumber.from(100))
-      const tokenToFound = tokensToSend.mul(await divToken.foundationRate()).div(10 ** 2)
+      const tokenToFound = tokensToSend.mul(await divToken.foundationRate()).div(10 ** 4)
       const tokensToReceive = tokensToSend.sub(tokenToBurn).sub(tokenToFound)
       const totalSupplyBefore = await divToken.totalSupply()
 
@@ -117,7 +118,6 @@ describe('DiversifyToken', function () {
       await divToken.burn(maxTokenToBurn)
       const finalTotalSupply = await divToken.totalSupply()
       const finalBalance = await divToken.balanceOf(addr1.address)
-
       // Assert
       expect(finalTotalSupply).eq(burnStopSupply)
       expect(finalBalance).eq(initialBalance.sub(maxTokenToBurn))
@@ -126,9 +126,8 @@ describe('DiversifyToken', function () {
       await expect(divToken.burn(finalBalance)).to.be.reverted
 
       // Check transfer
-      await divToken.setFoundationRate(0) // sake of simplicity, disable foundation
       await divToken.transfer(addr2.address, finalBalance)
-      expect(await divToken.balanceOf(addr2.address)).equals(finalBalance)
+      expect(await divToken.balanceOf(addr2.address)).equals(finalBalance.sub(calculateFoundationAmount(finalBalance)))
     })
 
     it('should adjust transfer burn amount, if it exceeds the total burn amount', async function () {
@@ -142,11 +141,12 @@ describe('DiversifyToken', function () {
       // Burn down near the supply
       await divToken.burn(maxTokenToBurn.sub(50))
       const addr1Amount = await divToken.balanceOf(addr1.address)
-      await divToken.setFoundationRate(0) // sake of simplicity, disable foundation
       await divToken.transfer(addr2.address, addr1Amount)
 
       // Assert
-      expect(await divToken.balanceOf(addr2.address)).equals(addr1Amount.add(initialBalanceAcc2).sub(50))
+      expect(await divToken.balanceOf(addr2.address)).equals(
+        addr1Amount.add(initialBalanceAcc2).sub(50).sub(calculateFoundationAmount(addr1Amount))
+      )
     })
   })
 
@@ -178,12 +178,12 @@ describe('DiversifyToken', function () {
     describe('change rate', function () {
       it('should change rate', async function () {
         // Arrange
-        const foundationRate = 0.5 * 10 ** 2 // change to 0.5%
+        const foundationRate = 50 // basis points eq 0.5 pct
         const oldFoundationRate = (await divToken.foundationRate()).toNumber()
 
         // Act
         await divToken.setFoundationRate(foundationRate)
-        const newFoundationRate = (await divToken.foundationRate()).toNumber() / 10 ** 2
+        const newFoundationRate = (await divToken.foundationRate()).toNumber()
 
         // Assert
         expect(newFoundationRate).to.be.equal(foundationRate)
