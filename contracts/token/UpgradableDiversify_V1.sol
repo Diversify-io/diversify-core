@@ -121,11 +121,10 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
-     * @dev Sets the foundation rate, maximal allowance of two decimal places like 1.33% a.e.
+     * @dev Sets the foundation rate, maximal allowance of two decimal places a.e. 1.33%
      * newRate: foundation Rate * 10**2
      */
     function setFoundationRate(uint256 newRate) public onlyOwner {
-        require(newRate > 0);
         require(newRate < 2.5 * 10**2);
         uint256 oldRate = _foundationRate;
         _foundationRate = newRate * 10**2;
