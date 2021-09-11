@@ -18,28 +18,28 @@ contract SeedSaleRound is RetrieveTokensFeature {
         Closed
     }
 
-    // beneficiary of tokens (weis) after the sale ends
-    address private immutable _beneficiary;
-
-    // the duration of the seed sale in days
-    uint256 private immutable _duration;
-
-    // Tracks the state of the seedsale
-    State private _state;
+    // ERC20 basic token contract being held
+    IERC20UpgradeableBurnable private _token;
 
     // Balance sheet of the invested weis
     mapping(address => uint256) private _balances;
 
-    // ERC20 basic token contract being held
-    IERC20UpgradeableBurnable private _token;
-
-    // How many token units a buyer gets per wei
-    uint256 private _rate;
+    // Tracks the state of the seedsale
+    State private _state;
 
     //  Start date of seedsale
     uint256 private _startDate;
 
-    // Initial supply of seed round in momos
+    // the duration of the seed sale in days
+    uint256 private immutable _duration;
+
+    // beneficiary of tokens (weis) after the sale ends
+    address private immutable _beneficiary;
+
+    // How many token units a buyer gets per wei
+    uint256 private _rate;
+
+    // Supply of seed round in momos
     uint256 private _totalSupply;
 
     // The total supply in wei
