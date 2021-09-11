@@ -48,7 +48,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         }
 
         // Set foundation rate
-        _foundationRate = 0.25 * 100;
+        _foundationRate = 0.25 * 10**2;
         _foundationWallet = fWallet;
     }
 
@@ -121,11 +121,13 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
-     * @dev Sets the address of the foundation wallet.
+     * @dev Sets the foundation rate, maximal allowance of two decimal places a.e. 1.33%
+     * newRate: foundation Rate * 10**2
      */
     function setFoundationRate(uint256 newRate) public onlyOwner {
+        require(newRate < 2.5 * 10**2);
         uint256 oldRate = _foundationRate;
-        _foundationRate = newRate;
+        _foundationRate = newRate * 10**2;
         emit FoundationRateChanged(oldRate, newRate);
     }
 
@@ -144,7 +146,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         address to,
         uint256 value
     ) internal override {
-        uint256 tFound = (value * _foundationRate) / 10**4;
+        uint256 tFound = (value * _foundationRate) / 10**2;
         uint256 tBurn = 0;
         if (totalSupply() != BURN_STOP_SUPPLY) {
             tBurn = value / 100;

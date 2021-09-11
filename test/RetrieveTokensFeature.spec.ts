@@ -38,7 +38,7 @@ describe('RetrieveTokensFeature', function () {
     const ownerBalanceBefore = await divToken.balanceOf(addr1.address)
 
     // We need to keep in mind the burn function
-    const amountToReceive = rtfBalanceBefore.div(100 * 10 ** 4).mul(98.75 * 10 ** 4)
+    const amountToReceive = rtfBalanceBefore.mul(98.75 * 10 ** 2).div(10 ** 4)
 
     // Act
     await retrieveTokenFeature.retrieveTokens(addr1.address, divToken.address)

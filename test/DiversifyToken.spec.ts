@@ -58,7 +58,7 @@ describe('DiversifyToken', function () {
       // Arrange
       const tokensToSend = parseEther('1749') // Convert momo's to tokens
       const tokenToBurn = tokensToSend.div(BigNumber.from(100))
-      const tokenToFound = tokensToSend.mul(await divToken.foundationRate()).div(10 ** 4)
+      const tokenToFound = tokensToSend.mul(await divToken.foundationRate()).div(10 ** 2)
       const tokensToReceive = tokensToSend.sub(tokenToBurn).sub(tokenToFound)
       const totalSupplyBefore = await divToken.totalSupply()
 
@@ -155,7 +155,6 @@ describe('DiversifyToken', function () {
       it('should change address', async function () {
         // Arrange
         const oldFoundationWallet = await divToken.foundationWallet()
-
         // Act
         await divToken.setFoundationWallet(addr2.address)
         const newFoundationWallet = await divToken.foundationWallet()
@@ -179,12 +178,12 @@ describe('DiversifyToken', function () {
     describe('change rate', function () {
       it('should change rate', async function () {
         // Arrange
-        const foundationRate = 0.5 * 100 // change to 0.5%
+        const foundationRate = 0.5 * 10 ** 2 // change to 0.5%
         const oldFoundationRate = (await divToken.foundationRate()).toNumber()
 
         // Act
         await divToken.setFoundationRate(foundationRate)
-        const newFoundationRate = (await divToken.foundationRate()).toNumber()
+        const newFoundationRate = (await divToken.foundationRate()).toNumber() / 10 ** 2
 
         // Assert
         expect(newFoundationRate).to.be.equal(foundationRate)
