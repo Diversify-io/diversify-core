@@ -155,7 +155,6 @@ describe('DiversifyToken', function () {
       it('should change address', async function () {
         // Arrange
         const oldFoundationWallet = await divToken.foundationWallet()
-
         // Act
         await divToken.setFoundationWallet(addr2.address)
         const newFoundationWallet = await divToken.foundationWallet()
