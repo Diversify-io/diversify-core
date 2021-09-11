@@ -6,6 +6,7 @@ import { UpgradableDiversifyV1__factory } from '../typechain/factories/Upgradabl
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { TimelockedTokenVault__factory } from './../typechain/factories/TimelockedTokenVault__factory'
 import { TimelockedTokenVault } from './../typechain/TimelockedTokenVault.d'
+import { calculateReceivedAmount } from './utils/testHelpers'
 
 describe('TimelockedTokenVault', function () {
   let divToken: UpgradableDiversifyV1
@@ -32,7 +33,7 @@ describe('TimelockedTokenVault', function () {
   })
 
   describe('Start', function () {
-    it('should only be called from owner', async function () {
+    it('should be restricted to owner', async function () {
       await expect(vault.connect(beneficary).start(divToken.address)).to.be.reverted
     })
 
@@ -78,6 +79,38 @@ describe('TimelockedTokenVault', function () {
 
     it('should return the retrievedTokens', async function () {
       expect(await vault.retrievedTokens()).to.be.equal(0)
+    })
+  })
+
+  describe('Retrieve wrongly assigned tokens', function () {
+    let alienToken: UpgradableDiversifyV1
+    this.beforeEach(async () => {
+      const tokenFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
+      alienToken = (await upgrades.deployProxy(tokenFactory, [
+        [addr1.address],
+        [1000000000],
+        addr3.address,
+      ])) as UpgradableDiversifyV1
+    })
+
+    it('should be restricted to owner', async function () {
+      await expect(vault.connect(beneficary).retrieveTokens(addr1.address, alienToken.address)).to.be.reverted
+    })
+
+    it('should revert if passed locked token', async function () {
+      await vault.start(divToken.address)
+      await expect(vault.retrieveTokens(addr1.address, divToken.address)).to.be.reverted
+    })
+
+    it('should transfer any token when not started', async function () {
+      // Arrange
+      const balanceBefore = await divToken.balanceOf(addr1.address)
+      const transferedAmount = calculateReceivedAmount(await divToken.balanceOf(vault.address))
+
+      // Act
+      await vault.retrieveTokens(addr1.address, divToken.address)
+      // Assert
+      expect(await divToken.balanceOf(addr1.address)).to.be.equal(balanceBefore.add(transferedAmount))
     })
   })
 })
