@@ -4,10 +4,7 @@ import '@openzeppelin/hardhat-upgrades'
 import '@typechain/hardhat'
 import 'hardhat-gas-reporter'
 import 'solidity-coverage'
-
-const ALCHEMY_API_KEY = 'rXd2olfndKqJLkB5X0SV8-FZkI2diQVo'
-const RINKEBY_PRIVATE_KEY = 'd7b50a2df201b3d0365df563564e9e0740261f490ea163671b70e7f2636cee05'
-
+require('dotenv').config()
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
@@ -19,15 +16,14 @@ export default {
       url: 'http://127.0.0.1:7545',
     },
     rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-      accounts: [`0x${RINKEBY_PRIVATE_KEY}`],
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      accounts: [`0x${process.env.RINKEBY_PRIVATE_KEY}`],
     },
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     currency: 'EUR',
-    coinmarketcap: '65ffafbd-6108-491c-8be3-b858dfa4e9e1',
-    gasPrice: 21,
+    coinmarketcap: `${process.env.COIN_MARKET_CAPI_KEY}`,
   },
   solidity: {
     version: '0.8.4',
