@@ -28,10 +28,10 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
     }
 
     /**
-     * @dev payout the locked amount of token
+     * @return returns the available amount to collect for the current time
      */
-    function retrieveLockedTokens() public override onlyOwner {
-        require(_started && block.timestamp >= _startDate, 'Lock not started');
+    function availableAmount() public view returns (uint256) {
+        require(_started);
         uint256 tokensToRetrieve = 0;
         if (block.timestamp >= _startDate + _duration) {
             tokensToRetrieve = _token.balanceOf(address(this));
@@ -43,9 +43,18 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
             uint256 tokensToRetrieveSinceStart = pastParts * tokensByPart;
             tokensToRetrieve = tokensToRetrieveSinceStart - _retrievedTokens;
         }
-        require(tokensToRetrieve > 0, 'No tokens available for retrieving at this moment.');
-        _retrievedTokens = _retrievedTokens + tokensToRetrieve;
-        _token.safeTransfer(beneficiary(), tokensToRetrieve);
-        emit Collected(beneficiary(), tokensToRetrieve);
+        return tokensToRetrieve;
+    }
+
+    /**
+     * @dev payout the locked amount of token
+     */
+    function retrieveLockedTokens() public override onlyOwner {
+        require(_started, 'Lock not started');
+        uint256 availableAmount_ = availableAmount();
+        require(availableAmount_ > 0, 'No tokens available for retrieving at this moment.');
+        _retrievedTokens = _retrievedTokens + availableAmount_;
+        _token.safeTransfer(beneficiary(), availableAmount_);
+        emit Collected(beneficiary(), availableAmount_);
     }
 }

@@ -60,13 +60,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     }
 
     /**
-     * @return the token being held.
-     */
-    function token() public view returns (IERC20) {
-        return _token;
-    }
-
-    /**
      * @return the duration being held in seconds
      */
     function duration() public view returns (uint256) {
@@ -92,6 +85,14 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      */
     function retrievedTokens() public view returns (uint256) {
         return _retrievedTokens;
+    }
+
+    /**
+     * @return the token being held.
+     */
+    function token() public view returns (IERC20) {
+        require(_started);
+        return _token;
     }
 
     /**

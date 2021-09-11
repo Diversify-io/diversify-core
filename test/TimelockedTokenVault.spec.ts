@@ -55,38 +55,47 @@ describe('TimelockedTokenVault', function () {
   })
 
   describe('Views', function () {
-    this.beforeEach(async () => {
-      await vault.start(divToken.address)
+    it('should revert the call of  the token', async function () {
+      await expect(vault.startBalance()).to.be.reverted
+      await expect(vault.startDate()).to.be.reverted
+      await expect(vault.endDate()).to.be.reverted
+      await expect(vault.token()).to.be.reverted
     })
 
-    it('should return the token', async function () {
-      expect(await vault.token()).to.be.equal(divToken.address)
-    })
+    describe('Vault started', function () {
+      this.beforeEach(async () => {
+        await vault.start(divToken.address)
+      })
 
-    it('should return the beneficiary', async function () {
-      expect(await vault.beneficiary()).to.be.equal(beneficary.address)
-    })
+      it('should return the token', async function () {
+        expect(await vault.token()).to.be.equal(divToken.address)
+      })
 
-    it('should return the startBalance', async function () {
-      const startBalance = await vault.startBalance()
-      // convert to momos
-      expect(startBalance).to.be.equal(parseEther(VAULT_START_BALANCE.toString()))
-    })
+      it('should return the beneficiary', async function () {
+        expect(await vault.beneficiary()).to.be.equal(beneficary.address)
+      })
 
-    it('should return the start state', async function () {
-      expect(await vault.started()).to.be.equal(true)
-    })
+      it('should return the startBalance', async function () {
+        const startBalance = await vault.startBalance()
+        // convert to momos
+        expect(startBalance).to.be.equal(parseEther(VAULT_START_BALANCE.toString()))
+      })
 
-    it('should return the retrievedTokens', async function () {
-      expect(await vault.retrievedTokens()).to.be.equal(0)
-    })
+      it('should return the start state', async function () {
+        expect(await vault.started()).to.be.equal(true)
+      })
 
-    it('should return the duration', async function () {
-      expect(await vault.duration()).to.be.equal(LOCK_TIME)
-    })
+      it('should return the retrievedTokens', async function () {
+        expect(await vault.retrievedTokens()).to.be.equal(0)
+      })
 
-    it('should return the startdate', async function () {
-      await expect(vault.startDate()).to.not.be.reverted
+      it('should return the duration', async function () {
+        expect(await vault.duration()).to.be.equal(LOCK_TIME)
+      })
+
+      it('should return the startdate', async function () {
+        await expect(vault.startDate()).to.not.be.reverted
+      })
     })
   })
 
