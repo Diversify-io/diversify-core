@@ -16,10 +16,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // beneficiary of tokens after they are released
     address internal immutable _beneficiary;
 
-    // startDate of the lock
-    uint256 internal immutable _startDate;
-
-    // the duration of the lock / end date
+    // the duration of the lock
     uint256 internal immutable _duration;
 
     // initial start balance
@@ -27,6 +24,9 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
 
     // indiacted wheter vault started or not
     bool internal _started;
+
+    // startDate of the lock
+    uint256 internal _startDate;
 
     // the amount of tokens already retrieved
     uint256 internal _retrievedTokens;
@@ -41,15 +41,9 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     /**
      * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
      */
-    constructor(
-        address beneficiary_,
-        uint256 startDate_,
-        uint256 duration_
-    ) {
-        require(startDate_ + duration_ > block.timestamp, 'TokenTimelock: release time is before current time');
+    constructor(address beneficiary_, uint256 duration_) {
         _beneficiary = beneficiary_;
-        _startDate = startDate_;
-        _duration = duration_ * 1 days;
+        _duration = duration_;
         _retrievedTokens = 0;
     }
 
@@ -60,6 +54,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
         require(!_started, 'Lock already started');
         require(address(token_) != address(0), 'Token must be set');
         _token = token_;
+        _startDate = block.timestamp;
         _startBalance = _token.balanceOf(address(this));
         _started = true;
     }
@@ -72,17 +67,17 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     }
 
     /**
+     * @return the duration being held in seconds
+     */
+    function duration() public view returns (uint256) {
+        return _duration;
+    }
+
+    /**
      * @return the beneficiary of the tokens.
      */
     function beneficiary() public view returns (address) {
         return _beneficiary;
-    }
-
-    /**
-     * @return the start balance
-     */
-    function startBalance() public view returns (uint256) {
-        return _startBalance;
     }
 
     /**
@@ -100,15 +95,39 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     }
 
     /**
-     * @dev payout the freezed amount of token
+     * @return the start balance
      */
-    function retrieveWalletTokens() public virtual onlyOwner {
-        require(_started && block.timestamp >= _startDate, 'Lock not started');
-        if (block.timestamp >= _startDate + _duration) {
-            uint256 tokensToRetrieve = _token.balanceOf(address(this));
-            _token.safeTransfer(beneficiary(), tokensToRetrieve);
-            emit Collected(beneficiary(), tokensToRetrieve);
-        }
+    function startBalance() public view returns (uint256) {
+        require(_started);
+        return _startBalance;
+    }
+
+    /**
+     * @return the startDate of the vault
+     */
+    function startDate() public view returns (uint256) {
+        require(_started);
+        return _startDate;
+    }
+
+    /**
+     * @return the enddate of the token being held as timestamp
+     */
+    function endDate() public view returns (uint256) {
+        require(_started);
+        return _startDate + _duration;
+    }
+
+    /**
+     * @dev payout the locked amount of token
+     */
+    function retrieveLockedTokens() public virtual onlyOwner {
+        require(_started, 'Lock not started');
+        require(block.timestamp >= endDate(), 'Duration not over');
+
+        uint256 tokensToRetrieve = _token.balanceOf(address(this));
+        _token.safeTransfer(beneficiary(), tokensToRetrieve);
+        emit Collected(beneficiary(), tokensToRetrieve);
     }
 
     /**

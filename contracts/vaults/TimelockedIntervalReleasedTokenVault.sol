@@ -16,20 +16,21 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
 
     /**
      * @dev Initalizes a new instanc of the TimelockedIntervaldReleased Vault
+     * interval_ in seconds
+     * duration_ in seconds
      */
     constructor(
         address beneficiary_,
-        uint256 startDate_,
         uint256 duration_,
         uint256 interval_
-    ) TimelockedTokenVault(beneficiary_, startDate_, duration_) {
-        _interval = interval_ * 1 days;
+    ) TimelockedTokenVault(beneficiary_, duration_) {
+        _interval = interval_;
     }
 
     /**
-     * @dev payout the freezed amount of token
+     * @dev payout the locked amount of token
      */
-    function retrieveWalletTokens() public override onlyOwner {
+    function retrieveLockedTokens() public override onlyOwner {
         require(_started && block.timestamp >= _startDate, 'Lock not started');
         uint256 tokensToRetrieve = 0;
         if (block.timestamp >= _startDate + _duration) {

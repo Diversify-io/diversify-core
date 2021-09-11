@@ -21,14 +21,16 @@ export const calculateBurnAmount = (amountSent: BigNumber): BigNumber => amountS
 /*
  * This method works like increaseTime, but takes the exact timestamp that you want in the next block, and increases the time accordingly
  */
-export const SetTimeAndMine = async (exactTimeStamp: number) => {
+export const setTimeAndMine = async (exactTimeStamp: number) => {
   await network.provider.send('evm_setNextBlockTimestamp', [exactTimeStamp])
   await network.provider.send('evm_mine')
 }
 /*
  * This method increases the time with the given seconds
  */
-export const IncreaseTimeAndMine = async (offsetInSeconds: number) => {
+export const increaseTimeAndMine = async (offsetInSeconds: number) => {
   await network.provider.send('evm_increaseTime', [offsetInSeconds])
   await network.provider.send('evm_mine')
 }
+
+export const daysToSeconds = (days: number) => days * 60 * 60 * 24
