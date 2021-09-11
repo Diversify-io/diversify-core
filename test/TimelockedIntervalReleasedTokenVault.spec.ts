@@ -68,14 +68,16 @@ describe('TimelockedIntervalReleasedTokenVault', function () {
       )
     })
 
-    it('should withdrawal whole amount when lock is over', async function () {
+    it('should withdrawal whole amount when lock is over and emit event', async function () {
       // Arrange
       const transferredAmount = calculateReceivedAmount(await divToken.balanceOf(vault.address))
       await vault.start(divToken.address)
       await increaseTimeAndMine(LOCK_TIME)
 
       // Act
-      await vault.retrieveLockedTokens()
+      expect(await vault.retrieveLockedTokens())
+        .to.emit(divToken, 'Collected')
+        .withArgs(beneficary.address, VAULT_START_BALANCE)
 
       // Assert
       expect(await divToken.balanceOf(vault.address)).to.be.equal(0)

@@ -51,10 +51,10 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
      */
     function retrieveLockedTokens() public override onlyOwner {
         require(_started, 'Lock not started');
-        uint256 availableAmount_ = availableAmount();
-        require(availableAmount_ > 0, 'No tokens available for retrieving at this moment.');
-        _retrievedTokens = _retrievedTokens + availableAmount_;
-        _token.safeTransfer(beneficiary(), availableAmount_);
-        emit Collected(beneficiary(), availableAmount_);
+        uint256 amountToTransfer = availableAmount();
+        require(amountToTransfer > 0, 'No tokens available for retrieving at this moment.');
+        _retrievedTokens = _retrievedTokens + amountToTransfer;
+        _token.safeTransfer(beneficiary(), amountToTransfer);
+        emit Collected(beneficiary(), amountToTransfer);
     }
 }
