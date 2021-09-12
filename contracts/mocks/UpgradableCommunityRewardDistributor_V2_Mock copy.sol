@@ -6,5 +6,10 @@ import '../distributors/UpgradableCommunityRewardDistributor_V1.sol';
 
 // MOCK TOKEN FOR UNIT TESTING
 contract UpgradableCommunityRewardDistributor_V2_Mock is UpgradableCommunityRewardDistributor_V1 {
-    function exampleFunction() public {}
+    /**
+     * @return the duration being held in seconds
+     */
+    function Amount() public view returns (uint256) {
+        return _token.balanceOf(address(this));
+    }
 }

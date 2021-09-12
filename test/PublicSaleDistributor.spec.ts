@@ -3,19 +3,19 @@ import { parseEther } from '@ethersproject/units'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers, upgrades } from 'hardhat'
-import { UpgradableCommunityRewardDistributorV1__factory } from '../typechain/factories/UpgradableCommunityRewardDistributorV1__factory'
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
-import { UpgradableCommunityRewardDistributorV1 } from '../typechain/UpgradableCommunityRewardDistributorV1.d'
-import { UpgradableCommunityRewardDistributorV2Mock } from '../typechain/UpgradableCommunityRewardDistributorV2Mock.d'
+import { UpgradablePublicSaleDistributorV1__factory } from '../typechain/factories/UpgradablePublicSaleDistributorV1__factory'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
+import { UpgradablePublicSaleDistributorV1 } from '../typechain/UpgradablePublicSaleDistributorV1'
+import { UpgradablePublicSaleDistributorV2Mock } from '../typechain/UpgradablePublicSaleDistributorV2Mock'
 import { calculateReceivedAmount } from './utils/testHelpers'
 
-describe('CommunityRewardDistributor', function () {
+describe('PublicSaleDistributor', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
   let addr3: SignerWithAddress
-  let communityDistributor: UpgradableCommunityRewardDistributorV1
+  let publicSaleDistributor: UpgradablePublicSaleDistributorV1
   const distributorInitalSupply = 50000
   const distributorAmountAfterTranfer = calculateReceivedAmount(BigNumber.from(distributorInitalSupply))
   this.beforeEach(async () => {
@@ -31,24 +31,24 @@ describe('CommunityRewardDistributor', function () {
       addr3.address,
     ])) as UpgradableDiversifyV1
 
-    const communityDistributorFactory = (await ethers.getContractFactory(
-      'UpgradableCommunityRewardDistributor_V1'
-    )) as UpgradableCommunityRewardDistributorV1__factory
+    const publicSaleDistributorFactory = (await ethers.getContractFactory(
+      'UpgradablePublicSaleDistributor_V1'
+    )) as UpgradablePublicSaleDistributorV1__factory
 
-    communityDistributor = (await upgrades.deployProxy(communityDistributorFactory, [
+    publicSaleDistributor = (await upgrades.deployProxy(publicSaleDistributorFactory, [
       divToken.address,
-    ])) as UpgradableCommunityRewardDistributorV1
+    ])) as UpgradablePublicSaleDistributorV1
 
-    await divToken.transfer(communityDistributor.address, distributorInitalSupply)
+    await divToken.transfer(publicSaleDistributor.address, distributorInitalSupply)
   })
 
   it('should be restricted to owner', async function () {
-    await expect(communityDistributor.connect(addr2.address).retrieveTokens(addr1.address, divToken.address)).to.be
+    await expect(publicSaleDistributor.connect(addr2.address).retrieveTokens(addr1.address, divToken.address)).to.be
       .reverted
   })
 
   it('should revert when retrieve token is called with div', async function () {
-    await expect(communityDistributor.retrieveTokens(addr1.address, divToken.address)).to.be.reverted
+    await expect(publicSaleDistributor.retrieveTokens(addr1.address, divToken.address)).to.be.reverted
   })
 
   it('should retrieve alien tokens', async function () {
@@ -58,31 +58,31 @@ describe('CommunityRewardDistributor', function () {
     const transferredAmount = calculateReceivedAmount(BigNumber.from(initalAmount))
 
     const alienToken = (await upgrades.deployProxy(alienFactory, [
-      [communityDistributor.address, addr2.address],
+      [publicSaleDistributor.address, addr2.address],
       [initalAmount, initalAmount],
       addr3.address,
     ])) as UpgradableDiversifyV1
 
     // Act
-    await communityDistributor.retrieveTokens(addr1.address, alienToken.address)
+    await publicSaleDistributor.retrieveTokens(addr1.address, alienToken.address)
 
     // Assert
-    expect(await alienToken.balanceOf(communityDistributor.address)).to.be.equals(0)
+    expect(await alienToken.balanceOf(publicSaleDistributor.address)).to.be.equals(0)
     expect(await alienToken.balanceOf(addr1.address)).to.be.equals(parseEther(transferredAmount.toString()))
   })
 
   it('should be upgradable', async function () {
     // Arrange
-    const distV2Factory = await ethers.getContractFactory('UpgradableCommunityRewardDistributor_V2_Mock')
+    const distV2Factory = await ethers.getContractFactory('UpgradablePublicSaleDistributor_V2_Mock')
 
     // Act
     const distV2 = (await upgrades.upgradeProxy(
-      communityDistributor.address,
+      publicSaleDistributor.address,
       distV2Factory
-    )) as UpgradableCommunityRewardDistributorV2Mock
+    )) as UpgradablePublicSaleDistributorV2Mock
 
     // Assert
-    expect(distV2.address).to.be.equals(communityDistributor.address)
+    expect(distV2.address).to.be.equals(publicSaleDistributor.address)
     expect(await distV2.Amount()).to.be.equal(distributorAmountAfterTranfer)
   })
 })

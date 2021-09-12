@@ -50,6 +50,7 @@ describe('DiversifyToken', function () {
 
         expect(amountBeforeUpgrade.add(500)).equals(amountAfterUpgrade)
         expect(supplyBeforeUpgrade.add(500)).equals(supplyAfterUpgrade)
+        expect(divTokenV2.address).to.be.equals(divToken.address)
       })
     })
   })

@@ -11,7 +11,7 @@ contract UpgradablePublicSaleDistributor_V1 is UpgradableRetrieveTokensFeature {
     using SafeERC20 for IERC20;
 
     // ERC20 basic token contract being held
-    IERC20 private _token;
+    IERC20 internal _token;
 
     /**
      * Initalize the vault
