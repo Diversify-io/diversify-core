@@ -13,6 +13,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // The State of the seed sale
     enum State {
         Setup,
+        Ready,
         Active,
         Refunding,
         Closed
@@ -30,11 +31,11 @@ contract SeedSaleRound is RetrieveTokensFeature {
     //  Start date of seedsale
     uint256 private _startDate;
 
-    // the duration of the seed sale in days
-    uint256 private immutable _duration;
+    // the duration of the seed sale in seconds
+    uint256 private _duration;
 
     // beneficiary of tokens (weis) after the sale ends
-    address private immutable _beneficiary;
+    address private _beneficiary;
 
     // How many token units a buyer gets per wei
     uint256 private _rate;
@@ -51,18 +52,26 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // Amount of wei to raise
     uint256 private _weiGoal;
 
-    // Locking period of tokens in days if sale was successful
+    // Locking period of tokens in seconds if sale was successful
     uint256 private _lockingPeriod;
 
     /*
-     * Event seedsale start logging
+     * Event seedsale announced logging
+     * @param startDate when the sales start
      * @param rate How many token units a buyer gets per wei
      * @param weiGoal amount of wei to reach for success
      * @param totalSupply of momos in the round
-     * @param duration the duration of the seed sale in days
-     * @param lockingPeriod Locking period of tokens in days if sale was successful
+     * @param duration the duration of the seed sale in seconds
+     * @param lockingPeriod Locking period of tokens in seconds if sale was successful
      */
-    event Started(uint256 rate, uint256 weiGoal, uint256 totalSupply, uint256 duration, uint256 lockingPeriod);
+    event Setup(
+        uint256 startDate,
+        uint256 rate,
+        uint256 weiGoal,
+        uint256 totalSupply,
+        uint256 duration,
+        uint256 lockingPeriod
+    );
 
     /*
      * Event for seedsale closed logging
@@ -87,55 +96,55 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @param value weis paid for purchase
      * @param amount amount of tokens purchased
      */
-    event TokenPurchase(address indexed purchaser, uint256 value, uint256 amount);
+    event TokenPurchased(address indexed purchaser, uint256 value, uint256 amount);
 
     /**
      * Create a new instance of the seed sale
-     * @param beneficiary_ beneficiary of tokens (weis) after the sale ends
-     * @param duration_ the duration of the seed sale in days
-     * @param lockingPeriod_ Locking period of tokens in days if sale was successful
      */
-    constructor(
-        address beneficiary_,
-        uint256 duration_,
-        uint256 lockingPeriod_
-    ) {
-        // note: we allow a zero lockingPeriod by design
-        require(beneficiary_ != address(0));
-        require(duration_ > 0);
-
-        _beneficiary = beneficiary_;
-        _duration = duration_ * 1 days;
+    constructor() {
         _state = State.Setup;
-        _lockingPeriod = lockingPeriod_ * 1 days;
     }
 
     /**
-     * @dev starts the sale
+     * @dev setup the sale
+     * @param beneficiary_ beneficiary of tokens (weis) after the sale ends
+     * @param startDate_ The date in a unix timestamp when the seedsale starts
+     * @param duration_ the duration of the seed sale in seconds
+     * @param lockingPeriod_ Locking period of tokens in seconds if sale was successful
      * @param rate_ How many momos a buyer gets per wei
      * @param weiGoal_ The goal in wei to reach for round success
      * @param token_ The div token
      */
-    function start(
+
+    function setup(
+        address beneficiary_,
+        uint256 startDate_,
+        uint256 duration_,
+        uint256 lockingPeriod_,
         uint256 rate_,
         uint256 weiGoal_,
         IERC20UpgradeableBurnable token_
     ) public onlyOwner {
+        require(beneficiary_ != address(0));
+        require(duration_ > 0);
         require(address(token_) != address(0), 'Token must be set');
         require(token_.balanceOf(address(this)) > 0);
         require(_state == State.Setup, 'Seed already started');
         require(rate_ > 0);
         require(weiGoal_ > 0);
 
+        _beneficiary = beneficiary_;
+        _duration = duration_;
+        _lockingPeriod = lockingPeriod_;
         _token = token_;
         _rate = rate_;
-        _state = State.Active;
-        _startDate = block.timestamp;
+        _startDate = startDate_;
         _totalSupply = _token.balanceOf(address(this));
         _weiTotalSupply = _totalSupply / _rate;
         _weiGoal = weiGoal_;
+        _state = State.Ready;
 
-        emit Started(_rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
+        emit Setup(_startDate, _rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
     }
 
     /**
@@ -177,10 +186,16 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev token purchase
      */
     function buyTokens() public payable {
-        uint256 weiAmount = msg.value;
+        require(block.timestamp > _startDate, 'SeedSale not started');
+
+        // Autostart seed sale when not started
+        if (_state == State.Ready) _state == State.Active;
+
         require(_state == State.Active);
         require(block.timestamp < _startDate + _duration, 'End duration reached');
         require(_msgSender() != address(0));
+
+        uint256 weiAmount = msg.value;
         require(weiAmount != 0);
         require(_weiRaised + weiAmount <= _weiTotalSupply);
 
@@ -191,7 +206,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         _weiRaised += weiAmount;
 
         _balances[_msgSender()] = _balances[_msgSender()] + msg.value;
-        emit TokenPurchase(_msgSender(), weiAmount, tokens);
+        emit TokenPurchased(_msgSender(), weiAmount, tokens);
     }
 
     /**
