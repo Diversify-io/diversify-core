@@ -17,6 +17,7 @@ contract UpgradableCommunityRewardDistributor_V1 is UpgradableRetrieveTokensFeat
      * Initalize the vault
      */
     function initialize(IERC20 token_) public initializer {
+        __RetrieveToken_init();
         _token = token_;
     }
 

@@ -3,8 +3,8 @@ import { expect } from 'chai'
 import { BigNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
-import { DiversifyMock } from '../typechain/DiversifyMock.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
+import { UpgradableDiversifyV2Mock } from '../typechain/UpgradableDiversifyV2Mock.d'
 import { calculateBurnAmount, calculateFoundationAmount } from './utils/testHelpers'
 
 describe('DiversifyToken', function () {
@@ -39,8 +39,8 @@ describe('DiversifyToken', function () {
 
     describe('Deploy and upgrade token contract to V2', () => {
       it('Deploy and upgrade V2', async () => {
-        const divV2 = await ethers.getContractFactory('Diversify_Mock')
-        const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as DiversifyMock
+        const divV2 = await ethers.getContractFactory('UpgradableDiversify_V2_Mock')
+        const divTokenV2 = (await upgrades.upgradeProxy(divToken.address, divV2)) as UpgradableDiversifyV2Mock
 
         const amountBeforeUpgrade = await divTokenV2.balanceOf(addr1.address)
         const supplyBeforeUpgrade = await divTokenV2.totalSupply()

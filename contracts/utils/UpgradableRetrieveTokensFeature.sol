@@ -14,7 +14,7 @@ contract UpgradableRetrieveTokensFeature is Initializable, ContextUpgradeable, O
     /**
      * @dev Initialization of the contract
      */
-    function initialize() public initializer {
+    function __RetrieveToken_init() internal initializer {
         __Ownable_init();
     }
 

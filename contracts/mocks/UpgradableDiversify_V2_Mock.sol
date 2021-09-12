@@ -5,7 +5,7 @@ import 'hardhat/console.sol';
 import '../token/UpgradableDiversify_V1.sol';
 
 // MOCK TOKEN FOR UNIT TESTING
-contract Diversify_Mock is UpgradableDiversify_V1 {
+contract UpgradableDiversify_V2_Mock is UpgradableDiversify_V1 {
     function exampleFunction() public {
         _mint(msg.sender, 500);
     }

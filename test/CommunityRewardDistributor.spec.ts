@@ -1,4 +1,14 @@
-/*
+import { BigNumber } from '@ethersproject/bignumber'
+import { parseEther } from '@ethersproject/units'
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
+import { expect } from 'chai'
+import { ethers, upgrades } from 'hardhat'
+import { UpgradableCommunityRewardDistributorV1__factory } from '../typechain/factories/UpgradableCommunityRewardDistributorV1__factory'
+import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
+import { UpgradableCommunityRewardDistributorV1 } from '../typechain/UpgradableCommunityRewardDistributorV1.d'
+import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
+import { calculateReceivedAmount } from './utils/testHelpers'
+
 describe('CommunityRewardDistributor', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
@@ -26,11 +36,56 @@ describe('CommunityRewardDistributor', function () {
     communityDistributor = (await upgrades.deployProxy(communityDistributorFactory, [
       divToken.address,
     ])) as UpgradableCommunityRewardDistributorV1
+
+    await divToken.transfer(communityDistributor.address, 50000)
   })
 
   it('should be restricted to owner', async function () {
     await expect(communityDistributor.connect(addr2.address).retrieveTokens(addr1.address, divToken.address)).to.be
       .reverted
   })
+
+  it('should revert when retrieve token is called with div', async function () {
+    await expect(communityDistributor.retrieveTokens(addr1.address, divToken.address)).to.be.reverted
+  })
+
+  it('should retrieve alien tokens', async function () {
+    // Arrange
+    const alienFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
+    const initalAmount = 2000000000
+    const transferredAmount = calculateReceivedAmount(BigNumber.from(initalAmount))
+
+    const alienToken = (await upgrades.deployProxy(alienFactory, [
+      [communityDistributor.address, addr2.address],
+      [initalAmount, initalAmount],
+      addr3.address,
+    ])) as UpgradableDiversifyV1
+
+    // Act
+    await communityDistributor.retrieveTokens(addr1.address, alienToken.address)
+
+    // Assert
+    expect(await alienToken.balanceOf(communityDistributor.address)).to.be.equals(0)
+    expect(await alienToken.balanceOf(addr1.address)).to.be.equals(parseEther(transferredAmount.toString()))
+  })
+
+  it('should be upgradable', async function () {
+    // Arrange
+    const alienFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
+    const initalAmount = 2000000000
+    const transferredAmount = calculateReceivedAmount(BigNumber.from(initalAmount))
+
+    const alienToken = (await upgrades.deployProxy(alienFactory, [
+      [communityDistributor.address, addr2.address],
+      [initalAmount, initalAmount],
+      addr3.address,
+    ])) as UpgradableDiversifyV1
+
+    // Act
+    await communityDistributor.retrieveTokens(addr1.address, alienToken.address)
+
+    // Assert
+    expect(await alienToken.balanceOf(communityDistributor.address)).to.be.equals(0)
+    expect(await alienToken.balanceOf(addr1.address)).to.be.equals(parseEther(transferredAmount.toString()))
+  })
 })
-*/
