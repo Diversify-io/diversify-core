@@ -186,12 +186,11 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev token purchase
      */
     function buyTokens() public payable {
+        require(_state != State.Setup, 'SeedSale not ready');
         require(block.timestamp > _startDate, 'SeedSale not started');
 
         // Autostart seed sale when not started
         if (_state == State.Ready) _state = State.Active;
-
-        require(_state == State.Active, 'SeedSale is not active');
         require(block.timestamp < _startDate + _duration, 'End duration reached');
         require(_msgSender() != address(0), 'Address 0 as sender is not allowed');
 

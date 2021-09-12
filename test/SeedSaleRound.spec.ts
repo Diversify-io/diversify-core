@@ -145,4 +145,40 @@ describe('SeedSaleRound', function () {
       expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
     })
   })
+
+  describe('Buy Tokens', function () {
+    describe('When seedsale state: setup', function () {
+      it('should revert ', async function () {
+        await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not ready')
+      })
+    })
+
+    describe('When seedsale state: ready or active', function () {
+      this.beforeEach(async () => {
+        await seedSaleRound.setup(
+          beneficiary.address,
+          SEED_SALE_START_DATE,
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          divToken.address
+        )
+      })
+
+      it('should revert when not started ', async function () {
+        await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not started')
+      })
+
+      it('should return the balance of a given address', async function () {
+        // Arrange
+        const weiAmountToBuy = 5000
+        await increaseTimeAndMine(daysToSeconds(2))
+        await seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })
+
+        expect(await seedSaleRound.balanceOf(addr1.address)).to.be.equal(0)
+        expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
+      })
+    })
+  })
 })
