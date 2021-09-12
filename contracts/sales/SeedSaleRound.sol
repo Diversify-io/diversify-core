@@ -125,11 +125,11 @@ contract SeedSaleRound is RetrieveTokensFeature {
         uint256 weiGoal_,
         IERC20UpgradeableBurnable token_
     ) public onlyOwner {
+        require(_state == State.Setup, 'Seed already started');
         require(beneficiary_ != address(0));
         require(duration_ > 0);
         require(address(token_) != address(0), 'Token must be set');
         require(token_.balanceOf(address(this)) > 0);
-        require(_state == State.Setup, 'Seed already started');
         require(rate_ > 0);
         require(weiGoal_ > 0);
 
@@ -176,10 +176,10 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @return the balance of div tokens for the given address
+     * @return the balance of momos for the given address
      */
     function balanceOf(address address_) public view returns (uint256) {
-        return _balances[address_];
+        return _getMomoAmount(_balances[address_]);
     }
 
     /**
@@ -189,15 +189,15 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(block.timestamp > _startDate, 'SeedSale not started');
 
         // Autostart seed sale when not started
-        if (_state == State.Ready) _state == State.Active;
+        if (_state == State.Ready) _state = State.Active;
 
-        require(_state == State.Active);
+        require(_state == State.Active, 'SeedSale is not active');
         require(block.timestamp < _startDate + _duration, 'End duration reached');
-        require(_msgSender() != address(0));
+        require(_msgSender() != address(0), 'Address 0 as sender is not allowed');
 
         uint256 weiAmount = msg.value;
-        require(weiAmount != 0);
-        require(_weiRaised + weiAmount <= _weiTotalSupply);
+        require(weiAmount != 0, 'Wei amount cant be zero');
+        require(_weiRaised + weiAmount <= _weiTotalSupply, 'Order overeaches totalSupply');
 
         // calculate token amount for event
         uint256 tokens = _getMomoAmount(weiAmount);
