@@ -137,12 +137,7 @@ describe('SeedSaleRound', function () {
 
     it('should return the balance of a given address', async function () {
       // Arrange
-      const weiAmountToBuy = 5000
-      await increaseTimeAndMine(daysToSeconds(2))
-      await seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })
-
       expect(await seedSaleRound.balanceOf(addr1.address)).to.be.equal(0)
-      expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
     })
   })
 
@@ -170,14 +165,21 @@ describe('SeedSaleRound', function () {
         await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not started')
       })
 
-      it('should return the balance of a given address', async function () {
+      it('should buy tokens and update balance', async function () {
         // Arrange
         const weiAmountToBuy = 5000
-        await increaseTimeAndMine(daysToSeconds(2))
+        await increaseTimeAndMine(daysToSeconds(1))
         await seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })
-
-        expect(await seedSaleRound.balanceOf(addr1.address)).to.be.equal(0)
         expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
+      })
+
+      it('should revert when time is over', async function () {
+        // Arrange
+        const weiAmountToBuy = 5000
+        await increaseTimeAndMine(SEED_SALE_DURATION)
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })).to.be.revertedWith(
+          'End duration reached'
+        )
       })
     })
   })
