@@ -25,12 +25,3 @@ export const setTimeAndMine = async (exactTimeStamp: number) => {
   await network.provider.send('evm_setNextBlockTimestamp', [exactTimeStamp])
   await network.provider.send('evm_mine')
 }
-/*
- * This method increases the time with the given seconds
- */
-export const increaseTimeAndMine = async (offsetInSeconds: number) => {
-  await network.provider.send('evm_increaseTime', [offsetInSeconds])
-  await network.provider.send('evm_mine')
-}
-
-export const daysToSeconds = (days: number) => days * 60 * 60 * 24

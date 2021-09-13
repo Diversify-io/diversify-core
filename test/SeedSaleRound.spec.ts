@@ -7,7 +7,7 @@ import { SeedSaleRound__factory } from '../typechain/factories/SeedSaleRound__fa
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
 import { SeedSaleRound } from '../typechain/SeedSaleRound'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
-import { daysToSeconds, increaseTimeAndMine } from './utils/testHelpers'
+import { daysToSeconds, increaseTimeAndMine } from './helpers/time'
 describe('SeedSaleRound', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
@@ -21,6 +21,18 @@ describe('SeedSaleRound', function () {
   const SEED_SALE_RATE = 200
   const SEED_SALE_WEI_GOAL = parseEther('10')
   const SEED_SALE_TOTAL_SUPPLY = 100000 // divs
+
+  const seedSaleSetup = async () =>
+    await seedSaleRound.setup(
+      beneficiary.address,
+      SEED_SALE_START_DATE,
+      SEED_SALE_DURATION,
+      SEED_SALE_LOCKING_PERIOD,
+      SEED_SALE_RATE,
+      SEED_SALE_WEI_GOAL,
+      divToken.address
+    )
+
   this.beforeEach(async () => {
     const [a1, a2, a3, a4] = await ethers.getSigners()
     addr1 = a1
@@ -48,9 +60,9 @@ describe('SeedSaleRound', function () {
           .connect(addr2.address)
           .setup(
             beneficiary.address,
+            SEED_SALE_START_DATE,
             SEED_SALE_DURATION,
             SEED_SALE_LOCKING_PERIOD,
-            SEED_SALE_START_DATE,
             SEED_SALE_RATE,
             SEED_SALE_WEI_GOAL,
             divToken.address
@@ -59,17 +71,7 @@ describe('SeedSaleRound', function () {
     })
 
     it('should initialize correctly and raise event', async function () {
-      await expect(
-        seedSaleRound.setup(
-          beneficiary.address,
-          SEED_SALE_START_DATE,
-          SEED_SALE_DURATION,
-          SEED_SALE_LOCKING_PERIOD,
-          SEED_SALE_RATE,
-          SEED_SALE_WEI_GOAL,
-          divToken.address
-        )
-      )
+      await expect(seedSaleSetup())
         .to.emit(seedSaleRound, 'Setup')
         .withArgs(
           SEED_SALE_START_DATE,
@@ -82,41 +84,14 @@ describe('SeedSaleRound', function () {
     })
 
     it('should revert when setup was done', async function () {
-      await seedSaleRound.setup(
-        beneficiary.address,
-        SEED_SALE_START_DATE,
-        SEED_SALE_DURATION,
-        SEED_SALE_LOCKING_PERIOD,
-        SEED_SALE_RATE,
-        SEED_SALE_WEI_GOAL,
-        divToken.address
-      )
-
-      await expect(
-        seedSaleRound.setup(
-          beneficiary.address,
-          SEED_SALE_DURATION,
-          SEED_SALE_LOCKING_PERIOD,
-          SEED_SALE_START_DATE,
-          SEED_SALE_RATE,
-          SEED_SALE_WEI_GOAL,
-          divToken.address
-        )
-      ).to.be.revertedWith('Seed already started')
+      await seedSaleSetup()
+      await expect(seedSaleSetup()).to.be.revertedWith('Seed already started')
     })
   })
 
   describe('Views', function () {
     this.beforeEach(async () => {
-      await seedSaleRound.setup(
-        beneficiary.address,
-        SEED_SALE_START_DATE,
-        SEED_SALE_DURATION,
-        SEED_SALE_LOCKING_PERIOD,
-        SEED_SALE_RATE,
-        SEED_SALE_WEI_GOAL,
-        divToken.address
-      )
+      await seedSaleSetup()
     })
 
     it('should return the seedsale token', async function () {
@@ -150,15 +125,7 @@ describe('SeedSaleRound', function () {
 
     describe('When seedsale state: ready or active', function () {
       this.beforeEach(async () => {
-        await seedSaleRound.setup(
-          beneficiary.address,
-          SEED_SALE_START_DATE,
-          SEED_SALE_DURATION,
-          SEED_SALE_LOCKING_PERIOD,
-          SEED_SALE_RATE,
-          SEED_SALE_WEI_GOAL,
-          divToken.address
-        )
+        await seedSaleSetup()
       })
 
       it('should revert when not started ', async function () {

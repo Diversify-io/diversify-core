@@ -5,7 +5,7 @@ import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
 import { UpgradableDiversifyV2Mock } from '../typechain/UpgradableDiversifyV2Mock.d'
-import { calculateBurnAmount, calculateFoundationAmount } from './utils/testHelpers'
+import { calculateBurnAmount, calculateFoundationAmount } from './helpers/calculators'
 
 describe('DiversifyToken', function () {
   let divToken: UpgradableDiversifyV1

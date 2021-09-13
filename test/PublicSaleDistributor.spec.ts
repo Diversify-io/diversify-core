@@ -8,7 +8,7 @@ import { UpgradablePublicSaleDistributorV1__factory } from '../typechain/factori
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { UpgradablePublicSaleDistributorV1 } from '../typechain/UpgradablePublicSaleDistributorV1'
 import { UpgradablePublicSaleDistributorV2Mock } from '../typechain/UpgradablePublicSaleDistributorV2Mock'
-import { calculateReceivedAmount } from './utils/testHelpers'
+import { calculateReceivedAmount } from './helpers/calculators'
 
 describe('PublicSaleDistributor', function () {
   let divToken: UpgradableDiversifyV1

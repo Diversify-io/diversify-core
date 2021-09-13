@@ -8,7 +8,7 @@ import { UpgradableDiversifyV1__factory } from '../typechain/factories/Upgradabl
 import { UpgradableCommunityRewardDistributorV1 } from '../typechain/UpgradableCommunityRewardDistributorV1.d'
 import { UpgradableCommunityRewardDistributorV2Mock } from '../typechain/UpgradableCommunityRewardDistributorV2Mock.d'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
-import { calculateReceivedAmount } from './utils/testHelpers'
+import { calculateReceivedAmount } from './helpers/calculators'
 
 describe('CommunityRewardDistributor', function () {
   let divToken: UpgradableDiversifyV1

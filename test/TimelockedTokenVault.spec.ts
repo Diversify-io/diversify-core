@@ -6,7 +6,8 @@ import { UpgradableDiversifyV1__factory } from '../typechain/factories/Upgradabl
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { TimelockedTokenVault__factory } from './../typechain/factories/TimelockedTokenVault__factory'
 import { TimelockedTokenVault } from './../typechain/TimelockedTokenVault.d'
-import { calculateReceivedAmount, daysToSeconds, increaseTimeAndMine } from './utils/testHelpers'
+import { calculateReceivedAmount } from './helpers/calculators'
+import { daysToSeconds, increaseTimeAndMine } from './helpers/time'
 describe('TimelockedTokenVault', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
