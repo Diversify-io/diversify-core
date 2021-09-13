@@ -7,7 +7,7 @@ import { SeedSaleRound__factory } from '../typechain/factories/SeedSaleRound__fa
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
 import { SeedSaleRound } from '../typechain/SeedSaleRound'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
-import { daysToSeconds, increaseTimeAndMine } from './helpers/time'
+import { daysToSeconds, getCurrentBlockTime, increaseTimeAndMine } from './helpers/time'
 describe('SeedSaleRound', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
@@ -17,21 +17,26 @@ describe('SeedSaleRound', function () {
   let seedSaleRound: SeedSaleRound
   const SEED_SALE_DURATION = daysToSeconds(10)
   const SEED_SALE_LOCKING_PERIOD = daysToSeconds(360)
-  const SEED_SALE_START_DATE = moment().add(1, 'd').unix()
   const SEED_SALE_RATE = 200
   const SEED_SALE_WEI_GOAL = parseEther('10')
   const SEED_SALE_TOTAL_SUPPLY = 100000 // divs
 
-  const seedSaleSetup = async () =>
+  const seedSaleSetup = async () => {
+    const seedSaleStartDate = moment
+      .unix(await getCurrentBlockTime())
+      .add('1', 'd')
+      .unix()
+
     await seedSaleRound.setup(
       beneficiary.address,
-      SEED_SALE_START_DATE,
+      seedSaleStartDate,
       SEED_SALE_DURATION,
       SEED_SALE_LOCKING_PERIOD,
       SEED_SALE_RATE,
       SEED_SALE_WEI_GOAL,
       divToken.address
     )
+  }
 
   this.beforeEach(async () => {
     const [a1, a2, a3, a4] = await ethers.getSigners()
@@ -60,7 +65,7 @@ describe('SeedSaleRound', function () {
           .connect(addr2.address)
           .setup(
             beneficiary.address,
-            SEED_SALE_START_DATE,
+            await getCurrentBlockTime(),
             SEED_SALE_DURATION,
             SEED_SALE_LOCKING_PERIOD,
             SEED_SALE_RATE,
@@ -71,10 +76,22 @@ describe('SeedSaleRound', function () {
     })
 
     it('should initialize correctly and raise event', async function () {
-      await expect(seedSaleSetup())
+      const seedSaleStart = await getCurrentBlockTime()
+
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          seedSaleStart,
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          divToken.address
+        )
+      )
         .to.emit(seedSaleRound, 'Setup')
         .withArgs(
-          SEED_SALE_START_DATE,
+          seedSaleStart,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
           parseEther(SEED_SALE_TOTAL_SUPPLY.toString()),
@@ -136,18 +153,31 @@ describe('SeedSaleRound', function () {
         // Arrange
         const weiAmountToBuy = 5000
         await increaseTimeAndMine(daysToSeconds(1))
-        await seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy }))
+          .to.be.emit(seedSaleRound, 'TokenPurchased')
+          .withArgs(addr2.address, weiAmountToBuy, weiAmountToBuy * SEED_SALE_RATE)
         expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
       })
 
       it('should revert when time is over', async function () {
         // Arrange
         const weiAmountToBuy = 5000
+        await increaseTimeAndMine(daysToSeconds(1))
         await increaseTimeAndMine(SEED_SALE_DURATION)
         await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })).to.be.revertedWith(
           'End duration reached'
         )
       })
+    })
+  })
+
+  describe('Close', function () {
+    this.beforeEach(async () => {
+      await seedSaleSetup()
+    })
+
+    it('should revert when not started ', async function () {
+      await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not started')
     })
   })
 })

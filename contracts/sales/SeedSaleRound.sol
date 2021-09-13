@@ -106,6 +106,41 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
+     * @return the token being held.
+     */
+    function token() public view returns (IERC20UpgradeableBurnable) {
+        return _token;
+    }
+
+    /**
+     * @return the beneficiary of the tokens.
+     */
+    function beneficiary() public view returns (address) {
+        return _beneficiary;
+    }
+
+    /**
+     * @return the rate how many momos one get per gwei
+     */
+    function rate() public view returns (uint256) {
+        return _rate;
+    }
+
+    /**
+     * @return the amount of the seed round
+     */
+    function totalSupply() public view returns (uint256) {
+        return _totalSupply;
+    }
+
+    /**
+     * @return the balance of momos for the given address
+     */
+    function balanceOf(address address_) public view returns (uint256) {
+        return _getMomoAmount(_balances[address_]);
+    }
+
+    /**
      * @dev setup the sale
      * @param beneficiary_ beneficiary of tokens (weis) after the sale ends
      * @param startDate_ The date in a unix timestamp when the seedsale starts
@@ -145,41 +180,6 @@ contract SeedSaleRound is RetrieveTokensFeature {
         _state = State.Ready;
 
         emit Setup(_startDate, _rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
-    }
-
-    /**
-     * @return the token being held.
-     */
-    function token() public view returns (IERC20UpgradeableBurnable) {
-        return _token;
-    }
-
-    /**
-     * @return the beneficiary of the tokens.
-     */
-    function beneficiary() public view returns (address) {
-        return _beneficiary;
-    }
-
-    /**
-     * @return the rate how many momos one get per gwei
-     */
-    function rate() public view returns (uint256) {
-        return _rate;
-    }
-
-    /**
-     * @return the amount of the seed round
-     */
-    function totalSupply() public view returns (uint256) {
-        return _totalSupply;
-    }
-
-    /**
-     * @return the balance of momos for the given address
-     */
-    function balanceOf(address address_) public view returns (uint256) {
-        return _getMomoAmount(_balances[address_]);
     }
 
     /**

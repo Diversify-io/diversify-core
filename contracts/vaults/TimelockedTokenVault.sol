@@ -84,7 +84,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @return the token being held.
      */
     function token() public view returns (IERC20) {
-        require(_started);
         return _token;
     }
 
@@ -92,7 +91,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @return the start balance
      */
     function startBalance() public view returns (uint256) {
-        require(_started);
         return _startBalance;
     }
 
@@ -100,7 +98,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @return the startDate of the vault
      */
     function startDate() public view returns (uint256) {
-        require(_started);
         return _startDate;
     }
 
@@ -108,7 +105,6 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @return the enddate of the token being held as timestamp
      */
     function endDate() public view returns (uint256) {
-        require(_started);
         return _startDate + _duration;
     }
 
