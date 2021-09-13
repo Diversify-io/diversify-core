@@ -191,6 +191,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
         // Autostart seed sale when not started
         if (_state == State.Ready) _state = State.Active;
+        require(_state == State.Active, 'SeedSale not active');
         require(block.timestamp < _startDate + _duration, 'End duration reached');
         require(_msgSender() != address(0), 'Address 0 as sender is not allowed');
 
