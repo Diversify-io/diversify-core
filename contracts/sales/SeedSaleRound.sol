@@ -13,7 +13,6 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // The State of the seed sale
     enum State {
         Setup,
-        Ready,
         Active,
         Refunding,
         Closed
@@ -177,7 +176,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
         _totalSupply = _token.balanceOf(address(this));
         _weiTotalSupply = _totalSupply / _rate;
         _weiGoal = weiGoal_;
-        _state = State.Ready;
+        _state = State.Active;
 
         emit Setup(_startDate, _rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
     }
@@ -189,8 +188,6 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(_state != State.Setup, 'SeedSale not ready');
         require(block.timestamp > _startDate, 'SeedSale not started');
 
-        // Autostart seed sale when not started
-        if (_state == State.Ready) _state = State.Active;
         require(_state == State.Active, 'SeedSale not active');
         require(block.timestamp < _startDate + _duration, 'End duration reached');
         require(_msgSender() != address(0), 'Address 0 as sender is not allowed');
@@ -233,7 +230,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev Investors can claim refunds here if crowdsale is unsuccessful
      */
     function claimRefund(address payable investor) public {
-        require(_state == State.Refunding);
+        require(_state == State.Refunding, 'Refunding disabled');
         uint256 balanceValue = _balances[investor];
         _balances[investor] = 0;
         investor.transfer(balanceValue);
@@ -244,7 +241,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev payout the freezed amount of token
      */
     function retrieveFreezedTokens() public {
-        require(_state == State.Closed, 'Sale is still open');
+        require(_state == State.Closed, 'Sale not closed');
         require(block.timestamp >= (_startDate + _duration + _lockingPeriod), 'Seed locking period not ended');
         uint256 momoAmount = _getMomoAmount(_balances[_msgSender()]);
         _balances[_msgSender()] = 0;
