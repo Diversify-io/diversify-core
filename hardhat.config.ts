@@ -1,4 +1,5 @@
 import '@nomiclabs/hardhat-ethers'
+import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
 import '@openzeppelin/hardhat-upgrades'
 import '@typechain/hardhat'
@@ -6,10 +7,7 @@ import 'hardhat-gas-reporter'
 import 'solidity-coverage'
 
 require('dotenv').config()
-/**
- * @type import('hardhat/config').HardhatUserConfig
- */
-// (process.env.REPORT_GAS)
+
 export default {
   networks: {
     hardhat: {},
@@ -17,14 +15,18 @@ export default {
       url: 'http://127.0.0.1:7545',
     },
     rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
-      accounts: [`0x${process.env.RINKEBY_PRIVATE_KEY}`],
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
   },
   gasReporter: {
     enabled: false,
     currency: 'EUR',
     coinmarketcap: `${process.env.COIN_MARKET_CAPI_KEY}`,
+  },
+  etherscan: {
+    // Your API key for Etherscan
+    // Obtain one at https://etherscan.io/
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
   solidity: {
     version: '0.8.4',

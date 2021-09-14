@@ -3,8 +3,8 @@ import { expect } from 'chai'
 import { ethers, upgrades } from 'hardhat'
 import { RetrieveTokensFeature__factory } from '../typechain/factories/RetrieveTokensFeature__factory'
 import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
-import { RetrieveTokensFeature } from '../typechain/RetrieveTokensFeature.d'
-import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1.d'
+import { RetrieveTokensFeature } from '../typechain/RetrieveTokensFeature'
+import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { calculateReceivedAmount } from './helpers/calculators'
 
 describe('RetrieveTokensFeature', function () {

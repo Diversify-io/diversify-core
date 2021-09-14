@@ -1,8 +1,10 @@
 # Diversify
-
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/Diversify-io/diversify-core) ![GitHub top language](https://img.shields.io/github/languages/top/Diversify-io/diversify-core) [![Test with Hardhat](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml/badge.svg)](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml)
 
+![Banner](logo.jpeg)
+
 Smart contracts implemented in Solidity for Diversify.
+
 
 ## Introduction
 
@@ -17,8 +19,8 @@ A recent version of [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.co
 
 ### ENV
 
-- `ALCHEMY_API_KEY`
-- `RINKEBY_PRIVATE_KEY`
+- `INFURA_API_KEY`
+- `ETHERSCAN_API_KEY`
 - `COIN_MARKET_CAPI_KEY`
 
 ## Compiling
