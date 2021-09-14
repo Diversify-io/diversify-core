@@ -1,6 +1,6 @@
 # Diversify
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/Diversify-io/diversify) ![GitHub top language](https://img.shields.io/github/languages/top/Diversify-io/diversify) [![Test with Hardhat](https://github.com/Diversify-io/diversify/actions/workflows/tests.yml/badge.svg)](https://github.com/Diversify-io/diversify/actions/workflows/tests.yml)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/Diversify-io/diversify-core) ![GitHub top language](https://img.shields.io/github/languages/top/Diversify-io/diversify-core) [![Test with Hardhat](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml/badge.svg)](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml)
 
 Smart contracts implemented in Solidity for Diversify.
 
