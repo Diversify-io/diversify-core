@@ -232,18 +232,54 @@ describe('SeedSaleRound', function () {
 
     it('should claim refund when enabled', async function () {
       const transferredAmount = SEED_SALE_WEI_GOAL.div(2)
-      const initialBalance = await addr2.getBalance()
       await increaseTimeAndMine(daysToSeconds(1))
       await seedSaleRound.connect(addr2).buyTokens({ value: transferredAmount })
+
       await increaseTimeAndMine(SEED_SALE_DURATION)
       await expect(seedSaleRound.close()).to.be.emit(seedSaleRound, 'RefundsEnabled')
+
+      const accountBalanceAfterBuy = await addr2.getBalance()
 
       await expect(seedSaleRound.connect(addr2).claimRefund(addr2.address))
         .to.be.emit(seedSaleRound, 'Refunded')
         .withArgs(addr2.address, transferredAmount)
 
-      // TODO Fix
-      //expect(await addr2.getBalance()).to.be.equal(initialBalance)
+      expect(await addr2.getBalance()).to.be.gt(accountBalanceAfterBuy)
+    })
+  })
+
+  describe('retrieveFreezedTokens', function () {
+    this.beforeEach(async () => {
+      await seedSaleSetup()
+    })
+
+    describe('When seedsale not closed', function () {
+      it('should revert', async function () {
+        await expect(seedSaleRound.retrieveFreezedTokens()).to.be.revertedWith('Sale not closed')
+      })
+    })
+
+    describe('When seedsale closed', function () {
+      this.beforeEach(async () => {
+        await increaseTimeAndMine(daysToSeconds(1))
+        await seedSaleRound.connect(addr2).buyTokens({ value: SEED_SALE_WEI_GOAL })
+        await increaseTimeAndMine(SEED_SALE_DURATION)
+        await seedSaleRound.close()
+      })
+
+      it('should revert when locking period not over', async function () {
+        await expect(seedSaleRound.retrieveFreezedTokens()).to.be.revertedWith('Seed locking period not ended')
+      })
+
+      it('should retrieve tokens when locking is over', async function () {
+        await increaseTimeAndMine(SEED_SALE_LOCKING_PERIOD)
+        const balanceBefore = await divToken.balanceOf(addr2.address)
+        await seedSaleRound.connect(addr2).retrieveFreezedTokens()
+        const balanceAfterFirstCollect = await divToken.balanceOf(addr2.address)
+        expect(balanceAfterFirstCollect).to.be.gt(balanceBefore)
+        await seedSaleRound.connect(addr2).retrieveFreezedTokens()
+        expect(await divToken.balanceOf(addr2.address)).to.be.eq(balanceAfterFirstCollect)
+      })
     })
   })
 
