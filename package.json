@@ -41,6 +41,7 @@
   },
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "coverage": "npx hardhat coverage"
   }
 }
