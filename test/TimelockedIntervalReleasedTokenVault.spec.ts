@@ -40,6 +40,9 @@ describe('TimelockedIntervalReleasedTokenVault', function () {
   })
 
   describe('Views', function () {
+    it('should revert when vault not started', async function () {
+      await expect(vault.availableAmount()).to.be.revertedWith('Lock not started')
+    })
     it('should return the available amount during different periods', async function () {
       await vault.start(divToken.address)
       expect(await vault.availableAmount()).to.be.equal(0)

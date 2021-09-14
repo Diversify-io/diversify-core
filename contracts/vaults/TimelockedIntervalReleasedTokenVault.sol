@@ -31,7 +31,7 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
      * @return returns the available amount to collect for the current time
      */
     function availableAmount() public view returns (uint256) {
-        require(_started);
+        require(_started, 'Lock not started');
         uint256 tokensToRetrieve = 0;
         if (block.timestamp >= _startDate + _duration) {
             tokensToRetrieve = _token.balanceOf(address(this));

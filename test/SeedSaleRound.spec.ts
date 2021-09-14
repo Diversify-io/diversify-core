@@ -9,6 +9,7 @@ import { UpgradableDiversifyV1__factory } from '../typechain/factories/Upgradabl
 import { SeedSaleRound } from '../typechain/SeedSaleRound'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { calculateReceivedAmount } from './helpers/calculators'
+import { ADDRESS_0 } from './helpers/constants'
 import { daysToSeconds, getCurrentBlockTime, increaseTimeAndMine } from './helpers/time'
 describe('SeedSaleRound', function () {
   let divToken: UpgradableDiversifyV1
@@ -55,7 +56,7 @@ describe('SeedSaleRound', function () {
     const tokenFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
     divToken = (await upgrades.deployProxy(tokenFactory, [
       [addr1.address, seedSaleRound.address],
-      [1000000000, SEED_SALE_TOTAL_SUPPLY],
+      [10000000000000, SEED_SALE_TOTAL_SUPPLY],
       addr3.address,
     ])) as UpgradableDiversifyV1
   })
@@ -75,6 +76,99 @@ describe('SeedSaleRound', function () {
             divToken.address
           )
       ).to.be.reverted
+    })
+
+    it('should revert when beneficary not specified', async function () {
+      await expect(
+        seedSaleRound.setup(
+          ADDRESS_0,
+          await getCurrentBlockTime(),
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          divToken.address
+        )
+      ).to.be.revertedWith('Beneficary not specified')
+    })
+
+    it('should revert when duration is zero', async function () {
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          await getCurrentBlockTime(),
+          0,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          divToken.address
+        )
+      ).to.be.revertedWith('Duration needs to be bigger than 0')
+    })
+
+    it('should revert when token not set', async function () {
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          await getCurrentBlockTime(),
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          ADDRESS_0
+        )
+      ).to.be.revertedWith('Token must be set')
+    })
+
+    it('should revert when contract owns no token', async function () {
+      const alienFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
+      const initalAmount = 2000000000
+
+      const alienToken = (await upgrades.deployProxy(alienFactory, [
+        [addr2.address],
+        [initalAmount],
+        addr3.address,
+      ])) as UpgradableDiversifyV1
+
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          await getCurrentBlockTime(),
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          SEED_SALE_WEI_GOAL,
+          alienToken.address
+        )
+      ).to.be.revertedWith('Seedsale has no amount for the given token')
+    })
+
+    it('should revert when rate not set', async function () {
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          await getCurrentBlockTime(),
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          0,
+          SEED_SALE_WEI_GOAL,
+          divToken.address
+        )
+      ).to.be.revertedWith('Rate needs to be bigger than 0')
+    })
+
+    it('should revert when goal not set', async function () {
+      await expect(
+        seedSaleRound.setup(
+          beneficiary.address,
+          await getCurrentBlockTime(),
+          SEED_SALE_DURATION,
+          SEED_SALE_LOCKING_PERIOD,
+          SEED_SALE_RATE,
+          0,
+          divToken.address
+        )
+      ).to.be.revertedWith('Goal needs to be bigger than 0')
     })
 
     it('should initialize correctly and raise event', async function () {
@@ -151,10 +245,20 @@ describe('SeedSaleRound', function () {
         await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not started')
       })
     })
-    describe('When seedsale state: ready ', function () {
+    describe('When seedsale state: active ', function () {
       this.beforeEach(async () => {
         await seedSaleSetup()
         await increaseTimeAndMine(daysToSeconds(1))
+      })
+
+      it('should revert if zero amount', async function () {
+        await expect(seedSaleRound.buyTokens({ value: 0 })).to.be.revertedWith('Wei amount cant be zero')
+      })
+
+      it('should revert if amount overreaches total supply', async function () {
+        await expect(seedSaleRound.buyTokens({ value: parseEther('800') })).to.be.revertedWith(
+          'Order overeaches totalSupply'
+        )
       })
 
       it('should buy tokens, update balance and emit event', async function () {
@@ -177,6 +281,21 @@ describe('SeedSaleRound', function () {
         const weiAmountToBuy = 5000
         await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })).to.be.revertedWith(
           'End duration reached'
+        )
+      })
+    })
+
+    describe('When seedsale closed', function () {
+      this.beforeEach(async () => {
+        await seedSaleSetup()
+        await increaseTimeAndMine(daysToSeconds(1))
+        await increaseTimeAndMine(SEED_SALE_DURATION)
+        await seedSaleRound.close()
+      })
+      it('should revert', async function () {
+        const weiAmountToBuy = 5000
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy })).to.be.revertedWith(
+          'SeedSale not active'
         )
       })
     })
@@ -204,6 +323,11 @@ describe('SeedSaleRound', function () {
       })
       it('should enable refunds and emit event when goal not reached', async function () {
         await expect(seedSaleRound.close()).to.be.emit(seedSaleRound, 'RefundsEnabled')
+      })
+
+      it('should revert when reclosing', async function () {
+        await seedSaleRound.close()
+        await expect(seedSaleRound.close()).to.be.revertedWith('Seedsale needs to be active state')
       })
     })
     describe('When seedsale goal reached', function () {
@@ -301,6 +425,11 @@ describe('SeedSaleRound', function () {
       await seedSaleSetup()
     })
 
+    it('should be restricted to owner', async function () {
+      await expect(seedSaleRound.connect(beneficiary).retrieveTokens(beneficiary.address, divToken.address)).to.be
+        .reverted
+    })
+
     it('should revert if seedsale token', async function () {
       await expect(seedSaleRound.retrieveTokens(beneficiary.address, divToken.address)).to.be.revertedWith(
         'You should only use this method to withdraw extraneous tokens.'
@@ -322,6 +451,37 @@ describe('SeedSaleRound', function () {
       await seedSaleRound.retrieveTokens(beneficiary.address, alienToken.address)
       expect(await alienToken.balanceOf(seedSaleRound.address)).to.be.equals(0)
       expect(await alienToken.balanceOf(beneficiary.address)).to.be.equals(parseEther(transferredAmount.toString()))
+    })
+  })
+
+  describe('retrieveETH branches', function () {
+    this.beforeEach(async () => {
+      await seedSaleSetup()
+    })
+
+    it('should be restricted to owner', async function () {
+      await expect(seedSaleRound.connect(beneficiary).retrieveETH(beneficiary.address)).to.be.reverted
+    })
+
+    it('should revert when seedsale not closed', async function () {
+      await expect(seedSaleRound.retrieveETH(beneficiary.address)).to.be.revertedWith('Only allowed when closed')
+    })
+
+    it('should revert when seedsale refunding', async function () {
+      await increaseTimeAndMine(daysToSeconds(1))
+      await increaseTimeAndMine(SEED_SALE_DURATION)
+      await seedSaleRound.close()
+      await expect(seedSaleRound.retrieveETH(beneficiary.address)).to.be.revertedWith('Only allowed when closed')
+    })
+
+    it('should revert if not beneficary', async function () {
+      await increaseTimeAndMine(daysToSeconds(1))
+      await seedSaleRound.connect(addr2).buyTokens({ value: SEED_SALE_WEI_GOAL })
+      await increaseTimeAndMine(SEED_SALE_DURATION)
+      await seedSaleRound.close()
+      await expect(seedSaleRound.retrieveETH(addr2.address)).to.be.revertedWith(
+        'You can only transfer tokens to the beneficiary'
+      )
     })
   })
 })

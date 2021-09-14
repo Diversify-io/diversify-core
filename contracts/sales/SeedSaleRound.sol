@@ -160,12 +160,12 @@ contract SeedSaleRound is RetrieveTokensFeature {
         IERC20UpgradeableBurnable token_
     ) public onlyOwner {
         require(_state == State.Setup, 'Seed already started');
-        require(beneficiary_ != address(0));
-        require(duration_ > 0);
+        require(beneficiary_ != address(0), 'Beneficary not specified');
+        require(duration_ > 0, 'Duration needs to be bigger than 0');
         require(address(token_) != address(0), 'Token must be set');
-        require(token_.balanceOf(address(this)) > 0);
-        require(rate_ > 0);
-        require(weiGoal_ > 0);
+        require(token_.balanceOf(address(this)) > 0, 'Seedsale has no amount for the given token');
+        require(rate_ > 0, 'Rate needs to be bigger than 0');
+        require(weiGoal_ > 0, 'Goal needs to be bigger than 0');
 
         _beneficiary = beneficiary_;
         _duration = duration_;
@@ -210,7 +210,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * Closes the sale, when enduration reached
      */
     function close() public onlyOwner {
-        require(_state == State.Active);
+        require(_state == State.Active, 'Seedsale needs to be active state');
         require(block.timestamp >= _startDate + _duration, 'End duration not reached');
 
         if (_weiRaised >= _weiGoal) {
@@ -261,7 +261,7 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @dev retrieve wrongly assigned tokens
      */
     function retrieveETH(address payable to) public override onlyOwner {
-        require(_state == State.Closed, 'Not started or timelock end not reached');
+        require(_state == State.Closed, 'Only allowed when closed');
         require(to == beneficiary(), 'You can only transfer tokens to the beneficiary');
         super.retrieveETH(to);
     }
