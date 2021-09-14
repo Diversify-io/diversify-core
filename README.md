@@ -1,6 +1,6 @@
 # Diversify
 
-![GitHub package.json version](https://img.shields.io/github/package-json/v/Diversify-io/diversify-core) ![GitHub top language](https://img.shields.io/github/languages/top/Diversify-io/diversify-core) [![Test with Hardhat](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml/badge.svg)](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml)
+![GitHub package.json version](https://img.shields.io/github/package-json/v/Diversify-io/diversify-core) ![GitHub top language](https://img.shields.io/github/languages/top/Diversify-io/diversify-core) [![Lint](https://github.com/Diversify-io/diversify-core/actions/workflows/lint.yml/badge.svg)](https://github.com/Diversify-io/diversify-core/actions/workflows/lint.yml) [![Test with Hardhat](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml/badge.svg)](https://github.com/Diversify-io/diversify-core/actions/workflows/tests.yml)
 
 ![Banner](logo.jpeg)
 
