@@ -1,6 +1,16 @@
+# Bundlers
 artifacts/
 cache/
 node_modules/
 typechain/
 coverage/
+coverage.json
+
+
+# OpenZeppelin
+.openzeppelin/dev-*.json
+.openzeppelin/.session
+
+# Dev Setup
 .env
+.vscode/
