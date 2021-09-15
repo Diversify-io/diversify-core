@@ -6,7 +6,7 @@ import '@openzeppelin/contracts/access/Ownable.sol';
 import '@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol';
 
 /**
- * Contract that provides ETC and ERC20 token retrieval authorised by the owner
+ * Contract that provides ETH and  ERC20 token retriever authorised by the owner
  */
 contract RetrieveTokensFeature is Context, Ownable {
     using SafeERC20 for IERC20;

@@ -7,6 +7,7 @@ import { UpgradableDiversifyV1__factory } from '../typechain/factories/Upgradabl
 import { TimelockedTokenVault } from '../typechain/TimelockedTokenVault'
 import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
 import { calculateReceivedAmount } from './helpers/calculators'
+import { ADDRESS_0 } from './helpers/constants'
 import { daysToSeconds, increaseTimeAndMine } from './helpers/time'
 describe('TimelockedTokenVault', function () {
   let divToken: UpgradableDiversifyV1
@@ -36,6 +37,10 @@ describe('TimelockedTokenVault', function () {
   describe('Start', function () {
     it('should be restricted to owner', async function () {
       await expect(vault.connect(beneficary).start(divToken.address)).to.be.reverted
+    })
+
+    it('should revert when token not set', async function () {
+      await expect(vault.start(ADDRESS_0)).to.be.revertedWith('Token must be set')
     })
 
     it('should start successful', async function () {

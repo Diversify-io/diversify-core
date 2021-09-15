@@ -5,7 +5,7 @@
   "homepage": "https://diversify.io",
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "engines": {
     "node": ">=10"
   },
@@ -41,6 +41,7 @@
   },
   "scripts": {
     "compile": "hardhat compile",
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "coverage": "npx hardhat coverage"
   }
 }
