@@ -32,7 +32,9 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     uint256 internal _retrievedTokens;
 
     /**
-     * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
+     * @dev Initalizes a new instanc of the TimelockedTokenVault Vault
+     * @param beneficiary_ the beneficiary who can collect the holdings
+     * @param duration_ the duration of the vault in seconds
      */
     constructor(address beneficiary_, uint256 duration_) {
         _beneficiary = beneficiary_;
