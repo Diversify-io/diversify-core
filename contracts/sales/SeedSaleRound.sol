@@ -221,8 +221,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(weiAmount != 0, 'Wei amount cant be zero');
 
         // limit the minimum amount for one transaction (WEI)
-        require(weiAmount >= _weiMinTransactionLimit, 'The amount is too small');
-        require(_weiRaised + weiAmount <= _weiTotalSupply, 'Order overeaches totalSupply');
+        require(weiAmount >= _weiMinTransactionLimit, 'Transaction doesnt reach minTransactionLimit');
+        require(_weiRaised + weiAmount <= _weiTotalSupply, 'Transaction overeaches totalSupply');
 
         // limit the maximum amount that one user can spend during sale (WEI),
         // if initalized with 0, we allow unlimited
