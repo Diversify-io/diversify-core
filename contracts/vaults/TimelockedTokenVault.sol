@@ -16,7 +16,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // beneficiary of tokens after they are released
     address internal immutable _beneficiary;
 
-    // the duration of the lock
+    // the duration of the lock in seconds
     uint256 internal immutable _duration;
 
     // initial start balance
@@ -25,7 +25,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // indiacted wheter vault started or not
     bool internal _started;
 
-    // startDate of the lock
+    // startDate of the lock in a unix timestamp
     uint256 internal _startDate;
 
     // the amount of tokens already retrieved
