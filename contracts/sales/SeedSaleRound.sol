@@ -51,14 +51,22 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // Amount of wei to raise
     uint256 private _weiGoal;
 
+    // Min investment limit per transaction
+    uint256 private _weiMinTransactionLimit;
+
+    // Max investment limit for investor, zero(0) for unlimited
+    uint256 private _weiMaxInvestmentLimit;
+
     // Locking period of tokens in seconds if sale was successful
     uint256 private _lockingPeriod;
 
     /*
-     * Event seedsale announced logging
+     * Event seedsale announced
      * @param startDate when the sales start
      * @param rate How many token units a buyer gets per wei
      * @param weiGoal amount of wei to reach for success
+     * @param weiMinTransactionLimit min investment limit per transaction
+     * @param weiMaxInvestmentLimit max investment limit for investor
      * @param totalSupply of momos in the round
      * @param duration the duration of the seed sale in seconds
      * @param lockingPeriod Locking period of tokens in seconds if sale was successful
@@ -67,6 +75,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
         uint256 startDate,
         uint256 rate,
         uint256 weiGoal,
+        uint256 weiMinTransactionLimit,
+        uint256 weiMaxInvestmentLimit,
         uint256 totalSupply,
         uint256 duration,
         uint256 lockingPeriod
@@ -147,6 +157,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
      * @param lockingPeriod_ Locking period of tokens in seconds if sale was successful
      * @param rate_ How many momos a buyer gets per wei
      * @param weiGoal_ The goal in wei to reach for round success
+     * @param weiMinTransactionLimit_ Min investment limit per transaction
+     * @param weiMaxInvestmentLimit_  Max investment limit per investor, zero for unlimited
      * @param token_ The div token
      */
 
@@ -157,6 +169,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
         uint256 lockingPeriod_,
         uint256 rate_,
         uint256 weiGoal_,
+        uint256 weiMinTransactionLimit_,
+        uint256 weiMaxInvestmentLimit_,
         IERC20UpgradeableBurnable token_
     ) public onlyOwner {
         require(_state == State.Setup, 'Seed already started');
@@ -176,9 +190,20 @@ contract SeedSaleRound is RetrieveTokensFeature {
         _totalSupply = _token.balanceOf(address(this));
         _weiTotalSupply = _totalSupply / _rate;
         _weiGoal = weiGoal_;
+        _weiMinTransactionLimit = weiMinTransactionLimit_;
+        _weiMaxInvestmentLimit = weiMaxInvestmentLimit_;
         _state = State.Active;
 
-        emit Setup(_startDate, _rate, _weiGoal, _totalSupply, _duration, _lockingPeriod);
+        emit Setup(
+            _startDate,
+            _rate,
+            _weiGoal,
+            _weiMinTransactionLimit,
+            _weiMaxInvestmentLimit,
+            _totalSupply,
+            _duration,
+            _lockingPeriod
+        );
     }
 
     /**
@@ -194,7 +219,17 @@ contract SeedSaleRound is RetrieveTokensFeature {
 
         uint256 weiAmount = msg.value;
         require(weiAmount != 0, 'Wei amount cant be zero');
+
+        // limit the minimum amount for one transaction (WEI)
+        require(weiAmount >= _weiMinTransactionLimit, 'The amount is too small');
         require(_weiRaised + weiAmount <= _weiTotalSupply, 'Order overeaches totalSupply');
+
+        // limit the maximum amount that one user can spend during sale (WEI),
+        // if initalized with 0, we allow unlimited
+        if (_weiMaxInvestmentLimit > 0) {
+            uint256 maxAllowableValue = _weiMaxInvestmentLimit - _balances[_msgSender()];
+            require(weiAmount <= maxAllowableValue, 'Transaction exceeds investment limit!');
+        }
 
         // calculate token amount for event
         uint256 tokens = _getMomoAmount(weiAmount);

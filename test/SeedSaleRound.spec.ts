@@ -22,6 +22,8 @@ describe('SeedSaleRound', function () {
   const SEED_SALE_LOCKING_PERIOD = daysToSeconds(360)
   const SEED_SALE_RATE = 200
   const SEED_SALE_WEI_GOAL = parseEther('10')
+  const SEED_SALE_MIN_WEI_AMOUNT = 0
+  const SEED_SALE_MAX_WEI_AMOUNT = 0
   const SEED_SALE_TOTAL_SUPPLY = 100000 // divs
 
   const seedSaleSetup = async () => {
@@ -37,6 +39,8 @@ describe('SeedSaleRound', function () {
       SEED_SALE_LOCKING_PERIOD,
       SEED_SALE_RATE,
       SEED_SALE_WEI_GOAL,
+      SEED_SALE_MIN_WEI_AMOUNT,
+      SEED_SALE_MAX_WEI_AMOUNT,
       divToken.address
     )
   }
@@ -73,6 +77,8 @@ describe('SeedSaleRound', function () {
             SEED_SALE_LOCKING_PERIOD,
             SEED_SALE_RATE,
             SEED_SALE_WEI_GOAL,
+            SEED_SALE_MIN_WEI_AMOUNT,
+            SEED_SALE_MAX_WEI_AMOUNT,
             divToken.address
           )
       ).to.be.reverted
@@ -87,6 +93,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           divToken.address
         )
       ).to.be.revertedWith('Beneficary not specified')
@@ -101,6 +109,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           divToken.address
         )
       ).to.be.revertedWith('Duration needs to be bigger than 0')
@@ -115,6 +125,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           ADDRESS_0
         )
       ).to.be.revertedWith('Token must be set')
@@ -138,6 +150,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           alienToken.address
         )
       ).to.be.revertedWith('Seedsale has no amount for the given token')
@@ -152,6 +166,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           0,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           divToken.address
         )
       ).to.be.revertedWith('Rate needs to be bigger than 0')
@@ -166,6 +182,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           0,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           divToken.address
         )
       ).to.be.revertedWith('Goal needs to be bigger than 0')
@@ -182,6 +200,8 @@ describe('SeedSaleRound', function () {
           SEED_SALE_LOCKING_PERIOD,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           divToken.address
         )
       )
@@ -190,6 +210,8 @@ describe('SeedSaleRound', function () {
           seedSaleStart,
           SEED_SALE_RATE,
           SEED_SALE_WEI_GOAL,
+          SEED_SALE_MIN_WEI_AMOUNT,
+          SEED_SALE_MAX_WEI_AMOUNT,
           parseEther(SEED_SALE_TOTAL_SUPPLY.toString()),
           SEED_SALE_DURATION,
           SEED_SALE_LOCKING_PERIOD
@@ -236,7 +258,7 @@ describe('SeedSaleRound', function () {
       })
     })
 
-    describe('When seedsale started ', function () {
+    describe('When seedsale ready and startdate not passed', function () {
       this.beforeEach(async () => {
         await seedSaleSetup()
       })
@@ -245,7 +267,7 @@ describe('SeedSaleRound', function () {
         await expect(seedSaleRound.buyTokens({ value: 500 })).to.be.revertedWith('SeedSale not started')
       })
     })
-    describe('When seedsale state: active ', function () {
+    describe('When seedsale started ', function () {
       this.beforeEach(async () => {
         await seedSaleSetup()
         await increaseTimeAndMine(daysToSeconds(1))
@@ -260,6 +282,8 @@ describe('SeedSaleRound', function () {
           'Order overeaches totalSupply'
         )
       })
+
+      // TODO: min / max tests
 
       it('should buy tokens, update balance and emit event', async function () {
         // Arrange
