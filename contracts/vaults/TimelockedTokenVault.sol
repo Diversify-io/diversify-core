@@ -35,6 +35,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
      * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
      */
     constructor(address beneficiary_, uint256 duration_) {
+        require(beneficiary_ != address(0), 'Address 0 as beneficary is not allowed');
         _beneficiary = beneficiary_;
         _duration = duration_;
         _retrievedTokens = 0;
