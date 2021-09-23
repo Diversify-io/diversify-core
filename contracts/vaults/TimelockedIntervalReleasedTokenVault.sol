@@ -16,8 +16,9 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
 
     /**
      * @dev Initalizes a new instanc of the TimelockedIntervaldReleased Vault
-     * interval_ in seconds
-     * duration_ in seconds
+     * @param beneficiary_ the beneficary who gets the holdings
+     * @param interval_ in seconds
+     * @param duration_ in seconds
      */
     constructor(
         address beneficiary_,

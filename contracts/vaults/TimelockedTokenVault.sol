@@ -16,7 +16,7 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // beneficiary of tokens after they are released
     address internal immutable _beneficiary;
 
-    // the duration of the lock
+    // the duration of the lock in seconds
     uint256 internal immutable _duration;
 
     // initial start balance
@@ -25,14 +25,16 @@ contract TimelockedTokenVault is RetrieveTokensFeature {
     // indiacted wheter vault started or not
     bool internal _started;
 
-    // startDate of the lock
+    // startDate of the lock in a unix timestamp
     uint256 internal _startDate;
 
     // the amount of tokens already retrieved
     uint256 internal _retrievedTokens;
 
     /**
-     * @dev Initalizes a new instanc of the TimelockedIntervaldDistributed Vault
+     * @dev Initalizes a new instanc of the TimelockedTokenVault Vault
+     * @param beneficiary_ the beneficiary who can collect the holdings
+     * @param duration_ the duration of the vault in seconds
      */
     constructor(address beneficiary_, uint256 duration_) {
         require(beneficiary_ != address(0), 'Address 0 as beneficary is not allowed');

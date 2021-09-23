@@ -2,6 +2,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { parseEther } from '@ethersproject/units'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
+import { BigNumberish } from 'ethers'
 import { ethers, upgrades } from 'hardhat'
 import moment from 'moment'
 import { SeedSaleRound__factory } from '../typechain/factories/SeedSaleRound__factory'
@@ -26,21 +27,30 @@ describe('SeedSaleRound', function () {
   const SEED_SALE_MAX_WEI_AMOUNT = 0
   const SEED_SALE_TOTAL_SUPPLY = 100000 // divs
 
-  const seedSaleSetup = async () => {
+  const seedSaleSetup = async (
+    beneficiary_?: string,
+    startDate_?: BigNumberish,
+    duration_?: BigNumberish,
+    lockingPeriod_?: BigNumberish,
+    rate_?: BigNumberish,
+    weiGoal_?: BigNumberish,
+    weiMinTransactionLimit_?: BigNumberish,
+    weiMaxInvestmentLimit_?: BigNumberish
+  ) => {
     const seedSaleStartDate = moment
       .unix(await getCurrentBlockTime())
       .add('1', 'd')
       .unix()
 
     await seedSaleRound.setup(
-      beneficiary.address,
-      seedSaleStartDate,
-      SEED_SALE_DURATION,
-      SEED_SALE_LOCKING_PERIOD,
-      SEED_SALE_RATE,
-      SEED_SALE_WEI_GOAL,
-      SEED_SALE_MIN_WEI_AMOUNT,
-      SEED_SALE_MAX_WEI_AMOUNT,
+      beneficiary_ ?? beneficiary.address,
+      startDate_ ?? seedSaleStartDate,
+      duration_ ?? SEED_SALE_DURATION,
+      lockingPeriod_ ?? SEED_SALE_LOCKING_PERIOD,
+      rate_ ?? SEED_SALE_RATE,
+      weiGoal_ ?? SEED_SALE_WEI_GOAL,
+      weiMinTransactionLimit_ ?? SEED_SALE_MIN_WEI_AMOUNT,
+      weiMaxInvestmentLimit_ ?? SEED_SALE_MAX_WEI_AMOUNT,
       divToken.address
     )
   }
@@ -269,7 +279,7 @@ describe('SeedSaleRound', function () {
     })
     describe('When seedsale started ', function () {
       this.beforeEach(async () => {
-        await seedSaleSetup()
+        await seedSaleSetup(undefined, undefined, undefined, undefined, undefined, undefined, 300, 1000)
         await increaseTimeAndMine(daysToSeconds(1))
       })
 
@@ -277,21 +287,44 @@ describe('SeedSaleRound', function () {
         await expect(seedSaleRound.buyTokens({ value: 0 })).to.be.revertedWith('Wei amount cant be zero')
       })
 
-      it('should revert if amount overreaches total supply', async function () {
-        await expect(seedSaleRound.buyTokens({ value: parseEther('800') })).to.be.revertedWith(
-          'Order overeaches totalSupply'
+      it('should revert if amount below min buy limit', async function () {
+        await expect(seedSaleRound.buyTokens({ value: 200 })).to.be.revertedWith(
+          'Transaction doesnt reach minTransactionLimit'
         )
       })
 
-      // TODO: min / max tests
+      it('should revert if over max investment limit', async function () {
+        await expect(seedSaleRound.buyTokens({ value: 1001 })).to.be.revertedWith(
+          'Transaction exceeds investment limit!'
+        )
+      })
 
-      it('should buy tokens, update balance and emit event', async function () {
+      it('should revert if amount overreaches total supply', async function () {
+        await expect(seedSaleRound.buyTokens({ value: parseEther('800') })).to.be.revertedWith(
+          'Transaction overeaches totalSupply'
+        )
+      })
+
+      it('should buy max token amount, update balance and emit event', async function () {
         // Arrange
-        const weiAmountToBuy = 5000
+        const weiAmountToBuy = 1000
         await expect(seedSaleRound.connect(addr2).buyTokens({ value: weiAmountToBuy }))
           .to.be.emit(seedSaleRound, 'TokenPurchased')
           .withArgs(addr2.address, weiAmountToBuy, weiAmountToBuy * SEED_SALE_RATE)
         expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(weiAmountToBuy * SEED_SALE_RATE)
+      })
+
+      it('should buy continously until max amount and revert', async function () {
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: 500 }))
+          .to.be.emit(seedSaleRound, 'TokenPurchased')
+          .withArgs(addr2.address, 500, 500 * SEED_SALE_RATE)
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: 500 }))
+          .to.be.emit(seedSaleRound, 'TokenPurchased')
+          .withArgs(addr2.address, 500, 500 * SEED_SALE_RATE)
+        expect(await seedSaleRound.balanceOf(addr2.address)).to.be.equal(1000 * SEED_SALE_RATE)
+        await expect(seedSaleRound.connect(addr2).buyTokens({ value: 500 })).to.be.revertedWith(
+          'Transaction exceeds investment limit!'
+        )
       })
     })
 

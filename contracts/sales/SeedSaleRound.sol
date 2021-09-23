@@ -27,16 +27,16 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // Tracks the state of the seedsale
     State private _state;
 
-    //  Start date of seedsale
+    //  Start date of seedsale (unix timestamp)
     uint256 private _startDate;
 
-    // the duration of the seed sale in seconds
+    // the duration of the seed sale (seconds)
     uint256 private _duration;
 
     // beneficiary of tokens (weis) after the sale ends
     address private _beneficiary;
 
-    // How many token units a buyer gets per wei
+    // How many token units a buyer gets per wei (wei)
     uint256 private _rate;
 
     // Supply of seed round in momos
@@ -51,13 +51,13 @@ contract SeedSaleRound is RetrieveTokensFeature {
     // Amount of wei to raise
     uint256 private _weiGoal;
 
-    // Min investment limit per transaction
+    // Min investment limit per transaction (wei)
     uint256 private _weiMinTransactionLimit;
 
-    // Max investment limit for investor, zero(0) for unlimited
+    // Max investment limit for investor, zero(0) for unlimited (wei)
     uint256 private _weiMaxInvestmentLimit;
 
-    // Locking period of tokens in seconds if sale was successful
+    // Locking period of tokens if sale was successful (seconds)
     uint256 private _lockingPeriod;
 
     /*
@@ -221,8 +221,8 @@ contract SeedSaleRound is RetrieveTokensFeature {
         require(weiAmount != 0, 'Wei amount cant be zero');
 
         // limit the minimum amount for one transaction (WEI)
-        require(weiAmount >= _weiMinTransactionLimit, 'The amount is too small');
-        require(_weiRaised + weiAmount <= _weiTotalSupply, 'Order overeaches totalSupply');
+        require(weiAmount >= _weiMinTransactionLimit, 'Transaction doesnt reach minTransactionLimit');
+        require(_weiRaised + weiAmount <= _weiTotalSupply, 'Transaction overeaches totalSupply');
 
         // limit the maximum amount that one user can spend during sale (WEI),
         // if initalized with 0, we allow unlimited
