@@ -1,10 +1,10 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers, upgrades } from 'hardhat'
-import { RetrieveTokensFeature__factory } from '../typechain/factories/RetrieveTokensFeature__factory'
-import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
-import { RetrieveTokensFeature } from '../typechain/RetrieveTokensFeature'
-import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
+import { RetrieveTokensFeature__factory } from '../types/factories/RetrieveTokensFeature__factory'
+import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
+import { RetrieveTokensFeature } from '../types/RetrieveTokensFeature'
+import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
 import { calculateReceivedAmount } from './helpers/calculators'
 
 describe('RetrieveTokensFeature', function () {

@@ -3,8 +3,8 @@ import { expect } from 'chai'
 import { BigNumber } from 'ethers'
 import { parseEther } from 'ethers/lib/utils'
 import { ethers, upgrades } from 'hardhat'
-import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
-import { UpgradableDiversifyV2Mock } from '../typechain/UpgradableDiversifyV2Mock'
+import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
+import { UpgradableDiversifyV2Mock } from '../types/UpgradableDiversifyV2Mock'
 import { calculateBurnAmount, calculateFoundationAmount } from './helpers/calculators'
 
 describe('DiversifyToken', function () {

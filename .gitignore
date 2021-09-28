@@ -1,9 +1,11 @@
 # Bundlers
+abi/
 artifacts/
 cache/
 node_modules/
-typechain/
+types/
 coverage/
+exports/
 coverage.json
 
 

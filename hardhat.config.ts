@@ -2,13 +2,18 @@ import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
 import '@openzeppelin/hardhat-upgrades'
+import '@tenderly/hardhat-tenderly'
 import '@typechain/hardhat'
+import 'hardhat-abi-exporter'
 import 'hardhat-gas-reporter'
+import { removeConsoleLog } from 'hardhat-preprocessor'
+import 'hardhat-spdx-license-identifier'
+import 'hardhat-watcher'
 import 'solidity-coverage'
-
 require('dotenv').config()
 
 export default {
+  defaultNetwork: 'hardhat',
   networks: {
     hardhat: {},
     ganache: {
@@ -17,11 +22,6 @@ export default {
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
     },
-  },
-  gasReporter: {
-    enabled: false,
-    currency: 'EUR',
-    coinmarketcap: `${process.env.COIN_MARKET_CAPI_KEY}`,
   },
   etherscan: {
     // Your API key for Etherscan
@@ -42,5 +42,40 @@ export default {
         bytecodeHash: 'none',
       },
     },
+  },
+  typechain: {
+    outDir: 'types',
+    target: 'ethers-v5',
+  },
+  abiExporter: {
+    path: './abi',
+    clear: false,
+    flat: true,
+    // only: [],
+    // except: []
+  },
+  preprocess: {
+    eachLine: removeConsoleLog((bre) => bre.network.name !== 'hardhat' && bre.network.name !== 'localhost'),
+  },
+  spdxLicenseIdentifier: {
+    overwrite: false,
+    runOnCompile: true,
+  },
+  watcher: {
+    compile: {
+      tasks: ['compile'],
+      files: ['./contracts'],
+      verbose: true,
+    },
+  },
+  tenderly: {
+    project: process.env.TENDERLY_PROJECT!,
+    username: process.env.TENDERLY_USERNAME!,
+  },
+  gasReporter: {
+    enabled: process.env.REPORT_GAS === 'true',
+    currency: 'USD',
+    coinmarketcap: process.env.COIN_MARKET_CAPI_KEY,
+    excludeContracts: ['contracts/mocks/'],
   },
 }

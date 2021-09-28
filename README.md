@@ -48,6 +48,48 @@ Run test cases with [Hardhat](https://hardhat.org/):
 $ yarn test
 ```
 
+## Deployment
+
+### HardHat
+
+```sh
+npx hardhat node
+```
+
+### Mainnet
+
+```sh
+yarn mainnet:deploy
+```
+
+```sh
+yarn mainnet:verify
+```
+
+```sh
+hardhat tenderly:verify --network mainnet ContractName=Address
+```
+
+```sh
+hardhat tenderly:push --network mainnet ContractName=Address
+```
+
+### Rinkeby
+
+```sh
+yarn rinkeby:deploy
+```
+
+```sh
+yarn rinkeby:verify
+```
+
+```sh
+hardhat tenderly:verify --network rinkeby ContractName=Address
+```
+
+
+
 ## Community
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/diversify_io?label=Diversify&style=social)](https://twitter.com/diversify_io) [![Chat on Telegram](https://img.shields.io/badge/Telegram-brightgreen.svg?logo=telegram&color=%234b4e52)](https://t.me/diversify_offical)
