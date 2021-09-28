@@ -88,8 +88,6 @@ yarn rinkeby:verify
 hardhat tenderly:verify --network rinkeby ContractName=Address
 ```
 
-
-
 ## Community
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/diversify_io?label=Diversify&style=social)](https://twitter.com/diversify_io) [![Chat on Telegram](https://img.shields.io/badge/Telegram-brightgreen.svg?logo=telegram&color=%234b4e52)](https://t.me/diversify_offical)
