@@ -19,33 +19,78 @@ The following uml provides a high level overview on the contracts.
 
 ![UML](img/uml-diversify.svg)
 
-## Prerequisite
+## Development
 
-A recent version of [Node.js](https://nodejs.org/) and [Yarn](https://yarnpkg.com/) are required to compile the contracts and run tests.
-
-### ENV
-
-- `INFURA_API_KEY`
-- `ETHERSCAN_API_KEY`
-- `COIN_MARKET_CAPI_KEY`
-
-## Compiling
-
-Build the smart contracts using [Hardhat](https://hardhat.org/) with the following command:
+### Local environment
 
 ```sh
-$ yarn install
-$ yarn compile
+npx hardhat node
 ```
 
-You can find compiled contracts in the `./artifacts` folder upon successful compilation.
-
-## Testing
-
-Run test cases with [Hardhat](https://hardhat.org/):
+### Mainnet forking
 
 ```sh
-$ yarn test
+npx hardhat node --fork <https://eth-mainnet.alchemyapi.io/v2/API_KEY>
+```
+
+<https://hardhat.org/guides/mainnet-forking.html#mainnet-forking>
+
+### Testing
+
+```sh
+yarn test
+```
+
+#### Single files
+
+```sh
+yarn test test/DiversifyToken.spec.js
+```
+
+Mocha & Chai with Waffle matchers (these are really useful).
+
+<https://ethereum-waffle.readthedocs.io/en/latest/matchers.html>
+
+#### Running Tests on VSCode
+
+<https://hardhat.org/guides/vscode-tests.html#running-tests-on-visual-studio-code>
+
+### Console
+
+```sh
+yarn console
+
+npx hardhat --network localhost console
+```
+
+<https://hardhat.org/guides/hardhat-console.html>
+
+### Coverage
+
+```sh
+yarn test:coverage
+```
+
+<https://hardhat.org/plugins/solidity-coverage.html#tasks>
+
+### Gas Usage
+
+```sh
+yarn test:gas
+```
+
+<https://github.com/cgewecke/hardhat-gas-reporter>
+
+### Lint
+
+```sh
+yarn lint
+```
+
+### Watch
+
+```sh
+npx hardhat watch compile
 ```
 
 ## Deployment
