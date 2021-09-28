@@ -35,6 +35,12 @@ npx hardhat node --fork <https://eth-mainnet.alchemyapi.io/v2/API_KEY>
 
 <https://hardhat.org/guides/mainnet-forking.html#mainnet-forking>
 
+### Build
+
+```sh
+yarn build
+```
+
 ### Testing
 
 ```sh
@@ -85,6 +91,12 @@ yarn test:gas
 
 ```sh
 yarn lint
+```
+
+### UML
+
+```sh
+yarn uml
 ```
 
 ### Watch
