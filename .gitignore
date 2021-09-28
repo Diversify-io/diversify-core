@@ -16,4 +16,4 @@ coverage.json
 
 # Dev Setup
 .env
-.vscode/
+.DS_Store
