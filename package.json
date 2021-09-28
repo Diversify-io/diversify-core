@@ -32,6 +32,7 @@
     "moment": "^2.29.1",
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.17",
+    "sol2uml": "^1.1.29",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.16",
@@ -40,8 +41,12 @@
     "typescript": "^4.3.5"
   },
   "scripts": {
-    "compile": "hardhat compile",
-    "test": "hardhat test",
-    "coverage": "npx hardhat coverage"
+    "build": "npm run clean && npm run compile",
+    "clean": "npx hardhat clean",
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "coverage": "npm run build && npx hardhat coverage",
+    "uml": "sol2uml ./contracts -o ./img/uml-diversify.svg",
+    "lint": "prettier --check ."
   }
 }
