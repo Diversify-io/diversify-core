@@ -14,6 +14,7 @@ The total issuance of the token is 1,000,000,000 DIV. With its diversified under
 Additionally, 0.25% of every transaction are sent to the Diversify Foundation Wallet. These funds will be used to invest in shares of renewable energy companies and charity. The foundation rate of 0.25% is part of the upgradable contract, which stands for the convertibility of the contract after the initial deployment. A minimum and maximum for this rate is irreversibly defined between 0% to 2.5%. This enables the Diversify community to have a vote about how high this rate should be. There are three token offerings – a Seed Sale, a Strategic Sale and a Global Sale.
 
 ## Architecture
+
 The following uml provides a high level overview on the contracts.
 
 ![UML](img/uml-diversify.svg)
