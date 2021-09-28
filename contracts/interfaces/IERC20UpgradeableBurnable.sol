@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity =0.8.4;
-import '@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/interfaces/IERC20Upgradeable.sol';
 
 /**
  * Wrapper around IERC20 to interact with burn function
