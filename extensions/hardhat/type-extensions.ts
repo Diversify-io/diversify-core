@@ -4,7 +4,6 @@
 import 'hardhat/types/config'
 import 'hardhat/types/runtime'
 
-
 // Extension of the Hardhat config.
 declare module 'hardhat/types/config' {
   // We extend the UserConfig type, which represents the config as written
@@ -29,10 +28,9 @@ declare module 'hardhat/types/config' {
 
 //  Extension to the Hardhat Runtime Environment.
 declare module 'hardhat/types/runtime' {
-  
   interface HardhatRuntimeEnvironment {
     getNamedAccounts: () => Promise<{
-      [name: keyof typeof]: string
+      [name: string]: string
     }>
   }
 }

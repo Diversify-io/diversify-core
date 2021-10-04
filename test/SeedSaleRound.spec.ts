@@ -5,13 +5,11 @@ import { expect } from 'chai'
 import { BigNumberish } from 'ethers'
 import { ethers, upgrades } from 'hardhat'
 import moment from 'moment'
-import { SeedSaleRound__factory } from '../types/factories/SeedSaleRound__factory'
-import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
-import { SeedSaleRound } from '../types/SeedSaleRound'
-import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
+import { SeedSaleRound, SeedSaleRound__factory, UpgradableDiversifyV1, UpgradableDiversifyV1__factory } from '../types'
 import { calculateReceivedAmount } from './helpers/calculators'
 import { ADDRESS_0 } from './helpers/constants'
 import { daysToSeconds, getCurrentBlockTime, increaseTimeAndMine } from './helpers/time'
+
 describe('SeedSaleRound', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet

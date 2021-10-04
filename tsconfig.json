@@ -5,9 +5,10 @@
     "strict": true,
     "esModuleInterop": true,
     "outDir": "dist",
+    "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./types", "./node_modules/@types"],
     "types": ["@nomiclabs/hardhat-ethers", "@nomiclabs/hardhat-waffle"]
   },
-  "include": ["./test", "./src", "./scripts"],
+  "include": ["./test", "./scripts", "./utils"],
   "files": ["./hardhat.config.ts"]
 }

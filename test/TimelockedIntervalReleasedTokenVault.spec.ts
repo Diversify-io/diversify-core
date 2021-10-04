@@ -2,12 +2,15 @@ import { parseEther } from '@ethersproject/units'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers, upgrades } from 'hardhat'
-import { TimelockedIntervalReleasedTokenVault__factory } from '../types/factories/TimelockedIntervalReleasedTokenVault__factory'
-import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
-import { TimelockedIntervalReleasedTokenVault } from '../types/TimelockedIntervalReleasedTokenVault'
-import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
+import {
+  TimelockedIntervalReleasedTokenVault,
+  TimelockedIntervalReleasedTokenVault__factory,
+  UpgradableDiversifyV1,
+  UpgradableDiversifyV1__factory,
+} from '../types'
 import { calculateReceivedAmount } from './helpers/calculators'
 import { daysToSeconds, increaseTimeAndMine } from './helpers/time'
+
 describe('TimelockedIntervalReleasedTokenVault', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet

@@ -1,20 +1,27 @@
-import { ethers, upgrades } from 'hardhat'
-import { SeedSaleRound__factory } from '../typechain/factories/SeedSaleRound__factory'
-import { TimelockedIntervalReleasedTokenVault__factory } from '../typechain/factories/TimelockedIntervalReleasedTokenVault__factory'
-import { TimelockedTokenVault__factory } from '../typechain/factories/TimelockedTokenVault__factory'
-import { UpgradableCommunityRewardDistributorV1__factory } from '../typechain/factories/UpgradableCommunityRewardDistributorV1__factory'
-import { UpgradableDiversifyV1__factory } from '../typechain/factories/UpgradableDiversifyV1__factory'
-import { UpgradablePublicSaleDistributorV1__factory } from '../typechain/factories/UpgradablePublicSaleDistributorV1__factory'
-import { UpgradableCommunityRewardDistributorV1 } from '../typechain/UpgradableCommunityRewardDistributorV1.d'
-import { UpgradableDiversifyV1 } from '../typechain/UpgradableDiversifyV1'
-import { UpgradablePublicSaleDistributorV1 } from '../typechain/UpgradablePublicSaleDistributorV1.d'
-
+import hre, { getNamedAccounts, upgrades } from 'hardhat'
+import { SeedSaleRound__factory } from '../types/factories/SeedSaleRound__factory'
+import { TimelockedIntervalReleasedTokenVault__factory } from '../types/factories/TimelockedIntervalReleasedTokenVault__factory'
+import { TimelockedTokenVault__factory } from '../types/factories/TimelockedTokenVault__factory'
+import { UpgradableCommunityRewardDistributorV1__factory } from '../types/factories/UpgradableCommunityRewardDistributorV1__factory'
+import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
+import { UpgradablePublicSaleDistributorV1__factory } from '../types/factories/UpgradablePublicSaleDistributorV1__factory'
+import { UpgradableCommunityRewardDistributorV1 } from '../types/UpgradableCommunityRewardDistributorV1.d'
+import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
+import { UpgradablePublicSaleDistributorV1 } from '../types/UpgradablePublicSaleDistributorV1.d'
+import { getContractFactory, saveContractAddress } from '../utils/deploy'
 /**
  * Workflow:
  * 1. Deploy PublicSaleVault & CommunityVault
  */
 
 async function deploy() {
+  // Make Sure
+  await hre.run('clean')
+  await hre.run('compile')
+
+  // Constants
+  const { deployer } = await getNamedAccounts()
+  const NETWORK_NAME = hre.network.name
   const TOTAL_SUPPLY = 1000000000
   const PR_SUPPLY_PERCENTAGE = 10
   const TA_SUPPLY_PERCENTAGE = 10
@@ -28,41 +35,37 @@ async function deploy() {
   const PRIVATE_SALE_WALLET = ''
   const FOUNDATION_WALLET = ''
   const VAULT_START_DATE = 34334
-  const [deployer] = await ethers.getSigners()
 
   console.log('Deploying contracts with the account:', deployer.address)
   console.log('Account balance:', (await deployer.getBalance()).toString())
 
   // Factories
-  const timelockedIntervalReleasedTokenVaultFactory = (await ethers.getContractFactory(
+  const TimelockedIntervalReleasedTokenVault = await getContractFactory<TimelockedIntervalReleasedTokenVault__factory>(
     'TimelockedIntervalReleasedTokenVault'
-  )) as TimelockedIntervalReleasedTokenVault__factory
-  const timelockedTokenVaultFactory = (await ethers.getContractFactory(
-    'TimelockedTokenVault'
-  )) as TimelockedTokenVault__factory
-  const communityRewardDistributorFactory = (await ethers.getContractFactory(
-    'UpgradableCommunityRewardDistributorV1'
-  )) as UpgradableCommunityRewardDistributorV1__factory
-  const diversifyTokenV1Factory = (await ethers.getContractFactory(
-    'UpgradableDiversifyV1'
-  )) as UpgradableDiversifyV1__factory
-  const publicSaleDistributor = (await ethers.getContractFactory(
+  )
+  const TimelockedTokenVault = await getContractFactory<TimelockedTokenVault__factory>('TimelockedTokenVault')
+  const UpgradableCommunityRewardDistributorV1 =
+    await getContractFactory<UpgradableCommunityRewardDistributorV1__factory>('UpgradableCommunityRewardDistributorV1')
+  const UpgradableDiversifyV1 = await getContractFactory<UpgradableDiversifyV1__factory>('UpgradableDiversifyV1')
+  const UpgradablePublicSaleDistributorV1 = await getContractFactory<UpgradablePublicSaleDistributorV1__factory>(
     'UpgradablePublicSaleDistributorV1'
-  )) as UpgradablePublicSaleDistributorV1__factory
-  const seedSaleRoundFactory = (await ethers.getContractFactory('SeedSaleRound')) as SeedSaleRound__factory
+  )
 
+  const SeedSaleRound = await getContractFactory<SeedSaleRound__factory>('SeedSaleRound')
   // Deploy: PR Vault (TimelockedIntervalReleasedTokenVault)
   // TODO: Set startdate, duration, interval
-  const deployedPrTokenLockVault = await timelockedIntervalReleasedTokenVaultFactory.deploy(
+  const deployedPrTokenLockVault = await TimelockedIntervalReleasedTokenVault.deploy(
     COMPANY_WALLET,
     VAULT_START_DATE,
     34234,
     180
   )
+  await deployedPrTokenLockVault.deployed()
+  saveContractAddress(NETWORK_NAME, 'SeedSaleRound', deployedPrTokenLockVault.address)
 
   // Deploy: T & A Vault (TimelockedIntervalReleasedTokenVault)
   // TODO: Set startdate, duration, interval
-  const deployedTaTokenLockVault = await timelockedIntervalReleasedTokenVaultFactory.deploy(
+  const deployedTaTokenLockVault = await TimelockedIntervalReleasedTokenVault.deploy(
     COMPANY_WALLET,
     VAULT_START_DATE,
     34234,
@@ -72,10 +75,10 @@ async function deploy() {
   // Deploy: CommunityRewardDistributor
   // Deploy: CommunityRewardVault (TimelockedIntervalReleasedTokenVault)
   const deployedCommunityRewardDistributorProxy = (await upgrades.deployProxy(
-    communityRewardDistributorFactory
+    UpgradableCommunityRewardDistributorV1
   )) as UpgradableCommunityRewardDistributorV1
 
-  const deployedCommunityTokenLockVault = await timelockedIntervalReleasedTokenVaultFactory.deploy(
+  const deployedCommunityTokenLockVault = await TimelockedIntervalReleasedTokenVault.deploy(
     deployedCommunityRewardDistributorProxy.address,
     VAULT_START_DATE,
     34234,
@@ -84,18 +87,18 @@ async function deploy() {
 
   // Deploy: SeedSale Round 1-2
   // TODO: -> Set: Params
-  const deployedSeedSaleRound1 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
-  const deployedSeedSaleRound2 = await seedSaleRoundFactory.deploy(COMPANY_WALLET, 30, 30)
+  const deployedSeedSaleRound1 = await SeedSaleRound.deploy(COMPANY_WALLET, 30, 30)
+  const deployedSeedSaleRound2 = await SeedSaleRound.deploy(COMPANY_WALLET, 30, 30)
 
   // Deploy: PrivateSale
   // TODO: set duration
-  const deployedPrivateSaleTokenLockVault = await timelockedTokenVaultFactory.deploy(PRIVATE_SALE_WALLET, 2323, 2323)
+  const deployedPrivateSaleTokenLockVault = await TimelockedTokenVault.deploy(PRIVATE_SALE_WALLET, 2323, 2323)
 
   // Deploy: PublicSaleVault
   const deployedPublicSaleVaultProxy = (await upgrades.deployProxy(
-    publicSaleDistributor
+    UpgradablePublicSaleDistributorV1
   )) as UpgradablePublicSaleDistributorV1
-  const deployedPublicSaleTokenLockVault = await timelockedTokenVaultFactory.deploy(
+  const deployedPublicSaleTokenLockVault = await TimelockedTokenVault.deploy(
     deployedPublicSaleVaultProxy.address,
     2323,
     2323
@@ -113,7 +116,7 @@ async function deploy() {
     [deployedSeedSaleRound2.address, totalSupplyPercentage * SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE],
   ])
 
-  const deployedTokenProxy = (await upgrades.deployProxy(diversifyTokenV1Factory, [
+  const deployedTokenProxy = (await upgrades.deployProxy(UpgradableDiversifyV1, [
     [...supplyMap.keys()],
     [...supplyMap.values()],
     FOUNDATION_WALLET,
@@ -138,6 +141,19 @@ async function deploy() {
     await upgrades.admin.transferProxyAdminOwnership(gnosisSafe)
     console.log('Transferred ownership of ProxyAdmin to:', gnosisSafe)
     */
+
+  /*
+
+  console.log(`Contract deployed by: ${accountAddress}`)
+  console.log('Collection imp:', collectonImp.address)
+  console.log('Rarities:', rarities.address)
+  console.log('Committee:', committee.address)
+  console.log('Collection Manager :', collectionManager.address)
+  console.log('Forwarder:', forwarder.address)
+  console.log('Collection Factory:', collectionFactoryV2.address)
+  console.log('Collection Store:', collectionStore.address)
+  console.log('NFT Marketplace:', marketplace.address)
+  */
 }
 
 // execute main

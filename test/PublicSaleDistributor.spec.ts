@@ -3,11 +3,13 @@ import { parseEther } from '@ethersproject/units'
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers'
 import { expect } from 'chai'
 import { ethers, upgrades } from 'hardhat'
-import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
-import { UpgradablePublicSaleDistributorV1__factory } from '../types/factories/UpgradablePublicSaleDistributorV1__factory'
-import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
-import { UpgradablePublicSaleDistributorV1 } from '../types/UpgradablePublicSaleDistributorV1'
-import { UpgradablePublicSaleDistributorV2Mock } from '../types/UpgradablePublicSaleDistributorV2Mock'
+import {
+  UpgradableDiversifyV1,
+  UpgradableDiversifyV1__factory,
+  UpgradablePublicSaleDistributorV1,
+  UpgradablePublicSaleDistributorV1__factory,
+  UpgradablePublicSaleDistributorV2Mock,
+} from '../types'
 import { calculateReceivedAmount } from './helpers/calculators'
 
 describe('PublicSaleDistributor', function () {

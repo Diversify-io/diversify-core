@@ -9,18 +9,51 @@ import 'hardhat-gas-reporter'
 import { removeConsoleLog } from 'hardhat-preprocessor'
 import 'hardhat-spdx-license-identifier'
 import 'hardhat-watcher'
+import { HardhatUserConfig } from 'hardhat/types'
 import 'solidity-coverage'
+import './extensions/hardhat/index'
+import { account, node_url } from './utils/network'
+
 require('dotenv').config()
 
-export default {
+const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
+  namedAccounts: {
+    deployer: {
+      default: 0, // here this will by default take the first account as deployer
+      mainnet: 0, // similarly on mainnet it will take the first account as deployer. Note though that depending on how hardhat network are configured, the account 0 on one network can be different than on another
+      rinkeby: '0x84b9514E013710b9dD0811c9Fe46b837a4A0d8E0', //it can also specify a specific netwotk name (specified in hardhat.config.js)
+    },
+    companyGnosis: {
+      default: 1, // here this will by default take the first account as deployer
+    },
+    privateSeedSaleGnosis: {
+      default: 2, // here this will by default take the first account as deployer
+    },
+    foundationGnosis: {
+      default: 3, // here this will by default take the first account as deployer
+    },
+    devGnosis: {
+      default: 4, // here this will by default take the second account as feeCollector (so in the test this will be a different account than the deployer)
+    },
+  },
   networks: {
-    hardhat: {},
-    ganache: {
-      url: 'http://127.0.0.1:7545',
+    mainnet: {
+      url: node_url('mainnet'),
+      accounts: account('mainnet'),
     },
     rinkeby: {
-      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      url: node_url('rinkeby'),
+      accounts: account('rinkeby'),
+    },
+    hardhat: {
+      forking: {
+        enabled: process.env.FORKING === 'true',
+        url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
+      },
+    },
+    ganache: {
+      url: 'http://127.0.0.1:7545',
     },
   },
   etherscan: {
@@ -79,3 +112,5 @@ export default {
     excludeContracts: ['contracts/mocks/'],
   },
 }
+
+export default config
