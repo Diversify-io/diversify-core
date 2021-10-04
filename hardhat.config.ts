@@ -24,16 +24,16 @@ const config: HardhatUserConfig = {
       mainnet: 0, // similarly on mainnet it will take the first account as deployer. Note though that depending on how hardhat network are configured, the account 0 on one network can be different than on another
       rinkeby: '0x84b9514E013710b9dD0811c9Fe46b837a4A0d8E0', //it can also specify a specific netwotk name (specified in hardhat.config.js)
     },
-    companyGnosis: {
+    company: {
       default: 1, // here this will by default take the first account as deployer
     },
-    privateSeedSaleGnosis: {
+    privateSeedSale: {
       default: 2, // here this will by default take the first account as deployer
     },
-    foundationGnosis: {
+    foundation: {
       default: 3, // here this will by default take the first account as deployer
     },
-    devGnosis: {
+    dev: {
       default: 4, // here this will by default take the second account as feeCollector (so in the test this will be a different account than the deployer)
     },
   },
