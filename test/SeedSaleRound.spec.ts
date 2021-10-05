@@ -24,6 +24,7 @@ describe('SeedSaleRound', function () {
   const SEED_SALE_MIN_WEI_AMOUNT = 0
   const SEED_SALE_MAX_WEI_AMOUNT = 0
   const SEED_SALE_TOTAL_SUPPLY = 100000 // divs
+  let SEED_SALE_START_DATE: number
 
   const seedSaleSetup = async (
     beneficiary_?: string,
@@ -35,14 +36,13 @@ describe('SeedSaleRound', function () {
     weiMinTransactionLimit_?: BigNumberish,
     weiMaxInvestmentLimit_?: BigNumberish
   ) => {
-    const seedSaleStartDate = moment
+    SEED_SALE_START_DATE = moment
       .unix(await getCurrentBlockTime())
       .add('1', 'd')
       .unix()
-
     await seedSaleRound.setup(
       beneficiary_ ?? beneficiary.address,
-      startDate_ ?? seedSaleStartDate,
+      startDate_ ?? SEED_SALE_START_DATE,
       duration_ ?? SEED_SALE_DURATION,
       lockingPeriod_ ?? SEED_SALE_LOCKING_PERIOD,
       rate_ ?? SEED_SALE_RATE,
@@ -245,8 +245,38 @@ describe('SeedSaleRound', function () {
       expect(await seedSaleRound.beneficiary()).to.be.equal(beneficiary.address)
     })
 
+    it('should return the duration', async function () {
+      expect(await seedSaleRound.duration()).to.be.equal(SEED_SALE_DURATION)
+    })
+
+    it('should return the startDate', async function () {
+      expect(await seedSaleRound.startDate()).to.be.equal(SEED_SALE_START_DATE)
+    })
+
     it('should return the rate', async function () {
       expect(await seedSaleRound.rate()).to.be.equal(SEED_SALE_RATE)
+    })
+
+    it('should return the weiTotalSupply', async function () {
+      expect(await seedSaleRound.weiTotalSupply()).to.be.equal(
+        parseEther((SEED_SALE_TOTAL_SUPPLY / SEED_SALE_RATE).toString())
+      )
+    })
+
+    it('should return the weiRaised', async function () {
+      expect(await seedSaleRound.weiRaised()).to.be.equal(0)
+    })
+
+    it('should return the weiMaxInvestmentLimit', async function () {
+      expect(await seedSaleRound.weiMaxInvestmentLimit()).to.be.equal(SEED_SALE_MAX_WEI_AMOUNT)
+    })
+
+    it('should return the lockingPeriod', async function () {
+      expect(await seedSaleRound.lockingPeriod()).to.be.equal(SEED_SALE_LOCKING_PERIOD)
+    })
+
+    it('should return the weiGoal', async function () {
+      expect(await seedSaleRound.weiGoal()).to.be.equal(SEED_SALE_WEI_GOAL)
     })
 
     it('should return the total supply', async function () {

@@ -5,6 +5,7 @@ import '@openzeppelin/hardhat-upgrades'
 import '@tenderly/hardhat-tenderly'
 import '@typechain/hardhat'
 import 'hardhat-abi-exporter'
+import 'hardhat-contract-sizer'
 import 'hardhat-gas-reporter'
 import { removeConsoleLog } from 'hardhat-preprocessor'
 import 'hardhat-spdx-license-identifier'
@@ -13,7 +14,6 @@ import { HardhatUserConfig } from 'hardhat/types'
 import 'solidity-coverage'
 import './extensions/hardhat/index'
 import { account, node_url } from './utils/network'
-
 require('dotenv').config()
 
 const config: HardhatUserConfig = {
@@ -86,6 +86,11 @@ const config: HardhatUserConfig = {
     flat: true,
     // only: [],
     // except: []
+  },
+  contractSizer: {
+    alphaSort: true,
+    disambiguatePaths: false,
+    strict: true,
   },
   preprocess: {
     eachLine: removeConsoleLog((bre) => bre.network.name !== 'hardhat' && bre.network.name !== 'localhost'),

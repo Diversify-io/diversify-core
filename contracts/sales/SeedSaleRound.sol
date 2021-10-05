@@ -121,6 +121,20 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
+     * @return  the start date of seedsale (unix timestamp)
+     */
+    function startDate() public view returns (uint256) {
+        return _startDate;
+    }
+
+    /**
+     * @return  the duration of seedsale (seconds)
+     */
+    function duration() public view returns (uint256) {
+        return _duration;
+    }
+
+    /**
      * @return the beneficiary of the tokens.
      */
     function beneficiary() public view returns (address) {
@@ -135,10 +149,52 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
-     * @return the amount of the seed round
+     * @return  Supply of seed round in momos
      */
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
+    }
+
+    /**
+     * @return the total supply in wei
+     */
+    function weiTotalSupply() public view returns (uint256) {
+        return _weiTotalSupply;
+    }
+
+    /**
+     * @return the amount of wei raised
+     */
+    function weiRaised() public view returns (uint256) {
+        return _weiRaised;
+    }
+
+    /**
+     * @return the wei min transaction limit
+     */
+    function weiMinTransactionLimit() public view returns (uint256) {
+        return _weiMinTransactionLimit;
+    }
+
+    /**
+     * @return the wei Max Investment Limit
+     */
+    function weiMaxInvestmentLimit() public view returns (uint256) {
+        return _weiMaxInvestmentLimit;
+    }
+
+    /**
+     * @return the locking period time in seconds
+     */
+    function lockingPeriod() public view returns (uint256) {
+        return _lockingPeriod;
+    }
+
+    /**
+     * @return the goal of wei to raise
+     */
+    function weiGoal() public view returns (uint256) {
+        return _weiGoal;
     }
 
     /**

@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 
 pragma solidity =0.8.4;
-import '../distributors/UpgradablePublicSaleDistributor_V1.sol';
+import '../vaults/UpgradableTokenVault.sol';
 
 // MOCK TOKEN FOR UNIT TESTING
-contract UpgradablePublicSaleDistributor_V2_Mock is UpgradablePublicSaleDistributor_V1 {
+contract UpgradableTokenVault_V2_Mock is UpgradableTokenVault {
     /**
      * @return the duration being held in seconds
      */
