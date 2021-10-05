@@ -16,6 +16,10 @@ type ContractAdresses = {
   }
 }
 
+function getContractAdressesPath(): string {
+  return `../contract-addresses${hre.network.name === 'hardhat' ? 'dev' : ''}.json`
+}
+
 /**
  * Get the stored contract addresses
  * @returns
@@ -23,7 +27,7 @@ type ContractAdresses = {
 function getSavedContractAddresses(): ContractAdresses {
   let json
   try {
-    json = fs.readFileSync(path.join(__dirname, '../contract-addresses.json'), 'utf-8')
+    json = fs.readFileSync(path.join(__dirname, getContractAdressesPath()), 'utf-8')
   } catch (err) {
     json = '{}'
   }
@@ -42,7 +46,7 @@ function saveContractAddress(network: string, contract: string, address: string,
     address: address,
     owner: owner,
   }
-  fs.writeFileSync(path.join(__dirname, '../contract-addresses.json'), JSON.stringify(addrs, null, '    '))
+  fs.writeFileSync(path.join(__dirname, getContractAdressesPath()), JSON.stringify(addrs, null, '    '))
 }
 
 /**

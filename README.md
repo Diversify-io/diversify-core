@@ -41,6 +41,12 @@ npx hardhat node --fork <https://eth-mainnet.alchemyapi.io/v2/API_KEY>
 yarn build
 ```
 
+#### Size Contracts
+
+```sh
+yarn build:size
+```
+
 ### Testing
 
 ```sh

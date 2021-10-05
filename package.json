@@ -52,10 +52,10 @@
   },
   "scripts": {
     "build": "yarn clean && yarn compile",
+    "build:size": "yarn build && hardhat size-contracts",
     "console": "hardhat console",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
-    "compile:size": "yarn compile && hardhat size-contracts",
     "testnet:deploy": "yarn rinkeby:deploy",
     "mainnet:deploy": "hardhat --network mainnet deploy",
     "mainnet:verify": "hardhat --network mainnet etherscan-verify --solc-input",

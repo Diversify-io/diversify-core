@@ -8,12 +8,12 @@ coverage/
 exports/
 coverage.json
 
-
 # OpenZeppelin
 .openzeppelin/dev-*.json
 .openzeppelin/unknown-*.json
 .openzeppelin/.session
 
 # Dev Setup
+contract-addresses.dev.json
 .env
 .DS_Store
