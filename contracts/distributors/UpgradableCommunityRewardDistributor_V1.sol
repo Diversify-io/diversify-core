@@ -16,8 +16,15 @@ contract UpgradableCommunityRewardDistributor_V1 is UpgradableRetrieveTokensFeat
     /**
      * Initalize the vault
      */
-    function initialize(IERC20 token_) public initializer {
+    function initialize() public initializer {
         __RetrieveToken_init();
+    }
+
+    /**
+     * @dev set the token to hold
+     */
+    function setToken(IERC20 token_) public onlyOwner {
+        require(address(token_) == address(0), 'contract already added');
         _token = token_;
     }
 
@@ -25,6 +32,7 @@ contract UpgradableCommunityRewardDistributor_V1 is UpgradableRetrieveTokensFeat
      * @dev retrieve wrongly assigned tokens
      */
     function retrieveTokens(address to, address anotherToken) public override onlyOwner {
+        require(address(_token) != address(0), 'Token must be set');
         require(address(_token) != anotherToken, 'You should only use this method to withdraw extraneous tokens.');
         super.retrieveTokens(to, anotherToken);
     }

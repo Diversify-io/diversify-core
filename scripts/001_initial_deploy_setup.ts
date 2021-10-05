@@ -5,10 +5,7 @@ import { TimelockedTokenVault__factory } from '../types/factories/TimelockedToke
 import { UpgradableCommunityRewardDistributorV1__factory } from '../types/factories/UpgradableCommunityRewardDistributorV1__factory'
 import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
 import { UpgradablePublicSaleDistributorV1__factory } from '../types/factories/UpgradablePublicSaleDistributorV1__factory'
-import { UpgradableCommunityRewardDistributorV1 } from '../types/UpgradableCommunityRewardDistributorV1.d'
-import { UpgradableDiversifyV1 } from '../types/UpgradableDiversifyV1'
-import { UpgradablePublicSaleDistributorV1 } from '../types/UpgradablePublicSaleDistributorV1.d'
-import { deployContract, getContractFactory, saveContractAddress } from '../utils/deploy'
+import { deployContract, deployProxy, getContractFactory } from '../utils/deploy'
 /**
  * Workflow:
  * 1. Deploy PublicSaleVault & CommunityVault
@@ -22,7 +19,6 @@ async function deploy() {
   // Constants
   const { deployer, company, privateSeedSale, foundation, dev } = await getNamedAccounts()
   const deployerWithSigner = await ethers.getSigner(deployer)
-  const NETWORK_NAME = hre.network.name
 
   // Supply
   const TOTAL_SUPPLY = 1000000000
@@ -50,10 +46,10 @@ async function deploy() {
   )
   const TimelockedTokenVault = await getContractFactory<TimelockedTokenVault__factory>('TimelockedTokenVault')
   const UpgradableCommunityRewardDistributorV1 =
-    await getContractFactory<UpgradableCommunityRewardDistributorV1__factory>('UpgradableCommunityRewardDistributorV1')
-  const UpgradableDiversifyV1 = await getContractFactory<UpgradableDiversifyV1__factory>('UpgradableDiversifyV1')
+    await getContractFactory<UpgradableCommunityRewardDistributorV1__factory>('UpgradableCommunityRewardDistributor_V1')
+  const UpgradableDiversifyV1 = await getContractFactory<UpgradableDiversifyV1__factory>('UpgradableDiversify_V1')
   const UpgradablePublicSaleDistributorV1 = await getContractFactory<UpgradablePublicSaleDistributorV1__factory>(
-    'UpgradablePublicSaleDistributorV1'
+    'UpgradablePublicSaleDistributor_V1'
   )
   const SeedSaleRound = await getContractFactory<SeedSaleRound__factory>('SeedSaleRound')
 
@@ -63,6 +59,7 @@ async function deploy() {
 
   // Deploy: PR Vault (TimelockedIntervalReleasedTokenVault)
   const prVault = await deployContract(
+    'prVault',
     TimelockedIntervalReleasedTokenVault,
     company,
     PR_VAULT_DURATION,
@@ -71,6 +68,7 @@ async function deploy() {
 
   // Deploy: T & A Vault (TimelockedIntervalReleasedTokenVault)
   const taVault = await deployContract(
+    'taVault',
     TimelockedIntervalReleasedTokenVault,
     company,
     TA_VAULT_DURATION,
@@ -78,14 +76,14 @@ async function deploy() {
   )
 
   // Deploy: CommunityRewardDistributor
-  const communityDistributorProxy = (await upgrades.deployProxy(
+  const communityDistributorProxy = await deployProxy(
+    'communityDistributorProxy',
     UpgradableCommunityRewardDistributorV1
-  )) as UpgradableCommunityRewardDistributorV1
-  await communityDistributorProxy.deployed()
-  saveContractAddress(NETWORK_NAME, 'communityDistributorProxy', communityDistributorProxy.address)
+  )
 
   // Deploy: CommunityRewardVault (TimelockedIntervalReleasedTokenVault)
   const communityVault = await deployContract(
+    'communityVault',
     TimelockedIntervalReleasedTokenVault,
     communityDistributorProxy.address,
     COMMUNITY_VAULT_DURATION,
@@ -93,25 +91,29 @@ async function deploy() {
   )
 
   // Deploy: SeedSale Round 1
-  const seedSaleRound1 = await deployContract(SeedSaleRound)
+  const seedSaleRound1 = await deployContract('seedSaleRound1', SeedSaleRound)
 
   // Deploy: SeedSale Round 2
-  const seedSaleRound2 = await deployContract(SeedSaleRound)
+  const seedSaleRound2 = await deployContract('seedSaleRound2', SeedSaleRound)
 
   // Deploy: PrivateSale
-  const privateSaleVault = await deployContract(TimelockedTokenVault, privateSeedSale, PRIVATE_SEED_SALE_VAULT_DURATION)
+  const privateSaleVault = await deployContract(
+    'privateSaleVault',
+    TimelockedTokenVault,
+    privateSeedSale,
+    PRIVATE_SEED_SALE_VAULT_DURATION
+  )
 
   // Deploy: publicSaleProxy
-  const publicSaleProxy = (await upgrades.deployProxy(
-    UpgradablePublicSaleDistributorV1
-  )) as UpgradablePublicSaleDistributorV1
-  await publicSaleProxy.deployed()
-  saveContractAddress(NETWORK_NAME, 'publicSaleProxy', publicSaleProxy.address)
+  const publicSaleProxy = await deployProxy('publicSaleProxy', UpgradablePublicSaleDistributorV1)
 
   // Deploy: publicSaleVault
-  const publicSaleVault = await TimelockedTokenVault.deploy(publicSaleProxy.address, PUBLIC_SEED_SALE_VAULT_DURATION)
-  await publicSaleVault.deployed()
-  saveContractAddress(NETWORK_NAME, 'publicSaleVault', publicSaleVault.address)
+  const publicSaleVault = await deployContract(
+    'publicSaleVault',
+    TimelockedTokenVault,
+    publicSaleProxy.address,
+    PUBLIC_SEED_SALE_VAULT_DURATION
+  )
 
   // Deploy: Token
   const totalSupplyPercentage = TOTAL_SUPPLY / 100
@@ -125,16 +127,16 @@ async function deploy() {
     [seedSaleRound2.address, totalSupplyPercentage * SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE],
   ])
 
-  const deployedTokenProxy = (await upgrades.deployProxy(UpgradableDiversifyV1, [
+  const divTokenProxy = await deployProxy(
+    'divTokenProxy',
+    UpgradableDiversifyV1,
     [...supplyMap.keys()],
     [...supplyMap.values()],
-    foundation,
-  ])) as UpgradableDiversifyV1
-  await deployedTokenProxy.deployed()
-  saveContractAddress(NETWORK_NAME, 'deployedTokenProxy', deployedTokenProxy.address)
+    foundation
+  )
 
   // Start Vaults
-  const { address: DIV_TOKEN_ADDRESS } = deployedTokenProxy
+  const { address: DIV_TOKEN_ADDRESS } = divTokenProxy
   await prVault.start(DIV_TOKEN_ADDRESS)
   await taVault.start(DIV_TOKEN_ADDRESS)
   await communityVault.start(DIV_TOKEN_ADDRESS)
