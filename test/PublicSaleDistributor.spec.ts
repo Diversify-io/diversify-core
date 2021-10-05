@@ -37,10 +37,10 @@ describe('PublicSaleDistributor', function () {
       'UpgradablePublicSaleDistributor_V1'
     )) as UpgradablePublicSaleDistributorV1__factory
 
-    publicSaleDistributor = (await upgrades.deployProxy(publicSaleDistributorFactory, [
-      divToken.address,
-    ])) as UpgradablePublicSaleDistributorV1
-
+    publicSaleDistributor = (await upgrades.deployProxy(
+      publicSaleDistributorFactory
+    )) as UpgradablePublicSaleDistributorV1
+    await publicSaleDistributor.setToken(divToken.address)
     await divToken.transfer(publicSaleDistributor.address, distributorInitalSupply)
   })
 

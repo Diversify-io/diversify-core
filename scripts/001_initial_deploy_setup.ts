@@ -5,14 +5,11 @@ import { TimelockedTokenVault__factory } from '../types/factories/TimelockedToke
 import { UpgradableCommunityRewardDistributorV1__factory } from '../types/factories/UpgradableCommunityRewardDistributorV1__factory'
 import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
 import { UpgradablePublicSaleDistributorV1__factory } from '../types/factories/UpgradablePublicSaleDistributorV1__factory'
-import { deployContract, deployProxy, getContractFactory } from '../utils/deploy'
-/**
- * Workflow:
- * 1. Deploy PublicSaleVault & CommunityVault
- */
+import { deployContract, deployProxy, getContractFactory, transferOwnership } from '../utils/deploy'
 
+// Initial deployment script
 async function deploy() {
-  // Make Sure
+  // Make sure that we have the actual files
   await hre.run('clean')
   await hre.run('compile')
 
@@ -54,6 +51,7 @@ async function deploy() {
   const SeedSaleRound = await getContractFactory<SeedSaleRound__factory>('SeedSaleRound')
 
   // Start Deployment
+  console.log('Deploying to network:', hre.network.name)
   console.log('Deploying contracts with the account:', deployer)
   console.log('Account balance:', (await deployerWithSigner.getBalance()).toString())
 
@@ -104,14 +102,14 @@ async function deploy() {
     PRIVATE_SEED_SALE_VAULT_DURATION
   )
 
-  // Deploy: publicSaleProxy
-  const publicSaleProxy = await deployProxy('publicSaleProxy', UpgradablePublicSaleDistributorV1)
+  // Deploy: publicSaleDistributorProxy
+  const publicSaleDistributorProxy = await deployProxy('publicSaleDistributorProxy', UpgradablePublicSaleDistributorV1)
 
   // Deploy: publicSaleVault
   const publicSaleVault = await deployContract(
     'publicSaleVault',
     TimelockedTokenVault,
-    publicSaleProxy.address,
+    publicSaleDistributorProxy.address,
     PUBLIC_SEED_SALE_VAULT_DURATION
   )
 
@@ -135,13 +133,29 @@ async function deploy() {
     foundation
   )
 
-  // Start Vaults
   const { address: DIV_TOKEN_ADDRESS } = divTokenProxy
+
+  // Set Distributor Token
+  await communityDistributorProxy.setToken(DIV_TOKEN_ADDRESS)
+  await publicSaleDistributorProxy.setToken(DIV_TOKEN_ADDRESS)
+
+  // Start Vaults
   await prVault.start(DIV_TOKEN_ADDRESS)
   await taVault.start(DIV_TOKEN_ADDRESS)
   await communityVault.start(DIV_TOKEN_ADDRESS)
   await privateSaleVault.start(DIV_TOKEN_ADDRESS)
   await publicSaleVault.start(DIV_TOKEN_ADDRESS)
+
+  // Transfer Ownership
+  await transferOwnership('prVault', prVault, company)
+  await transferOwnership('taVault', taVault, company)
+  await transferOwnership('communityDistributorProxy', communityDistributorProxy, company)
+  await transferOwnership('communityVault', communityVault, company)
+  await transferOwnership('seedSaleRound1', seedSaleRound1, company)
+  await transferOwnership('seedSaleRound2', seedSaleRound2, company)
+  await transferOwnership('privateSaleVault', privateSaleVault, company)
+  await transferOwnership('publicSaleVault', publicSaleVault, company)
+  await transferOwnership('divTokenProxy', divTokenProxy, company)
 
   // Transfer Ownerships to dev
   console.log('Transferring ownership of ProxyAdmin...')

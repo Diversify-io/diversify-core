@@ -37,10 +37,10 @@ describe('CommunityRewardDistributor', function () {
       'UpgradableCommunityRewardDistributor_V1'
     )) as UpgradableCommunityRewardDistributorV1__factory
 
-    communityDistributor = (await upgrades.deployProxy(communityDistributorFactory, [
-      divToken.address,
-    ])) as UpgradableCommunityRewardDistributorV1
-
+    communityDistributor = (await upgrades.deployProxy(
+      communityDistributorFactory
+    )) as UpgradableCommunityRewardDistributorV1
+    await communityDistributor.setToken(divToken.address)
     await divToken.transfer(communityDistributor.address, distributorInitalSupply)
   })
 
