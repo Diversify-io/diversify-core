@@ -26,6 +26,7 @@ async function deploy() {
   const SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE = 2.25
   const PRIVATE_SALE_SUPPLY_PERCENTAGE = 10
   const PUBLIC_SALE_SUPPLY_PERCENTAGE = 50
+  const COMPANY_SUPPLY_PERCENTAGE = 0
 
   // Vaults
   const PR_VAULT_DURATION = 10
@@ -123,6 +124,7 @@ async function deploy() {
     [privateSaleVault.address, totalSupplyPercentage * PRIVATE_SALE_SUPPLY_PERCENTAGE],
     [seedSaleRound1.address, totalSupplyPercentage * SEED_SALE_ROUND_1_SUPPLY_PERCENTAGE],
     [seedSaleRound2.address, totalSupplyPercentage * SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE],
+    [company, totalSupplyPercentage * COMPANY_SUPPLY_PERCENTAGE],
   ])
 
   const divTokenProxy = await deployProxy(
@@ -130,7 +132,8 @@ async function deploy() {
     UpgradableDiversifyV1,
     [...supplyMap.keys()],
     [...supplyMap.values()],
-    foundation
+    foundation,
+    communityDistributorProxy.address
   )
 
   const { address: DIV_TOKEN_ADDRESS } = divTokenProxy

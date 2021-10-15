@@ -14,8 +14,9 @@ describe('SeedSaleRound', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
-  let addr3: SignerWithAddress
+  let addr3: SignerWithAddress // foundation
   let beneficiary: SignerWithAddress
+  let addr5: SignerWithAddress // community
   let seedSaleRound: SeedSaleRound
   const SEED_SALE_DURATION = daysToSeconds(10)
   const SEED_SALE_LOCKING_PERIOD = daysToSeconds(360)
@@ -54,11 +55,12 @@ describe('SeedSaleRound', function () {
   }
 
   this.beforeEach(async () => {
-    const [a1, a2, a3, a4] = await ethers.getSigners()
+    const [a1, a2, a3, a4, a5] = await ethers.getSigners()
     addr1 = a1
     addr2 = a2
-    addr3 = a3
+    addr3 = a3 // foundation
     beneficiary = a4
+    addr5 = a5 // community
 
     // Deploy seedsale round
     const seedSaleRoundFactory = (await ethers.getContractFactory('SeedSaleRound')) as SeedSaleRound__factory
@@ -70,6 +72,7 @@ describe('SeedSaleRound', function () {
       [addr1.address, seedSaleRound.address],
       [10000000000000, SEED_SALE_TOTAL_SUPPLY],
       addr3.address,
+      addr5.address,
     ])) as UpgradableDiversifyV1
   })
 
@@ -148,6 +151,7 @@ describe('SeedSaleRound', function () {
         [addr2.address],
         [initalAmount],
         addr3.address,
+        addr5.address,
       ])) as UpgradableDiversifyV1
 
       await expect(
@@ -505,6 +509,7 @@ describe('SeedSaleRound', function () {
         [seedSaleRound.address, addr2.address],
         [initalAmount, initalAmount],
         addr3.address,
+        addr5.address,
       ])) as UpgradableDiversifyV1
 
       await seedSaleSetup()

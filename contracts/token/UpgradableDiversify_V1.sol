@@ -12,17 +12,28 @@ import '../interfaces/IERC20UpgradeableBurnable.sol';
  * @notice This contract handles the implementation fo the Diversify token
  */
 contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgradeable, IERC20UpgradeableBurnable {
-    event FoundationWalletChanged(address indexed previousWallet, address indexed newWallet);
+    // Foundation Events
+    event FoundationChanged(address indexed previousAddress, address indexed newAddress);
     event FoundationRateChanged(uint256 previousRate, uint256 newRate);
+
+    // Community Events
+    event CommunityChanged(address indexed previousAddress, address indexed newAddress);
+    event CommunityRateChanged(uint256 previousRate, uint256 newRate);
 
     // Immutable burn stop supply
     uint256 private constant BURN_STOP_SUPPLY = 45000000 * 10**18;
 
-    // the address of the foundation wallet
-    address private _foundationWallet;
+    // the address of the foundation
+    address private _foundation;
 
-    // the rate that goes to the foundation
+    // the rate that goes to the foundation per transaction
     uint256 private _foundationRate;
+
+    // the address of the community
+    address private _community;
+
+    // the rate that goes to the community per transaction
+    uint256 private _communityRate;
 
     // total burned amount
     uint256 private _amountBurned;
@@ -30,13 +41,17 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     // total amount transfered to foundation
     uint256 private _amountFounded;
 
+    // total amount transfered to community
+    uint256 private _amountCommunity;
+
     /**
      * Initialize
      */
     function initialize(
         address[] memory addresses,
         uint256[] memory amounts,
-        address fWallet
+        address foundation_,
+        address community_
     ) public initializer {
         __ERC20_init('Diversify', 'DIV');
         __Ownable_init();
@@ -49,7 +64,11 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
 
         // Set foundation rate (25 basis points = 0.25 pct)
         _foundationRate = 25;
-        _foundationWallet = fWallet;
+        _foundation = foundation_;
+
+        // Set community rate (100 basis points = 1 pct)
+        _communityRate = 100;
+        _community = community_;
     }
 
     /**
@@ -84,10 +103,24 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
-     * @dev Returns the address of the foundation wallet.
+     * @dev Returns the address of the community.
      */
-    function foundationWallet() public view returns (address) {
-        return _foundationWallet;
+    function community() public view returns (address) {
+        return _community;
+    }
+
+    /**
+     * @dev Returns the address of the foundation.
+     */
+    function foundation() public view returns (address) {
+        return _foundation;
+    }
+
+    /**
+     * @dev Returns the rate of the community.
+     */
+    function communityRate() public view returns (uint256) {
+        return _communityRate;
     }
 
     /**
@@ -95,6 +128,13 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
      */
     function foundationRate() public view returns (uint256) {
         return _foundationRate;
+    }
+
+    /**
+     * @dev Returns the amount of tokens transfered to community
+     */
+    function amountCommunity() public view returns (uint256) {
+        return _amountCommunity;
     }
 
     /**
@@ -114,10 +154,10 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     /**
      * @dev Sets the address of the foundation wallet.
      */
-    function setFoundationWallet(address newWallet) public onlyOwner {
-        address oldWallet = _foundationWallet;
-        _foundationWallet = newWallet;
-        emit FoundationWalletChanged(oldWallet, newWallet);
+    function setFoundation(address newAddress) public onlyOwner {
+        address oldWallet = _foundation;
+        _foundation = newAddress;
+        emit FoundationChanged(oldWallet, newAddress);
     }
 
     /**
@@ -128,6 +168,25 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         uint256 oldRate = _foundationRate;
         _foundationRate = newRate;
         emit FoundationRateChanged(oldRate, newRate);
+    }
+
+    /**
+     * @dev Sets the address of the community wallet.
+     */
+    function setCommunity(address newAddress) public onlyOwner {
+        address oldCommunity = _community;
+        _community = newAddress;
+        emit CommunityChanged(oldCommunity, newAddress);
+    }
+
+    /**
+     * @dev Sets the comunity rate, maximal allowance of 250 basis points (2.5 pct)
+     */
+    function setCommunityRate(uint256 newRate) public onlyOwner {
+        require(newRate > 0 && newRate <= 250);
+        uint256 oldRate = _communityRate;
+        _communityRate = newRate;
+        emit CommunityRateChanged(oldRate, newRate);
     }
 
     /**
@@ -146,18 +205,27 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
         uint256 value
     ) internal override {
         uint256 tFound = (value * _foundationRate) / 10**4;
+        uint256 tCommunity = (value * _communityRate) / 10**4;
         uint256 tBurn = 0;
+
+        // Burn
         if (totalSupply() != BURN_STOP_SUPPLY) {
-            tBurn = value / 100;
+            tBurn = value / 100; // 1 pct per transaction
             // Reduce burn amount to burn limit
             if (totalSupply() < BURN_STOP_SUPPLY + value) {
                 tBurn = totalSupply() - BURN_STOP_SUPPLY;
             }
             _burn(from, tBurn);
         }
-        super._transfer(from, _foundationWallet, tFound);
-        super._transfer(from, to, value - tFound - tBurn);
+
+        // Transfer to foundation, community and receiver
+        super._transfer(from, _foundation, tFound);
+        super._transfer(from, _community, tCommunity);
+        super._transfer(from, to, value - tFound - tCommunity - tBurn);
+
+        // Update amounts
         _amountFounded += tFound;
+        _amountCommunity += tCommunity;
     }
 
     /**

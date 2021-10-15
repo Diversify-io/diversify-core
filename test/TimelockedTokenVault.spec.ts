@@ -16,15 +16,17 @@ describe('TimelockedTokenVault', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let beneficary: SignerWithAddress
-  let addr3: SignerWithAddress
+  let addr3: SignerWithAddress // Foundation
+  let addr4: SignerWithAddress // Community
   let vault: TimelockedTokenVault
   const VAULT_START_BALANCE = 2000000000
   const LOCK_TIME = daysToSeconds(5)
   this.beforeEach(async () => {
-    const [a1, a2, a3] = await ethers.getSigners()
+    const [a1, a2, a3, a4] = await ethers.getSigners()
     addr1 = a1
     beneficary = a2
     addr3 = a3
+    addr4 = a4
     const tokenFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
     const vaultFactory = (await ethers.getContractFactory('TimelockedTokenVault')) as TimelockedTokenVault__factory
 
@@ -34,6 +36,7 @@ describe('TimelockedTokenVault', function () {
       [addr1.address, vault.address],
       [1000000000, VAULT_START_BALANCE],
       addr3.address,
+      addr4.address,
     ])) as UpgradableDiversifyV1
   })
 
@@ -108,6 +111,7 @@ describe('TimelockedTokenVault', function () {
         [addr1.address, vault.address],
         [1000000000, 50000],
         addr3.address,
+        addr4.address,
       ])) as UpgradableDiversifyV1
     })
 

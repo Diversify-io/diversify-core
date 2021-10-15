@@ -12,21 +12,24 @@ describe('UpgradableTokenVault', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
-  let addr3: SignerWithAddress
+  let addr3: SignerWithAddress // Foundation
+  let addr4: SignerWithAddress // Community
   let upgradableTokenVaultImpl: UpgradableTokenVault
   const distributorInitalSupply = 50000
   const distributorAmountAfterTranfer = calculateReceivedAmount(BigNumber.from(distributorInitalSupply))
   this.beforeEach(async () => {
-    const [a1, a2, a3] = await ethers.getSigners()
+    const [a1, a2, a3, a4] = await ethers.getSigners()
     addr1 = a1
     addr2 = a2
     addr3 = a3
+    addr4 = a4
 
     const tokenFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
     divToken = (await upgrades.deployProxy(tokenFactory, [
       [addr1.address],
       [1000000000],
       addr3.address,
+      addr4.address,
     ])) as UpgradableDiversifyV1
 
     const UpgradableTokenVault = (await ethers.getContractFactory(
@@ -57,6 +60,7 @@ describe('UpgradableTokenVault', function () {
       [upgradableTokenVaultImpl.address, addr2.address],
       [initalAmount, initalAmount],
       addr3.address,
+      addr4.address,
     ])) as UpgradableDiversifyV1
 
     // Act

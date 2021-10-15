@@ -11,14 +11,16 @@ describe('RetrieveTokensFeature', function () {
   let divToken: UpgradableDiversifyV1
   let addr1: SignerWithAddress // owner Wallet
   let addr2: SignerWithAddress
-  let addr3: SignerWithAddress
+  let addr3: SignerWithAddress // Foundation
+  let addr4: SignerWithAddress // Community
   let retrieveTokenFeature: RetrieveTokensFeature
 
   this.beforeEach(async () => {
-    const [a1, a2, a3] = await ethers.getSigners()
+    const [a1, a2, a3, a4] = await ethers.getSigners()
     addr1 = a1
     addr2 = a2
-    addr3 = a3
+    addr3 = a3 // Foundation
+    addr4 = a4 // community
     const tokenFactory = (await ethers.getContractFactory('UpgradableDiversify_V1')) as UpgradableDiversifyV1__factory
     const retrieveTokensFeatureFactory = (await ethers.getContractFactory(
       'RetrieveTokensFeature'
@@ -30,6 +32,7 @@ describe('RetrieveTokensFeature', function () {
       [addr1.address, retrieveTokenFeature.address],
       [1000000000, 2000000000],
       addr3.address,
+      addr4.address,
     ])) as UpgradableDiversifyV1
   })
 
