@@ -197,7 +197,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     }
 
     /**
-     * Extend transfer with limit burn and governance wallet
+     * Extend transfer with limit burn, foundation and community
      */
     function _transfer(
         address from,
