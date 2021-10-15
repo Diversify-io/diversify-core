@@ -17,7 +17,7 @@ type ContractAdresses = {
 }
 
 function getContractAdressesPath(): string {
-  return `../contract-addresses${hre.network.name === 'hardhat' ? '.dev' : ''}.json`
+  return `../contract-addresses${hre.network.name === ('hardhat' || 'localhost') ? '.dev' : ''}.json`
 }
 
 /**

@@ -16,7 +16,7 @@ contract UpgradableDiversify_V1 is Initializable, ERC20Upgradeable, OwnableUpgra
     event FoundationRateChanged(uint256 previousRate, uint256 newRate);
 
     // Immutable burn stop supply
-    uint256 private constant BURN_STOP_SUPPLY = 100000000 * 10**18;
+    uint256 private constant BURN_STOP_SUPPLY = 45000000 * 10**18;
 
     // the address of the foundation wallet
     address private _foundationWallet;

@@ -55,6 +55,9 @@ const config: HardhatUserConfig = {
     ganache: {
       url: 'http://127.0.0.1:7545',
     },
+    localhost: {
+      url: 'http://127.0.0.1:8545',
+    },
   },
   etherscan: {
     // Your API key for Etherscan
