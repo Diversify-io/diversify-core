@@ -1,5 +1,5 @@
+import chalk from 'chalk'
 import 'dotenv/config'
-
 /**
  * Helper to get node uri
  * @param networkName
@@ -40,6 +40,7 @@ export function getMnemonic(networkName?: string): string {
 
   const mnemonic = process.env.MNEMONIC
   if (!mnemonic || mnemonic === '') {
+    console.log(chalk.red('☢️ WARNING: No MNEMONIC specified. Using a default one.'))
     return 'test test test test test test test test test test test junk'
   }
   return mnemonic

@@ -9,6 +9,7 @@ import 'hardhat-gas-reporter'
 import { removeConsoleLog } from 'hardhat-preprocessor'
 import 'hardhat-spdx-license-identifier'
 import 'hardhat-watcher'
+import { task } from 'hardhat/config'
 import { HardhatUserConfig } from 'hardhat/types'
 import 'solidity-coverage'
 import './extensions/hardhat/index'
@@ -19,7 +20,7 @@ const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   namedAccounts: {
     deployer: {
-      default: 0,
+      default: 0, // Always first account
     },
     company: {
       default: 1,
@@ -120,3 +121,8 @@ const config: HardhatUserConfig = {
 }
 
 export default config
+
+task('accounts', 'Prints the list of accounts', async (_, { ethers }) => {
+  const accounts = await ethers.provider.listAccounts()
+  accounts.forEach((account) => console.log(account))
+})

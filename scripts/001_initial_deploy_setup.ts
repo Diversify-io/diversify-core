@@ -1,3 +1,4 @@
+import chalk from 'chalk'
 import hre, { ethers, getNamedAccounts, upgrades } from 'hardhat'
 import moment from 'moment'
 import { daysToSeconds, getSecondsBetweenDates } from '../test/helpers/time'
@@ -57,9 +58,9 @@ async function deploy() {
   const SeedSaleRound = await getContractFactory<SeedSaleRound__factory>('SeedSaleRound')
 
   // Start Deployment
-  console.log('Deploying to network:', hre.network.name)
-  console.log('Deploying contracts with the account:', deployer)
-  console.log('Account balance:', (await deployerWithSigner.getBalance()).toString())
+  console.log('📡 Deploying to network:', hre.network.name)
+  console.log('👤 Deploying contracts with the account:', chalk.magenta(deployer))
+  console.log('💰 Account balance:', chalk.green((await deployerWithSigner.getBalance()).toString()))
 
   // Deploy: Project Vault (TimelockedIntervalReleasedTokenVault)
   const projectVault = await deployContract(
