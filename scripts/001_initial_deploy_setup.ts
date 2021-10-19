@@ -14,29 +14,28 @@ async function deploy() {
   await hre.run('compile')
 
   // Constants
-  const { deployer, company, privateSeedSale, foundation, dev } = await getNamedAccounts()
+  const { deployer, company, strategicSale, foundation, dev } = await getNamedAccounts()
   const deployerWithSigner = await ethers.getSigner(deployer)
 
   // Supply
   const TOTAL_SUPPLY = 1000000000
-  const PR_SUPPLY_PERCENTAGE = 10
-  const TA_SUPPLY_PERCENTAGE = 10
-  const COMMUNITY_SUPPLY_PERCENTAGE = 17.5
-  const SEED_SALE_ROUND_1_SUPPLY_PERCENTAGE = 0.25
-  const SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE = 2.25
-  const PRIVATE_SALE_SUPPLY_PERCENTAGE = 10
-  const PUBLIC_SALE_SUPPLY_PERCENTAGE = 50
-  const COMPANY_SUPPLY_PERCENTAGE = 0
+  const COMPANY_SUPPLY_PERCENTAGE = 0.025
+  const PROJECT_SUPPLY_PERCENTAGE = 0.09
+  const TEAM_SUPPLY_PERCENTAGE = 0.09
+  const COMMUNITY_SUPPLY_PERCENTAGE = 0.175
+  const SEED_SALE_SUPPLY_PERCENTAGE = 0.02
+  const STRATEGIC_SALE_SUPPLY_PERCENTAGE = 0.1
+  const GLOBAL_SALE_SUPPLY_PERCENTAGE = 0.5
 
   // Vaults
-  const PR_VAULT_DURATION = 10
-  const PR_VAULT_INTERVAL = 10
-  const TA_VAULT_DURATION = 10
-  const TA_VAULT_INTERVAL = 10
-  const COMMUNITY_VAULT_DURATION = 10
-  const COMMUNITY_VAULT_INTERVAL = 10
-  const PRIVATE_SEED_SALE_VAULT_DURATION = 10
-  const PUBLIC_SEED_SALE_VAULT_DURATION = 10
+  const PROJECT_VAULT_DURATION = 157680000
+  const PROJECT_VAULT_INTERVAL = 15768000
+  const TEAM_VAULT_DURATION = 78840000
+  const TEAM_VAULT_INTERVAL = 7884000
+  const COMMUNITY_VAULT_DURATION = 346896000
+  const COMMUNITY_VAULT_INTERVAL = 31536000
+  const STRATEGIC_SALE_VAULT_DURATION = 10
+  const GLOBAL_SALE_VAULT_DURATION = 10
 
   // Contracts
   const TimelockedIntervalReleasedTokenVault = await getContractFactory<TimelockedIntervalReleasedTokenVault__factory>(
@@ -56,22 +55,22 @@ async function deploy() {
   console.log('Deploying contracts with the account:', deployer)
   console.log('Account balance:', (await deployerWithSigner.getBalance()).toString())
 
-  // Deploy: PR Vault (TimelockedIntervalReleasedTokenVault)
-  const prVault = await deployContract(
-    'prVault',
+  // Deploy: Project Vault (TimelockedIntervalReleasedTokenVault)
+  const projectVault = await deployContract(
+    'projectVault',
     TimelockedIntervalReleasedTokenVault,
     company,
-    PR_VAULT_DURATION,
-    PR_VAULT_INTERVAL
+    PROJECT_VAULT_DURATION,
+    PROJECT_VAULT_INTERVAL
   )
 
-  // Deploy: T & A Vault (TimelockedIntervalReleasedTokenVault)
-  const taVault = await deployContract(
-    'taVault',
+  // Deploy: Team Vault (TimelockedIntervalReleasedTokenVault)
+  const teamVault = await deployContract(
+    'teamVault',
     TimelockedIntervalReleasedTokenVault,
     company,
-    TA_VAULT_DURATION,
-    TA_VAULT_INTERVAL
+    TEAM_VAULT_DURATION,
+    TEAM_VAULT_INTERVAL
   )
 
   // Deploy: CommunityRewardDistributor
@@ -89,41 +88,37 @@ async function deploy() {
     COMMUNITY_VAULT_INTERVAL
   )
 
-  // Deploy: SeedSale Round 1
-  const seedSaleRound1 = await deployContract('seedSaleRound1', SeedSaleRound)
+  // Deploy: SeedSale Round
+  const seedSaleRound = await deployContract('seedSaleRound', SeedSaleRound)
 
-  // Deploy: SeedSale Round 2
-  const seedSaleRound2 = await deployContract('seedSaleRound2', SeedSaleRound)
-
-  // Deploy: PrivateSale
-  const privateSaleVault = await deployContract(
-    'privateSaleVault',
+  // Deploy: StrategicSale
+  const strategicSaleVault = await deployContract(
+    'strategicSaleVault',
     TimelockedTokenVault,
-    privateSeedSale,
-    PRIVATE_SEED_SALE_VAULT_DURATION
+    strategicSale,
+    STRATEGIC_SALE_VAULT_DURATION
   )
 
   // Deploy: publicSaleDistributorProxy
   const publicSaleDistributorProxy = await deployProxy('publicSaleDistributorProxy', UpgradablePublicSaleDistributorV1)
 
-  // Deploy: publicSaleVault
-  const publicSaleVault = await deployContract(
-    'publicSaleVault',
+  // Deploy: globalSaleVault
+  const globalSaleVault = await deployContract(
+    'globalSaleVault',
     TimelockedTokenVault,
     publicSaleDistributorProxy.address,
-    PUBLIC_SEED_SALE_VAULT_DURATION
+    GLOBAL_SALE_VAULT_DURATION
   )
 
   // Deploy: Token
   const totalSupplyPercentage = TOTAL_SUPPLY / 100
   const supplyMap = new Map([
-    [prVault.address, totalSupplyPercentage * PR_SUPPLY_PERCENTAGE],
-    [taVault.address, totalSupplyPercentage * TA_SUPPLY_PERCENTAGE],
+    [projectVault.address, totalSupplyPercentage * PROJECT_SUPPLY_PERCENTAGE],
+    [teamVault.address, totalSupplyPercentage * TEAM_SUPPLY_PERCENTAGE],
     [communityVault.address, totalSupplyPercentage * COMMUNITY_SUPPLY_PERCENTAGE],
-    [publicSaleVault.address, totalSupplyPercentage * PUBLIC_SALE_SUPPLY_PERCENTAGE],
-    [privateSaleVault.address, totalSupplyPercentage * PRIVATE_SALE_SUPPLY_PERCENTAGE],
-    [seedSaleRound1.address, totalSupplyPercentage * SEED_SALE_ROUND_1_SUPPLY_PERCENTAGE],
-    [seedSaleRound2.address, totalSupplyPercentage * SEED_SALE_ROUND_2_SUPPLY_PERCENTAGE],
+    [globalSaleVault.address, totalSupplyPercentage * GLOBAL_SALE_SUPPLY_PERCENTAGE],
+    [strategicSaleVault.address, totalSupplyPercentage * STRATEGIC_SALE_SUPPLY_PERCENTAGE],
+    [seedSaleRound.address, totalSupplyPercentage * SEED_SALE_SUPPLY_PERCENTAGE],
     [company, totalSupplyPercentage * COMPANY_SUPPLY_PERCENTAGE],
   ])
 
@@ -143,21 +138,20 @@ async function deploy() {
   await publicSaleDistributorProxy.setToken(DIV_TOKEN_ADDRESS)
 
   // Start Vaults
-  await prVault.start(DIV_TOKEN_ADDRESS)
-  await taVault.start(DIV_TOKEN_ADDRESS)
+  await projectVault.start(DIV_TOKEN_ADDRESS)
+  await teamVault.start(DIV_TOKEN_ADDRESS)
   await communityVault.start(DIV_TOKEN_ADDRESS)
-  await privateSaleVault.start(DIV_TOKEN_ADDRESS)
-  await publicSaleVault.start(DIV_TOKEN_ADDRESS)
+  await strategicSaleVault.start(DIV_TOKEN_ADDRESS)
+  await globalSaleVault.start(DIV_TOKEN_ADDRESS)
 
   // Transfer Ownership
-  await transferOwnership('prVault', prVault, company)
-  await transferOwnership('taVault', taVault, company)
+  await transferOwnership('projectVault', projectVault, company)
+  await transferOwnership('teamVault', teamVault, company)
   await transferOwnership('communityDistributorProxy', communityDistributorProxy, company)
   await transferOwnership('communityVault', communityVault, company)
-  await transferOwnership('seedSaleRound1', seedSaleRound1, company)
-  await transferOwnership('seedSaleRound2', seedSaleRound2, company)
-  await transferOwnership('privateSaleVault', privateSaleVault, company)
-  await transferOwnership('publicSaleVault', publicSaleVault, company)
+  await transferOwnership('seedSaleRound', seedSaleRound, company)
+  await transferOwnership('strategicSaleVault', strategicSaleVault, company)
+  await transferOwnership('globalSaleVault', globalSaleVault, company)
   await transferOwnership('divTokenProxy', divTokenProxy, company)
 
   // Transfer Ownerships to dev

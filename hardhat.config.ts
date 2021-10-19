@@ -4,7 +4,6 @@ import '@nomiclabs/hardhat-waffle'
 import '@openzeppelin/hardhat-upgrades'
 import '@tenderly/hardhat-tenderly'
 import '@typechain/hardhat'
-import 'hardhat-abi-exporter'
 import 'hardhat-contract-sizer'
 import 'hardhat-gas-reporter'
 import { removeConsoleLog } from 'hardhat-preprocessor'
@@ -20,21 +19,27 @@ const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   namedAccounts: {
     deployer: {
-      default: 0, // here this will by default take the first account as deployer
-      mainnet: 0, // similarly on mainnet it will take the first account as deployer. Note though that depending on how hardhat network are configured, the account 0 on one network can be different than on another
-      rinkeby: '0x84b9514E013710b9dD0811c9Fe46b837a4A0d8E0', //it can also specify a specific netwotk name (specified in hardhat.config.js)
+      default: 0,
     },
     company: {
-      default: 1, // here this will by default take the first account as deployer
+      default: 1,
+      mainnet: '0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6',
+      rinkeby: '0xd457B03b6650EFC95ffd6387797705eE41B21C29',
     },
-    privateSeedSale: {
-      default: 2, // here this will by default take the first account as deployer
+    strategicSale: {
+      default: 2,
+      mainnet: '0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6',
+      rinkeby: '0xd457B03b6650EFC95ffd6387797705eE41B21C29',
     },
     foundation: {
-      default: 3, // here this will by default take the first account as deployer
+      default: 3,
+      mainnet: '0xf74c31591Eec496AB02b052E36b678012381F0A0',
+      rinkeby: '0x529980Be29B38f132B4DefcAcA787D0Ca313A3fc',
     },
     dev: {
-      default: 4, // here this will by default take the second account as feeCollector (so in the test this will be a different account than the deployer)
+      default: 4,
+      mainnet: '',
+      rinkeby: '',
     },
   },
   networks: {
@@ -82,13 +87,6 @@ const config: HardhatUserConfig = {
   typechain: {
     outDir: 'types',
     target: 'ethers-v5',
-  },
-  abiExporter: {
-    path: './abi',
-    clear: false,
-    flat: true,
-    // only: [],
-    // except: []
   },
   contractSizer: {
     alphaSort: true,
