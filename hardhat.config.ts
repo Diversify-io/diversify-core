@@ -38,8 +38,8 @@ const config: HardhatUserConfig = {
     },
     dev: {
       default: 4,
-      mainnet: '',
-      rinkeby: '',
+      mainnet: '0x503B0a370fF60Ed457045B61Ba3E17622FF8A1E6',
+      rinkeby: '0xc23C545cFfFb2c548fade31E4A2b1621211e216b',
     },
   },
   networks: {

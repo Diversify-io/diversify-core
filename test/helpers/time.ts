@@ -1,5 +1,5 @@
 import { ethers, network } from 'hardhat'
-
+import moment, { MomentInput } from 'moment'
 /*
  * This method increases the time with the given seconds
  */
@@ -9,6 +9,9 @@ export const increaseTimeAndMine = async (offsetInSeconds: number) => {
 }
 
 export const daysToSeconds = (days: number) => days * 60 * 60 * 24
+
+export const getSecondsBetweenDates = (dateA: MomentInput, dateB: MomentInput) =>
+  Math.round(Math.abs(moment.duration(moment(dateA).diff(dateB)).asSeconds()))
 
 export const getCurrentBlockTime = async () => {
   const blockNum = await ethers.provider.getBlockNumber()
