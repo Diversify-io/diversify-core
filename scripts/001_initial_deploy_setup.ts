@@ -1,6 +1,6 @@
 import hre, { ethers, getNamedAccounts, upgrades } from 'hardhat'
 import moment from 'moment'
-import { getSecondsBetweenDates } from '../test/helpers/time'
+import { daysToSeconds, getSecondsBetweenDates } from '../test/helpers/time'
 import { SeedSaleRound__factory } from '../types/factories/SeedSaleRound__factory'
 import { TimelockedIntervalReleasedTokenVault__factory } from '../types/factories/TimelockedIntervalReleasedTokenVault__factory'
 import { TimelockedTokenVault__factory } from '../types/factories/TimelockedTokenVault__factory'
@@ -32,12 +32,12 @@ async function deploy() {
   const GLOBAL_SALE_SUPPLY_3_PERCENTAGE = 10
 
   // Vaults
-  const PROJECT_VAULT_DURATION = 157680000
-  const PROJECT_VAULT_INTERVAL = 15768000
-  const TEAM_VAULT_DURATION = 78840000
-  const TEAM_VAULT_INTERVAL = 7884000
-  const COMMUNITY_VAULT_DURATION = 346896000
-  const COMMUNITY_VAULT_INTERVAL = 31536000
+  const PROJECT_VAULT_DURATION = daysToSeconds(5 * 365) // 5 years (60 months)
+  const PROJECT_VAULT_INTERVAL = daysToSeconds(182.5) // every 6 months
+  const TEAM_VAULT_DURATION = daysToSeconds(2.5 * 365) // 2.5 years (30 months)
+  const TEAM_VAULT_INTERVAL = daysToSeconds(91.25) // every 3 months
+  const COMMUNITY_VAULT_DURATION = daysToSeconds(11 * 365) // 11 years (132 monate)
+  const COMMUNITY_VAULT_INTERVAL = daysToSeconds(365) // every year
   const STRATEGIC_SALE_VAULT_DURATION = getSecondsBetweenDates(moment(), '2022-01-01')
   const GLOBAL_SALE_VAULT_1_DURATION = getSecondsBetweenDates(moment(), '2022-06-02')
   const GLOBAL_SALE_VAULT_2_DURATION = getSecondsBetweenDates(moment(), '2023-06-02')
@@ -174,6 +174,7 @@ async function deploy() {
   await transferOwnership('projectVault', projectVault, company)
   await transferOwnership('teamVault', teamVault, company)
   await transferOwnership('communityDistributorProxy', communityDistributorProxy, company)
+  await transferOwnership('publicSaleDistributorProxy', publicSaleDistributorProxy, company)
   await transferOwnership('communityVault', communityVault, company)
   await transferOwnership('seedSaleRound', seedSaleRound, company)
   await transferOwnership('strategicSaleVault', strategicSaleVault, company)
