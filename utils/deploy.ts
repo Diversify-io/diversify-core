@@ -1,7 +1,7 @@
 import chalk from 'chalk'
-import { ContractFactory, Overrides } from 'ethers'
+import { Contract, ContractFactory, Overrides, utils } from 'ethers'
 import fs from 'fs'
-import hre, { config, ethers, tenderly, upgrades } from 'hardhat'
+import hre, { config, ethers, upgrades } from 'hardhat'
 import path from 'path'
 import { Ownable } from '../types/Ownable.d'
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T
@@ -12,6 +12,7 @@ type ContractAdresses = {
     [contract: string]: {
       address: string
       owner?: string
+      args?: any[]
     }
   }
 }
@@ -36,15 +37,21 @@ function getSavedContractAddresses(): ContractAdresses {
 }
 
 /**
- * Save the contract addresses
- * @returns
+ * Save the contrac
+ * @param network
+ * @param contract
+ * @param address
+ * @param owner
+ * @param args
  */
-function saveContractAddress(network: string, contract: string, address: string, owner?: string) {
+function saveContractAddress(network: string, contract: string, address: string, owner?: string, args?: any[]) {
   const addrs = getSavedContractAddresses()
   addrs[network] = addrs[network] || {}
   addrs[network][contract] = {
-    address: address,
-    owner: owner,
+    ...addrs[network][contract],
+    ...(address && { address: address }),
+    ...(owner && { owner: owner }),
+    ...(args && { args: args }),
   }
   fs.writeFileSync(path.join(__dirname, getContractAdressesPath()), JSON.stringify(addrs, null, '    '))
 }
@@ -71,9 +78,7 @@ const deployContract = async <T extends ContractFactory>(
 ): Promise<ReturnType<T['deploy']>> => {
   console.log(` 🛰  Deploying: ${name}`)
   const deployment = await contract.deploy(...args)
-  await deployment.deployed()
-  saveContractAddress(hre.network.name, name, deployment.address)
-  console.log(' 📄', chalk.cyan(name), 'deployed to:', chalk.magenta(deployment.address))
+  await postDeploy(name, deployment, [...args])
   return deployment
 }
 
@@ -93,9 +98,7 @@ const deployProxy = async <T extends ContractFactory>(
 ): Promise<ReturnType<T['deploy']>> => {
   console.log(` 🛰  Deploying proxy: ${name}`)
   const deployment = await upgrades.deployProxy(contract, args)
-  await deployment.deployed()
-  saveContractAddress(hre.network.name, name, deployment.address)
-  console.log(' 📄', chalk.cyan(name), 'deployed to:', chalk.magenta(deployment.address))
+  await postDeploy(name, deployment, [...args])
   return deployment
 }
 
@@ -113,29 +116,44 @@ const transferOwnership = async <T extends Ownable>(name: string, contract: T, n
 }
 
 /**
+ * Post deployment actions
+ * @param name ContractName
+ * @param deployment Contract deployment instance
+ * @param args The contracts constructor passed arguments
+ */
+const postDeploy = async (name: string, deployment: Contract, args: any[]) => {
+  await deployment.deployed()
+
+  let extraGasInfo = ''
+  if (deployment && deployment.deployTransaction) {
+    const gasUsed = deployment.deployTransaction.gasLimit.mul(deployment.deployTransaction.gasPrice ?? 0)
+    extraGasInfo = `${utils.formatEther(gasUsed)} ETH, tx hash ${deployment.deployTransaction.hash}`
+    deployment
+  }
+  console.log(' 📄', chalk.cyan(name), 'deployed to:', chalk.magenta(deployment.address))
+  console.log(' ⛽', chalk.grey(extraGasInfo))
+
+  await etherscanVerify(name, deployment.address, args)
+
+  saveContractAddress(hre.network.name, name, deployment.address, undefined, args)
+}
+
+/**
  * Verify task for tenderly
  * @param contractName
  * @param contractAddress
  * @returns
  */
-const tenderlyVerify = async (contractName: string, contractAddress: string) => {
-  let tenderlyNetworks = ['kovan', 'goerli', 'mainnet', 'rinkeby', 'ropsten', 'matic', 'mumbai', 'xDai', 'POA']
+const etherscanVerify = async (contractName: string, contractAddress: string, args: any[]) => {
+  let tenderlyNetworks = ['kovan', 'goerli', 'mainnet', 'rinkeby', 'ropsten']
   let targetNetwork = process.env.HARDHAT_NETWORK || config.defaultNetwork
 
   if (tenderlyNetworks.includes(targetNetwork)) {
     console.log(chalk.blue(` 📁 Attempting tenderly verification of ${contractName} on ${targetNetwork}`))
-
-    await tenderly.persistArtifacts({
-      name: contractName,
+    let verification = await hre.run('verify:verify', {
       address: contractAddress,
+      constructorArguments: args,
     })
-
-    let verification = await tenderly.verify({
-      name: contractName,
-      address: contractAddress,
-      network: targetNetwork,
-    })
-
     return verification
   } else {
     console.log(chalk.grey(` 🧐 Contract verification not supported on ${targetNetwork}`))

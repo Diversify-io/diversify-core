@@ -2,7 +2,6 @@ import '@nomiclabs/hardhat-ethers'
 import '@nomiclabs/hardhat-etherscan'
 import '@nomiclabs/hardhat-waffle'
 import '@openzeppelin/hardhat-upgrades'
-import '@tenderly/hardhat-tenderly'
 import '@typechain/hardhat'
 import 'hardhat-contract-sizer'
 import 'hardhat-gas-reporter'
@@ -107,10 +106,6 @@ const config: HardhatUserConfig = {
       files: ['./contracts'],
       verbose: true,
     },
-  },
-  tenderly: {
-    project: process.env.TENDERLY_PROJECT!,
-    username: process.env.TENDERLY_USERNAME!,
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS === 'true',
