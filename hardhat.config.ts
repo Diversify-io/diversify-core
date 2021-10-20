@@ -44,21 +44,24 @@ const config: HardhatUserConfig = {
   },
   networks: {
     mainnet: {
+      chainId: 1,
       url: node_url('mainnet'),
       accounts: account('mainnet'),
+      gasPrice: 120 * 1000000000,
     },
     rinkeby: {
+      chainId: 4,
       url: node_url('rinkeby'),
       accounts: account('rinkeby'),
+      gasPrice: 5000000000,
+      gasMultiplier: 2,
     },
     hardhat: {
+      chainId: 1337,
       forking: {
         enabled: process.env.FORKING === 'true',
         url: `https://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`,
       },
-    },
-    ganache: {
-      url: 'http://127.0.0.1:7545',
     },
     localhost: {
       url: 'http://127.0.0.1:8545',

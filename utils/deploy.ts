@@ -1,3 +1,4 @@
+import { getImplementationAddress } from '@openzeppelin/upgrades-core'
 import chalk from 'chalk'
 import { Contract, ContractFactory, Overrides, utils } from 'ethers'
 import fs from 'fs'
@@ -7,53 +8,73 @@ import { Ownable } from '../types/Ownable.d'
 type ThenArg<T> = T extends PromiseLike<infer U> ? U : T
 type InitalizeArgs<T extends ContractFactory> = Parameters<ThenArg<ReturnType<T['deploy']>>['initialize']>
 
-type ContractAdresses = {
-  [network: string]: {
-    [contract: string]: {
-      address: string
-      owner?: string
-      args?: any[]
-    }
+type ContractType = 'contract' | 'proxy'
+type ContractBaseInformation = {
+  type: ContractType
+  name: string
+  address: string
+  meta: {
+    src: string
+    txHash: string
+    owner: string
+    args: any[]
   }
 }
 
-function getContractAdressesPath(): string {
-  return `../contract-addresses${['hardhat', 'localhost'].includes(hre.network.name) ? '.dev' : ''}.json`
+type ContractInformation =
+  | ({ type: 'contract' } & ContractBaseInformation)
+  | ({
+      type: 'proxy'
+      implementation: {
+        src: string
+        address: string
+      }
+    } & ContractBaseInformation)
+
+type DeploymentLog = {
+  [network: string]: {
+    [contract: string]: ContractInformation
+  }
 }
 
+const getDeploymentLogPath = () =>
+  `../contracts${['hardhat', 'localhost'].includes(hre.network.name) ? '.dev' : ''}.json`
+
 /**
- * Get the stored contract addresses
+ * Get the stored deployment log
  * @returns
  */
-function getSavedContractAddresses(): ContractAdresses {
+function getDeploymentLog(): DeploymentLog {
   let json
   try {
-    json = fs.readFileSync(path.join(__dirname, getContractAdressesPath()), 'utf-8')
+    json = fs.readFileSync(path.join(__dirname, getDeploymentLogPath()), 'utf-8')
   } catch (err) {
     json = '{}'
   }
-  const addrs: ContractAdresses = JSON.parse(json)
-  return addrs
+  return JSON.parse(json)
 }
 
 /**
- * Save the contrac
+ *
  * @param network
- * @param contract
- * @param address
- * @param owner
- * @param args
+ * @param contractName
+ * @returns
  */
-function saveContractAddress(network: string, contract: string, address: string, owner?: string, args?: any[]) {
-  const addrs = getSavedContractAddresses()
+function getContractInformation(network: string, contractName: string): ContractInformation {
+  const log = getDeploymentLog()
+  return log[network][contractName] ?? {}
+}
+
+/**
+ *
+ * @param network
+ * @param contractData
+ */
+function saveContractInformation(network: string, contractData: ContractInformation) {
+  const addrs = getDeploymentLog()
   addrs[network] = addrs[network] || {}
-  addrs[network][contract] = {
-    ...addrs[network][contract],
-    ...(address && { address: address }),
-    ...(owner && { owner: owner }),
-    ...(args && { args: args }),
-  }
-  fs.writeFileSync(path.join(__dirname, getContractAdressesPath()), JSON.stringify(addrs, null, '    '))
+  addrs[network][contractData.name] = contractData
+  fs.writeFileSync(path.join(__dirname, getDeploymentLogPath()), JSON.stringify(addrs, null, '    '))
 }
 
 /**
@@ -67,18 +88,31 @@ const getContractFactory = async <T extends ContractFactory>(contractName: strin
 /**
  * TypeSafe contract deployment
  * @param name
- * @param contract
+ * @param contractName
  * @param args
  * @returns
  */
 const deployContract = async <T extends ContractFactory>(
   name: string,
-  contract: T,
+  contractName: string,
   ...args: Parameters<T['deploy']>
 ): Promise<ReturnType<T['deploy']>> => {
   console.log(` 🛰  Deploying: ${name}`)
-  const deployment = await contract.deploy(...args)
-  await postDeploy(name, deployment, [...args])
+  const factory = (await getContractFactory(contractName)) as T
+  const deployment = await factory.deploy(...args)
+  await postDeploy(name, deployment)
+  const { address } = deployment
+  saveContractInformation(hre.network.name, {
+    name,
+    address,
+    type: 'contract',
+    meta: {
+      owner: deployment.deployTransaction.from,
+      src: `contracts/${contractName}.sol:${contractName}`,
+      txHash: deployment.deployTransaction.hash,
+      args,
+    },
+  })
   return deployment
 }
 
@@ -91,14 +125,31 @@ const deployContract = async <T extends ContractFactory>(
  */
 const deployProxy = async <T extends ContractFactory>(
   name: string,
-  contract: T,
+  contractName: string,
   ...args: InitalizeArgs<T> extends { overrides?: Overrides & { from?: string | Promise<string> } }
     ? [undefined?]
     : InitalizeArgs<T>
 ): Promise<ReturnType<T['deploy']>> => {
   console.log(` 🛰  Deploying proxy: ${name}`)
-  const deployment = await upgrades.deployProxy(contract, args)
-  await postDeploy(name, deployment, [...args])
+  const factory = (await getContractFactory(contractName)) as T
+  const deployment = await upgrades.deployProxy(factory, args)
+  await postDeploy(name, deployment)
+  const { address } = deployment
+  saveContractInformation(hre.network.name, {
+    name,
+    address,
+    type: 'proxy',
+    implementation: {
+      address: (await deployment.deployed()) && (await getImplementationAddress(hre.ethers.provider, address)),
+      src: `contracts/${contractName}.sol:${contractName}`,
+    },
+    meta: {
+      owner: deployment.deployTransaction.from,
+      src: '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy',
+      txHash: deployment.deployTransaction.hash,
+      args,
+    },
+  })
   return deployment
 }
 
@@ -111,7 +162,17 @@ const deployProxy = async <T extends ContractFactory>(
 const transferOwnership = async <T extends Ownable>(name: string, contract: T, newOwner: string) => {
   console.log(` 👮 Transfering ownership: ${name}`)
   await contract.transferOwnership(newOwner)
-  saveContractAddress(hre.network.name, name, contract.address, newOwner)
+
+  // Update contract information
+  const network = hre.network.name
+  let contractInformation = getContractInformation(network, name)
+  saveContractInformation(network, {
+    ...contractInformation,
+    meta: {
+      ...contractInformation.meta,
+      owner: newOwner,
+    },
+  })
   console.log(' 🔐', chalk.cyan(name), 'ownership transferred to:', chalk.magenta(newOwner))
 }
 
@@ -121,50 +182,46 @@ const transferOwnership = async <T extends Ownable>(name: string, contract: T, n
  * @param deployment Contract deployment instance
  * @param args The contracts constructor passed arguments
  */
-const postDeploy = async (name: string, deployment: Contract, args: any[]) => {
-  await deployment.deployed()
-
+const postDeploy = async (name: string, deployment: Contract) => {
   let extraGasInfo = ''
   if (deployment && deployment.deployTransaction) {
     const gasUsed = deployment.deployTransaction.gasLimit.mul(deployment.deployTransaction.gasPrice ?? 0)
     extraGasInfo = `${utils.formatEther(gasUsed)} ETH, tx hash ${deployment.deployTransaction.hash}`
-    deployment
+
+    console.log(' 📄', chalk.cyan(name), 'deployed to:', chalk.magenta(deployment.address))
+    console.log(' ⛽', chalk.grey(extraGasInfo))
   }
-  console.log(' 📄', chalk.cyan(name), 'deployed to:', chalk.magenta(deployment.address))
-  console.log(' ⛽', chalk.grey(extraGasInfo))
-
-  await etherscanVerify(name, deployment.address, args)
-
-  saveContractAddress(hre.network.name, name, deployment.address, undefined, args)
 }
 
 /**
- * Verify task for tenderly
+ * Verify task for etherscan
  * @param contractName
  * @param contractAddress
- * @returns
+ * @param args
+ * @param contract "contracts/Example.sol:ExampleContract"
  */
-const etherscanVerify = async (contractName: string, contractAddress: string, args: any[]) => {
+const etherscanVerify = async (contractName: string, contractAddress: string, args: any[], contract?: string) => {
   let tenderlyNetworks = ['kovan', 'goerli', 'mainnet', 'rinkeby', 'ropsten']
   let targetNetwork = process.env.HARDHAT_NETWORK || config.defaultNetwork
 
   if (tenderlyNetworks.includes(targetNetwork)) {
-    console.log(chalk.blue(` 📁 Attempting tenderly verification of ${contractName} on ${targetNetwork}`))
-    let verification = await hre.run('verify:verify', {
+    console.log(chalk.blue(` 📁 Attempting etherscan verification of ${contractName} on ${targetNetwork}`))
+    await hre.run('verify:verify', {
       address: contractAddress,
       constructorArguments: args,
+      ...(contract && { contract }),
     })
-    return verification
   } else {
     console.log(chalk.grey(` 🧐 Contract verification not supported on ${targetNetwork}`))
   }
 }
 
 export {
-  getSavedContractAddresses,
-  saveContractAddress,
+  getDeploymentLog as getSavedContractAddresses,
+  saveContractInformation as saveContractAddress,
   getContractFactory,
   deployContract,
   deployProxy,
   transferOwnership,
+  etherscanVerify,
 }

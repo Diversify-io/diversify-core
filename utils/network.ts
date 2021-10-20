@@ -40,7 +40,7 @@ export function getMnemonic(networkName?: string): string {
 
   const mnemonic = process.env.MNEMONIC
   if (!mnemonic || mnemonic === '') {
-    console.log(chalk.red('☢️ WARNING: No MNEMONIC specified. Using a default one.'))
+    console.log(chalk.red('☢️ WARNING: No MNEMONIC specified. Using a default one. For network', networkName))
     return 'test test test test test test test test test test test junk'
   }
   return mnemonic
@@ -48,9 +48,12 @@ export function getMnemonic(networkName?: string): string {
 
 /**
  * get the account
+ * supports private key or mnemonic
  * @param networkName
  * @returns
  */
-export function account(networkName?: string): { mnemonic: string } {
-  return { mnemonic: getMnemonic(networkName) }
+export function account(networkName?: string): { mnemonic: string } | string[] {
+  const mnemonic = getMnemonic(networkName)
+
+  return mnemonic.includes(' ') ? { mnemonic } : [mnemonic]
 }

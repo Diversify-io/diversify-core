@@ -8,7 +8,13 @@ import { TimelockedTokenVault__factory } from '../types/factories/TimelockedToke
 import { UpgradableCommunityRewardDistributorV1__factory } from '../types/factories/UpgradableCommunityRewardDistributorV1__factory'
 import { UpgradableDiversifyV1__factory } from '../types/factories/UpgradableDiversifyV1__factory'
 import { UpgradablePublicSaleDistributorV1__factory } from '../types/factories/UpgradablePublicSaleDistributorV1__factory'
-import { deployContract, deployProxy, getContractFactory, transferOwnership } from '../utils/deploy'
+import {
+  deployContract,
+  deployProxy,
+  etherscanVerify,
+  getSavedContractAddresses,
+  transferOwnership,
+} from '../utils/deploy'
 
 // Initial deployment script
 async function deploy() {
@@ -19,6 +25,7 @@ async function deploy() {
   // Constants
   const { deployer, company, strategicSale, foundation, dev } = await getNamedAccounts()
   const deployerWithSigner = await ethers.getSigner(deployer)
+  const networkName = hre.network.name
 
   // Supply
   const TOTAL_SUPPLY = 1000000000
@@ -44,91 +51,81 @@ async function deploy() {
   const GLOBAL_SALE_VAULT_2_DURATION = getSecondsBetweenDates(moment(), '2023-06-02')
   const GLOBAL_SALE_VAULT_3_DURATION = getSecondsBetweenDates(moment(), '2024-06-02')
 
-  // Contracts
-  const TimelockedIntervalReleasedTokenVault = await getContractFactory<TimelockedIntervalReleasedTokenVault__factory>(
-    'TimelockedIntervalReleasedTokenVault'
-  )
-  const TimelockedTokenVault = await getContractFactory<TimelockedTokenVault__factory>('TimelockedTokenVault')
-  const UpgradableCommunityRewardDistributorV1 =
-    await getContractFactory<UpgradableCommunityRewardDistributorV1__factory>('UpgradableCommunityRewardDistributor_V1')
-  const UpgradableDiversifyV1 = await getContractFactory<UpgradableDiversifyV1__factory>('UpgradableDiversify_V1')
-  const UpgradablePublicSaleDistributorV1 = await getContractFactory<UpgradablePublicSaleDistributorV1__factory>(
-    'UpgradablePublicSaleDistributor_V1'
-  )
-  const SeedSaleRound = await getContractFactory<SeedSaleRound__factory>('SeedSaleRound')
-
   // Start Deployment
-  console.log('📡 Deploying to network:', hre.network.name)
-  console.log('👤 Deploying contracts with the account:', chalk.magenta(deployer))
-  console.log('💰 Account balance:', chalk.green((await deployerWithSigner.getBalance()).toString()))
+  console.log(' 📡 Deploying to network:', networkName)
+  console.log(' 👤 Deploying contracts with the account:', chalk.magenta(deployer))
+  console.log(' 💰 Account balance:', chalk.green((await deployerWithSigner.getBalance()).toString()))
 
   // Deploy: Project Vault (TimelockedIntervalReleasedTokenVault)
-  const projectVault = await deployContract(
+  const projectVault = await deployContract<TimelockedIntervalReleasedTokenVault__factory>(
     'projectVault',
-    TimelockedIntervalReleasedTokenVault,
+    'TimelockedIntervalReleasedTokenVault',
     company,
     PROJECT_VAULT_DURATION,
     PROJECT_VAULT_INTERVAL
   )
 
   // Deploy: Team Vault (TimelockedIntervalReleasedTokenVault)
-  const teamVault = await deployContract(
+  const teamVault = await deployContract<TimelockedIntervalReleasedTokenVault__factory>(
     'teamVault',
-    TimelockedIntervalReleasedTokenVault,
+    'TimelockedIntervalReleasedTokenVault',
     company,
     TEAM_VAULT_DURATION,
     TEAM_VAULT_INTERVAL
   )
 
   // Deploy: CommunityRewardDistributor
-  const communityDistributorProxy = await deployProxy(
+  const communityDistributorProxy = await deployProxy<UpgradableCommunityRewardDistributorV1__factory>(
     'communityDistributorProxy',
-    UpgradableCommunityRewardDistributorV1
+    'UpgradableCommunityRewardDistributor_V1'
   )
 
   // Deploy: CommunityRewardVault (TimelockedIntervalReleasedTokenVault)
-  const communityVault = await deployContract(
+  const communityVault = await deployContract<TimelockedIntervalReleasedTokenVault__factory>(
     'communityVault',
-    TimelockedIntervalReleasedTokenVault,
+    'TimelockedIntervalReleasedTokenVault',
     communityDistributorProxy.address,
     COMMUNITY_VAULT_DURATION,
     COMMUNITY_VAULT_INTERVAL
   )
 
   // Deploy: SeedSale Round
-  const seedSaleRound = await deployContract('seedSaleRound', SeedSaleRound)
+  const seedSaleRound = await deployContract<SeedSaleRound__factory>('seedSaleRound', 'SeedSaleRound')
 
   // Deploy: StrategicSale
-  const strategicSaleVault = await deployContract(
+  const strategicSaleVault = await deployContract<TimelockedTokenVault__factory>(
     'strategicSaleVault',
-    TimelockedTokenVault,
+    'TimelockedTokenVault',
     strategicSale,
     STRATEGIC_SALE_VAULT_DURATION
   )
 
   // Deploy: publicSaleDistributorProxy
-  const publicSaleDistributorProxy = await deployProxy('publicSaleDistributorProxy', UpgradablePublicSaleDistributorV1)
+  const publicSaleDistributorProxy = await deployProxy<UpgradablePublicSaleDistributorV1__factory>(
+    'publicSaleDistributorProxy',
+    'UpgradablePublicSaleDistributor_V1'
+  )
 
   // Deploy: globalSaleVault1
-  const globalSaleVault1 = await deployContract(
+  const globalSaleVault1 = await deployContract<TimelockedTokenVault__factory>(
     'globalSaleVault1',
-    TimelockedTokenVault,
+    'TimelockedTokenVault',
     publicSaleDistributorProxy.address,
     GLOBAL_SALE_VAULT_1_DURATION
   )
 
   // Deploy: globalSaleVault2
-  const globalSaleVault2 = await deployContract(
+  const globalSaleVault2 = await deployContract<TimelockedTokenVault__factory>(
     'globalSaleVault2',
-    TimelockedTokenVault,
+    'TimelockedTokenVault',
     publicSaleDistributorProxy.address,
     GLOBAL_SALE_VAULT_2_DURATION
   )
 
   // Deploy: globalSaleVault3
-  const globalSaleVault3 = await deployContract(
+  const globalSaleVault3 = await deployContract<TimelockedTokenVault__factory>(
     'globalSaleVault3',
-    TimelockedTokenVault,
+    'TimelockedTokenVault',
     publicSaleDistributorProxy.address,
     GLOBAL_SALE_VAULT_3_DURATION
   )
@@ -147,9 +144,9 @@ async function deploy() {
     [company, totalSupplyPercentage * COMPANY_SUPPLY_PERCENTAGE],
   ])
 
-  const divTokenProxy = await deployProxy(
+  const divTokenProxy = await deployProxy<UpgradableDiversifyV1__factory>(
     'divTokenProxy',
-    UpgradableDiversifyV1,
+    'UpgradableDiversify_V1',
     [...supplyMap.keys()],
     [...supplyMap.values()],
     foundation,
@@ -163,6 +160,7 @@ async function deploy() {
   await publicSaleDistributorProxy.setToken(DIV_TOKEN_ADDRESS)
 
   // Start Vaults
+  console.log(chalk.green(' 🏛️  Starting the vaults...'))
   await projectVault.start(DIV_TOKEN_ADDRESS)
   await teamVault.start(DIV_TOKEN_ADDRESS)
   await communityVault.start(DIV_TOKEN_ADDRESS)
@@ -170,6 +168,7 @@ async function deploy() {
   await globalSaleVault1.start(DIV_TOKEN_ADDRESS)
   await globalSaleVault2.start(DIV_TOKEN_ADDRESS)
   await globalSaleVault3.start(DIV_TOKEN_ADDRESS)
+  console.log(chalk.green(' 🏆  Vaults started'))
 
   // Transfer Ownership
   await transferOwnership('projectVault', projectVault, company)
@@ -185,9 +184,22 @@ async function deploy() {
   await transferOwnership('divTokenProxy', divTokenProxy, company)
 
   // Transfer Ownerships to dev
-  console.log('Transferring ownership of ProxyAdmin...')
+  console.log(' 👮 Transferring ownership of ProxyAdmin...')
   await upgrades.admin.transferProxyAdminOwnership(dev)
-  console.log('Transferred ownership of ProxyAdmin to:', dev)
+  console.log(' 🔐 Transferred ownership of ProxyAdmin to:', dev)
+
+  // Verification
+  const contractAddress = getSavedContractAddresses()
+  const networkAdresses = contractAddress[networkName]
+  for (const key of Object.keys(networkAdresses)) {
+    const contract = networkAdresses[key]
+    const address = contract.type === 'proxy' ? contract.implementation.address : contract.address
+    const src = contract.type === 'proxy' ? contract.implementation.src : contract.meta.src
+    await etherscanVerify(key, address, contract.meta.args ?? [], src)
+  }
+  console.log(chalk.grey('==========='))
+  console.log(chalk.green(' 🚀  Mission Modern Investing started!'))
+  console.log(chalk.grey('==========='))
 }
 
 // execute main
