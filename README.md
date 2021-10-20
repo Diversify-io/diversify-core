@@ -12,7 +12,7 @@ The Diversify Token (DIV) is an ERC20 token on the Ethereum Blockchain. It has a
 
 ## Architecture
 
-The following uml provides a high level overview on the contracts.
+The following UML provides a high level overview on the contracts.
 
 ![UML](img/uml-diversify.svg)
 
