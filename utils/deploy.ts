@@ -13,6 +13,7 @@ type ContractBaseInformation = {
   type: ContractType
   name: string
   address: string
+  verified: boolean
   meta: {
     src: string
     txHash: string
@@ -101,14 +102,18 @@ const deployContract = async <T extends ContractFactory>(
   const factory = (await getContractFactory(contractName)) as T
   const deployment = await factory.deploy(...args)
   await postDeploy(name, deployment)
+  const artifact = await hre.artifacts.readArtifact(contractName)
+
+  // Save contract informations
   const { address } = deployment
   saveContractInformation(hre.network.name, {
+    type: 'contract',
     name,
     address,
-    type: 'contract',
+    verified: false,
     meta: {
+      src: `${artifact.sourceName}:${artifact.contractName}`,
       owner: deployment.deployTransaction.from,
-      src: `contracts/${contractName}.sol:${contractName}`,
       txHash: deployment.deployTransaction.hash,
       args,
     },
@@ -134,18 +139,22 @@ const deployProxy = async <T extends ContractFactory>(
   const factory = (await getContractFactory(contractName)) as T
   const deployment = await upgrades.deployProxy(factory, args)
   await postDeploy(name, deployment)
+
+  // Save contract informations
   const { address } = deployment
+  const artifact = await hre.artifacts.readArtifact(contractName)
   saveContractInformation(hre.network.name, {
+    type: 'proxy',
     name,
     address,
-    type: 'proxy',
+    verified: false,
     implementation: {
       address: (await deployment.deployed()) && (await getImplementationAddress(hre.ethers.provider, address)),
-      src: `contracts/${contractName}.sol:${contractName}`,
+      src: `${artifact.sourceName}:${artifact.contractName}`,
     },
     meta: {
-      owner: deployment.deployTransaction.from,
       src: '@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy',
+      owner: deployment.deployTransaction.from,
       txHash: deployment.deployTransaction.hash,
       args,
     },

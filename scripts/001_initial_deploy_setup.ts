@@ -13,6 +13,7 @@ import {
   deployProxy,
   etherscanVerify,
   getSavedContractAddresses,
+  saveContractAddress,
   transferOwnership,
 } from '../utils/deploy'
 
@@ -160,7 +161,7 @@ async function deploy() {
   await publicSaleDistributorProxy.setToken(DIV_TOKEN_ADDRESS)
 
   // Start Vaults
-  console.log(chalk.green(' 🏛️  Starting the vaults...'))
+  console.log(' 🏛️  Starting the vaults...')
   await projectVault.start(DIV_TOKEN_ADDRESS)
   await teamVault.start(DIV_TOKEN_ADDRESS)
   await communityVault.start(DIV_TOKEN_ADDRESS)
@@ -168,7 +169,7 @@ async function deploy() {
   await globalSaleVault1.start(DIV_TOKEN_ADDRESS)
   await globalSaleVault2.start(DIV_TOKEN_ADDRESS)
   await globalSaleVault3.start(DIV_TOKEN_ADDRESS)
-  console.log(chalk.green(' 🏆  Vaults started'))
+  console.log(' 🏆  Vaults started')
 
   // Transfer Ownership
   await transferOwnership('projectVault', projectVault, company)
@@ -195,8 +196,19 @@ async function deploy() {
     const contract = networkAdresses[key]
     const address = contract.type === 'proxy' ? contract.implementation.address : contract.address
     const src = contract.type === 'proxy' ? contract.implementation.src : contract.meta.src
-    await etherscanVerify(key, address, contract.meta.args ?? [], src)
+    const args = contract.type === 'proxy' ? [] : contract.meta.args ?? [] // upgradable contracts use initalize functions -> no constructor
+    try {
+      await etherscanVerify(key, address, args, src)
+      saveContractAddress(networkName, {
+        ...contract,
+        verified: true,
+      })
+    } catch (e) {
+      console.log(e)
+    }
   }
+
+  // Start the mission
   console.log(chalk.grey('==========='))
   console.log(chalk.green(' 🚀  Mission Modern Investing started!'))
   console.log(chalk.grey('==========='))
