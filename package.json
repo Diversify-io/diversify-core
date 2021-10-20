@@ -1,6 +1,6 @@
 {
   "name": "@diversify-io/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Smart contracts for Diversify.",
   "files": [
     "contracts",
@@ -62,6 +62,7 @@
   "scripts": {
     "build": "yarn clean && yarn compile",
     "build:size": "yarn build && hardhat size-contracts",
+    "package:publish": "yarn build && yarn tsc types/**/*.ts && yarn publish --access public",
     "console": "hardhat console",
     "clean": "hardhat clean",
     "compile": "hardhat compile",
