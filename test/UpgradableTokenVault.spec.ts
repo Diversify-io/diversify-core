@@ -41,6 +41,10 @@ describe('UpgradableTokenVault', function () {
     await divToken.transfer(upgradableTokenVaultImpl.address, distributorInitalSupply)
   })
 
+  it('should return the token', async function () {
+    expect(await upgradableTokenVaultImpl.token()).to.be.equal(divToken.address)
+  })
+
   it('retrieve tokens should be restricted to owner', async function () {
     await expect(upgradableTokenVaultImpl.connect(addr2.address).retrieveTokens(addr1.address, divToken.address)).to.be
       .reverted

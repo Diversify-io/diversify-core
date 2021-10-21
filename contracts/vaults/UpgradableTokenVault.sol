@@ -29,6 +29,13 @@ contract UpgradableTokenVault is UpgradableRetrieveTokensFeature {
     }
 
     /**
+     * @return the token being held.
+     */
+    function token() public view returns (IERC20) {
+        return _token;
+    }
+
+    /**
      * @dev retrieve wrongly assigned tokens
      */
     function retrieveTokens(address to, address anotherToken) public override onlyOwner {

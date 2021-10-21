@@ -29,6 +29,13 @@ contract TimelockedIntervalReleasedTokenVault is TimelockedTokenVault {
     }
 
     /**
+     * @return the interval within which capital will be released
+     */
+    function interval() public view returns (uint256) {
+        return _interval;
+    }
+
+    /**
      * @return returns the available amount to collect for the current time
      */
     function availableAmount() public view returns (uint256) {
