@@ -1,6 +1,6 @@
 {
   "name": "@diversify-io/core",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Smart contracts for Diversify.",
   "files": [
     "contracts",
