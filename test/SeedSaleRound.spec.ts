@@ -241,6 +241,10 @@ describe('SeedSaleRound', function () {
       await seedSaleSetup()
     })
 
+    it('should return the seedsale state', async function () {
+      expect(await seedSaleRound.state()).to.be.equal(1)
+    })
+
     it('should return the seedsale token', async function () {
       expect(await seedSaleRound.token()).to.be.equal(divToken.address)
     })

@@ -114,6 +114,13 @@ contract SeedSaleRound is RetrieveTokensFeature {
     }
 
     /**
+     * @return the state of the sales round
+     */
+    function state() public view returns (State) {
+        return _state;
+    }
+
+    /**
      * @return the token being held.
      */
     function token() public view returns (IERC20UpgradeableBurnable) {
