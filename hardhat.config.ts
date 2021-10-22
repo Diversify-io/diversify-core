@@ -48,6 +48,7 @@ const config: HardhatUserConfig = {
       url: node_url('mainnet'),
       accounts: account('mainnet'),
       gasPrice: 120 * 1000000000,
+      timeout: 50000,
     },
     rinkeby: {
       chainId: 4,
@@ -55,6 +56,7 @@ const config: HardhatUserConfig = {
       accounts: account('rinkeby'),
       gasPrice: 5000000000,
       gasMultiplier: 2,
+      timeout: 50000,
     },
     hardhat: {
       chainId: 1337,
