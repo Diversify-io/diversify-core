@@ -47,7 +47,8 @@ const config: HardhatUserConfig = {
       chainId: 1,
       url: node_url('mainnet'),
       accounts: account('mainnet'),
-      gasPrice: 120 * 1000000000,
+      gasPrice: 65 * 1000000000,
+      gasMultiplier: 2,
       timeout: 50000,
     },
     rinkeby: {
@@ -115,7 +116,7 @@ const config: HardhatUserConfig = {
   gasReporter: {
     enabled: process.env.REPORT_GAS === 'true',
     currency: 'USD',
-    coinmarketcap: process.env.COIN_MARKET_CAPI_KEY,
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY,
     excludeContracts: ['contracts/mocks/'],
   },
 }
