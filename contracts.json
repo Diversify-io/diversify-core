@@ -1,392 +1,324 @@
 {
-    "rinkeby": {
-        "projectVault": {
-            "type": "contract",
-            "name": "projectVault",
-            "address": "0x25Db549E0122704aE97D8467A14d304923Aac33F",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x8bfdb70330abd062d3a83046d022f5c11aa2d457d135369989280484a60943f0",
-                "args": [
-                    "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                    157680000,
-                    15768000
-                ]
-            }
-        },
-        "teamVault": {
-            "type": "contract",
-            "name": "teamVault",
-            "address": "0xdD54E5cE40ae5599AE005AEc52741B3ACaE7f893",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x7c7f3ede347143584d3802ca6fba613ff6d7a6c9745e2296c8d26d5bccb554d2",
-                "args": [
-                    "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                    78840000,
-                    7884000
-                ]
-            }
-        },
-        "communityDistributorProxy": {
-            "type": "proxy",
-            "name": "communityDistributorProxy",
-            "address": "0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9",
-            "verified": true,
-            "implementation": {
-                "address": "0x52F0ca3A3FaEf34E344994f8DD0744f273964B9F",
-                "src": "contracts/distributors/UpgradableCommunityRewardDistributor_V1.sol:UpgradableCommunityRewardDistributor_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0xe90f5432c67d6e6ccc72047a33ea0e1a0e0bf3c97d48e79ff6f03b29f73034ae",
-                "args": []
-            }
-        },
-        "communityVault": {
-            "type": "contract",
-            "name": "communityVault",
-            "address": "0x5953Be8F1418D7DcFB98FE6174D07aeeb04c1642",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x0b735e71940e492ee70fcae1d0a7aee34ed3b8637ed8bb0bc1110a06fd49766a",
-                "args": [
-                    "0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9",
-                    346896000,
-                    31536000
-                ]
-            }
-        },
-        "seedSaleRound": {
-            "type": "contract",
-            "name": "seedSaleRound",
-            "address": "0x7C7B7EE0abf98EbD371D471759dD40C2f7347B7f",
-            "verified": true,
-            "meta": {
-                "src": "contracts/sales/SeedSaleRound.sol:SeedSaleRound",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x463f3c5a5bc6204413fdc2af8c843f5c37833a2519147f5dcb4b0384a4a19af7",
-                "args": []
-            }
-        },
-        "strategicSaleVault": {
-            "type": "contract",
-            "name": "strategicSaleVault",
-            "address": "0x7562B14391cf1592d7539f2C37D9b294874FA0fd",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x78a4a1113263bd8b5c8ab55a19761e9f9c88cf948b54b1aa02a3e2b09f401100",
-                "args": [
-                    "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                    6243190
-                ]
-            }
-        },
-        "publicSaleDistributorProxy": {
-            "type": "proxy",
-            "name": "publicSaleDistributorProxy",
-            "address": "0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9",
-            "verified": true,
-            "implementation": {
-                "address": "0x52F0ca3A3FaEf34E344994f8DD0744f273964B9F",
-                "src": "contracts/distributors/UpgradablePublicSaleDistributor_V1.sol:UpgradablePublicSaleDistributor_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0xf780aa2f11ab8fdea4be8f603391d2e1014f16cd219fc9fa3ad3475d6fac218b",
-                "args": []
-            }
-        },
-        "globalSaleVault1": {
-            "type": "contract",
-            "name": "globalSaleVault1",
-            "address": "0x9469d079A73Aab76916334Cc2BD17E4EB91F45cF",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0xfed03f8f8308b72ea9baaaf656e41ca540e280077d4d903d8d5b7853d7b6dbf9",
-                "args": [
-                    "0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9",
-                    19372390
-                ]
-            }
-        },
-        "globalSaleVault2": {
-            "type": "contract",
-            "name": "globalSaleVault2",
-            "address": "0xf7f56ACCCa3A338db962fBe0250a57faBcf31038",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x733b5e93bbb8410129f0507840c6e766581a0192af91dc449e4f307bd2f5f6e0",
-                "args": [
-                    "0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9",
-                    50908390
-                ]
-            }
-        },
-        "globalSaleVault3": {
-            "type": "contract",
-            "name": "globalSaleVault3",
-            "address": "0xd4aeA239544D9b529b9A08E3D1d3D4cB1528F25E",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0xf59f50c7040342ef201f699d39b570efe54c65ee1aa6d960d1d564ae5c1f5128",
-                "args": [
-                    "0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9",
-                    82530790
-                ]
-            }
-        },
-        "divTokenProxy": {
-            "type": "proxy",
-            "name": "divTokenProxy",
-            "address": "0x9bFF3169E371F20B52b6280d799dcb0aeB01D028",
-            "verified": true,
-            "implementation": {
-                "address": "0xe9987a75d80A28273Db39303D10119507F5dD7F1",
-                "src": "contracts/token/UpgradableDiversify_V1.sol:UpgradableDiversify_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
-                "txHash": "0x7e8f2dfafecf8753629b861a41b27f6ad62d8511b6af2a26e3b79b84b26820ec",
-                "args": [
-                    [
-                        "0x25Db549E0122704aE97D8467A14d304923Aac33F",
-                        "0xdD54E5cE40ae5599AE005AEc52741B3ACaE7f893",
-                        "0x5953Be8F1418D7DcFB98FE6174D07aeeb04c1642",
-                        "0x9469d079A73Aab76916334Cc2BD17E4EB91F45cF",
-                        "0xf7f56ACCCa3A338db962fBe0250a57faBcf31038",
-                        "0xd4aeA239544D9b529b9A08E3D1d3D4cB1528F25E",
-                        "0x7562B14391cf1592d7539f2C37D9b294874FA0fd",
-                        "0x7C7B7EE0abf98EbD371D471759dD40C2f7347B7f",
-                        "0xd457B03b6650EFC95ffd6387797705eE41B21C29"
-                    ],
-                    [
-                        90000000,
-                        90000000,
-                        175000000,
-                        200000000,
-                        200000000,
-                        100000000,
-                        100000000,
-                        20000000,
-                        25000000
-                    ],
-                    "0x529980Be29B38f132B4DefcAcA787D0Ca313A3fc",
-                    "0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9"
-                ]
-            }
-        }
+  "rinkeby": {
+    "projectVault": {
+      "type": "contract",
+      "name": "projectVault",
+      "address": "0x25Db549E0122704aE97D8467A14d304923Aac33F",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x8bfdb70330abd062d3a83046d022f5c11aa2d457d135369989280484a60943f0",
+        "args": ["0xd457B03b6650EFC95ffd6387797705eE41B21C29", 157680000, 15768000]
+      }
     },
-    "mainnet": {
-        "projectVault": {
-            "type": "contract",
-            "name": "projectVault",
-            "address": "0xe9a4C3154Ff6132977F9F3A0834C052e0f88E37F",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xcbd2fdfd78277d7076277590050174053f92ed43494b7efe23589abc8fdffb83",
-                "args": [
-                    "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                    157680000,
-                    15768000
-                ]
-            }
-        },
-        "teamVault": {
-            "type": "contract",
-            "name": "teamVault",
-            "address": "0x198c81a4C87A5Edd0a68144Fb2693A953545CC66",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xf4c97c38a9f723e12cdde56c088bac08c2cd9c60fe7f5caa4b2713fee8e02f16",
-                "args": [
-                    "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                    78840000,
-                    7884000
-                ]
-            }
-        },
-        "communityDistributorProxy": {
-            "type": "proxy",
-            "name": "communityDistributorProxy",
-            "address": "0x451248E7624F5489E9e534718D96aAAd5987ebF8",
-            "verified": true,
-            "implementation": {
-                "address": "0xf93F589E36507C5f403E38471B019801Ab79816D",
-                "src": "contracts/distributors/UpgradableCommunityRewardDistributor_V1.sol:UpgradableCommunityRewardDistributor_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xfe833d4c3f0e5f5f67850b7225d247c80d5c8fd9ce61290ea99abb5bda206975",
-                "args": []
-            }
-        },
-        "communityVault": {
-            "type": "contract",
-            "name": "communityVault",
-            "address": "0x66fE5043528fe37E325Bd29DBa0fc9D9eC19755d",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0x028a1e74d7a8ba5f2af834d93d322d8bf7132d45ec0de7b7a9dc7e63f9644ac5",
-                "args": [
-                    "0x451248E7624F5489E9e534718D96aAAd5987ebF8",
-                    346896000,
-                    31536000
-                ]
-            }
-        },
-        "seedSaleRound": {
-            "type": "contract",
-            "name": "seedSaleRound",
-            "address": "0xDe42db82eeb5101b7B083fb27dcB9c660798e6b9",
-            "verified": true,
-            "meta": {
-                "src": "contracts/sales/SeedSaleRound.sol:SeedSaleRound",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0x53b0715534225d8ea204a86529216ed6389b212bab9228bbd7679f35f072a264",
-                "args": []
-            }
-        },
-        "strategicSaleVault": {
-            "type": "contract",
-            "name": "strategicSaleVault",
-            "address": "0x6b0c7364720377A6fcBD592e336713444139f28a",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xff4166a149f37d32e79002b0c2977a3f177d3f6932f688db8b5d651c0b0760ac",
-                "args": [
-                    "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                    5932233
-                ]
-            }
-        },
-        "publicSaleDistributorProxy": {
-            "type": "proxy",
-            "name": "publicSaleDistributorProxy",
-            "address": "0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3",
-            "verified": false,
-            "implementation": {
-                "address": "0xf93F589E36507C5f403E38471B019801Ab79816D",
-                "src": "contracts/distributors/UpgradablePublicSaleDistributor_V1.sol:UpgradablePublicSaleDistributor_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0x6cd64f913287ae64117a1d2684b11241a4f3970cb1b02e88b5e31b1b0ba6d5dc",
-                "args": []
-            }
-        },
-        "globalSaleVault1": {
-            "type": "contract",
-            "name": "globalSaleVault1",
-            "address": "0x0Aa3dEf5e7b9eD8eE55fAa23B9F464B64A7d0f04",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0x1dc588f5c137fee93cb915c395c5a79ebdf98c84fd7615d13196fa8ca7fd437d",
-                "args": [
-                    "0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3",
-                    19061433
-                ]
-            }
-        },
-        "globalSaleVault2": {
-            "type": "contract",
-            "name": "globalSaleVault2",
-            "address": "0x18F061E8F1A977f977286653a4712B8e695f7B05",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xf41cb9b2abf080b6efe98615559c8496a5b0ec5c321bf6a9dec695a552859d85",
-                "args": [
-                    "0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3",
-                    50597433
-                ]
-            }
-        },
-        "globalSaleVault3": {
-            "type": "contract",
-            "name": "globalSaleVault3",
-            "address": "0x61e85b728F7c0195D2cb993F9f98984F68E72e41",
-            "verified": true,
-            "meta": {
-                "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0xa96a1c2759d231e447048f24768ac8f44af064379f6619660adea465f8463ad4",
-                "args": [
-                    "0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3",
-                    82219833
-                ]
-            }
-        },
-        "divTokenProxy": {
-            "type": "proxy",
-            "name": "divTokenProxy",
-            "address": "0x7B3B763Fd29e4E01eFD3A65f9Dea746C44B69d6d",
-            "verified": true,
-            "implementation": {
-                "address": "0xEeF16D511205fAbC1E3490aD4a3314Db0cd4a45E",
-                "src": "contracts/token/UpgradableDiversify_V1.sol:UpgradableDiversify_V1"
-            },
-            "meta": {
-                "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
-                "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
-                "txHash": "0x9f5670b320e85aef3b3a250088d13db4094bc1468d2bb876ab3d0913fd2a8cf5",
-                "args": [
-                    [
-                        "0xe9a4C3154Ff6132977F9F3A0834C052e0f88E37F",
-                        "0x198c81a4C87A5Edd0a68144Fb2693A953545CC66",
-                        "0x66fE5043528fe37E325Bd29DBa0fc9D9eC19755d",
-                        "0x0Aa3dEf5e7b9eD8eE55fAa23B9F464B64A7d0f04",
-                        "0x18F061E8F1A977f977286653a4712B8e695f7B05",
-                        "0x61e85b728F7c0195D2cb993F9f98984F68E72e41",
-                        "0x6b0c7364720377A6fcBD592e336713444139f28a",
-                        "0xDe42db82eeb5101b7B083fb27dcB9c660798e6b9",
-                        "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6"
-                    ],
-                    [
-                        90000000,
-                        90000000,
-                        175000000,
-                        200000000,
-                        200000000,
-                        100000000,
-                        100000000,
-                        20000000,
-                        25000000
-                    ],
-                    "0xf74c31591Eec496AB02b052E36b678012381F0A0",
-                    "0x451248E7624F5489E9e534718D96aAAd5987ebF8"
-                ]
-            }
-        }
+    "teamVault": {
+      "type": "contract",
+      "name": "teamVault",
+      "address": "0xdD54E5cE40ae5599AE005AEc52741B3ACaE7f893",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x7c7f3ede347143584d3802ca6fba613ff6d7a6c9745e2296c8d26d5bccb554d2",
+        "args": ["0xd457B03b6650EFC95ffd6387797705eE41B21C29", 78840000, 7884000]
+      }
+    },
+    "communityDistributorProxy": {
+      "type": "proxy",
+      "name": "communityDistributorProxy",
+      "address": "0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9",
+      "verified": true,
+      "implementation": {
+        "address": "0x52F0ca3A3FaEf34E344994f8DD0744f273964B9F",
+        "src": "contracts/distributors/UpgradableCommunityRewardDistributor_V1.sol:UpgradableCommunityRewardDistributor_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0xe90f5432c67d6e6ccc72047a33ea0e1a0e0bf3c97d48e79ff6f03b29f73034ae",
+        "args": []
+      }
+    },
+    "communityVault": {
+      "type": "contract",
+      "name": "communityVault",
+      "address": "0x5953Be8F1418D7DcFB98FE6174D07aeeb04c1642",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x0b735e71940e492ee70fcae1d0a7aee34ed3b8637ed8bb0bc1110a06fd49766a",
+        "args": ["0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9", 346896000, 31536000]
+      }
+    },
+    "seedSaleRound": {
+      "type": "contract",
+      "name": "seedSaleRound",
+      "address": "0x7C7B7EE0abf98EbD371D471759dD40C2f7347B7f",
+      "verified": true,
+      "meta": {
+        "src": "contracts/sales/SeedSaleRound.sol:SeedSaleRound",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x463f3c5a5bc6204413fdc2af8c843f5c37833a2519147f5dcb4b0384a4a19af7",
+        "args": []
+      }
+    },
+    "strategicSaleVault": {
+      "type": "contract",
+      "name": "strategicSaleVault",
+      "address": "0x7562B14391cf1592d7539f2C37D9b294874FA0fd",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x78a4a1113263bd8b5c8ab55a19761e9f9c88cf948b54b1aa02a3e2b09f401100",
+        "args": ["0xd457B03b6650EFC95ffd6387797705eE41B21C29", 6243190]
+      }
+    },
+    "publicSaleDistributorProxy": {
+      "type": "proxy",
+      "name": "publicSaleDistributorProxy",
+      "address": "0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9",
+      "verified": true,
+      "implementation": {
+        "address": "0x52F0ca3A3FaEf34E344994f8DD0744f273964B9F",
+        "src": "contracts/distributors/UpgradablePublicSaleDistributor_V1.sol:UpgradablePublicSaleDistributor_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0xf780aa2f11ab8fdea4be8f603391d2e1014f16cd219fc9fa3ad3475d6fac218b",
+        "args": []
+      }
+    },
+    "globalSaleVault1": {
+      "type": "contract",
+      "name": "globalSaleVault1",
+      "address": "0x9469d079A73Aab76916334Cc2BD17E4EB91F45cF",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0xfed03f8f8308b72ea9baaaf656e41ca540e280077d4d903d8d5b7853d7b6dbf9",
+        "args": ["0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9", 19372390]
+      }
+    },
+    "globalSaleVault2": {
+      "type": "contract",
+      "name": "globalSaleVault2",
+      "address": "0xf7f56ACCCa3A338db962fBe0250a57faBcf31038",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x733b5e93bbb8410129f0507840c6e766581a0192af91dc449e4f307bd2f5f6e0",
+        "args": ["0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9", 50908390]
+      }
+    },
+    "globalSaleVault3": {
+      "type": "contract",
+      "name": "globalSaleVault3",
+      "address": "0xd4aeA239544D9b529b9A08E3D1d3D4cB1528F25E",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0xf59f50c7040342ef201f699d39b570efe54c65ee1aa6d960d1d564ae5c1f5128",
+        "args": ["0x6de0F4C76DD6576efc7de7bD474D20E77ac084F9", 82530790]
+      }
+    },
+    "divTokenProxy": {
+      "type": "proxy",
+      "name": "divTokenProxy",
+      "address": "0x9bFF3169E371F20B52b6280d799dcb0aeB01D028",
+      "verified": true,
+      "implementation": {
+        "address": "0xe9987a75d80A28273Db39303D10119507F5dD7F1",
+        "src": "contracts/token/UpgradableDiversify_V1.sol:UpgradableDiversify_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0xd457B03b6650EFC95ffd6387797705eE41B21C29",
+        "txHash": "0x7e8f2dfafecf8753629b861a41b27f6ad62d8511b6af2a26e3b79b84b26820ec",
+        "args": [
+          [
+            "0x25Db549E0122704aE97D8467A14d304923Aac33F",
+            "0xdD54E5cE40ae5599AE005AEc52741B3ACaE7f893",
+            "0x5953Be8F1418D7DcFB98FE6174D07aeeb04c1642",
+            "0x9469d079A73Aab76916334Cc2BD17E4EB91F45cF",
+            "0xf7f56ACCCa3A338db962fBe0250a57faBcf31038",
+            "0xd4aeA239544D9b529b9A08E3D1d3D4cB1528F25E",
+            "0x7562B14391cf1592d7539f2C37D9b294874FA0fd",
+            "0x7C7B7EE0abf98EbD371D471759dD40C2f7347B7f",
+            "0xd457B03b6650EFC95ffd6387797705eE41B21C29"
+          ],
+          [90000000, 90000000, 175000000, 200000000, 200000000, 100000000, 100000000, 20000000, 25000000],
+          "0x529980Be29B38f132B4DefcAcA787D0Ca313A3fc",
+          "0x3eE1625A38BAB93Ba8dd24065A1B469Df7E6fDD9"
+        ]
+      }
     }
+  },
+  "mainnet": {
+    "projectVault": {
+      "type": "contract",
+      "name": "projectVault",
+      "address": "0xe9a4C3154Ff6132977F9F3A0834C052e0f88E37F",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xcbd2fdfd78277d7076277590050174053f92ed43494b7efe23589abc8fdffb83",
+        "args": ["0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6", 157680000, 15768000]
+      }
+    },
+    "teamVault": {
+      "type": "contract",
+      "name": "teamVault",
+      "address": "0x198c81a4C87A5Edd0a68144Fb2693A953545CC66",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xf4c97c38a9f723e12cdde56c088bac08c2cd9c60fe7f5caa4b2713fee8e02f16",
+        "args": ["0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6", 78840000, 7884000]
+      }
+    },
+    "communityDistributorProxy": {
+      "type": "proxy",
+      "name": "communityDistributorProxy",
+      "address": "0x451248E7624F5489E9e534718D96aAAd5987ebF8",
+      "verified": true,
+      "implementation": {
+        "address": "0xf93F589E36507C5f403E38471B019801Ab79816D",
+        "src": "contracts/distributors/UpgradableCommunityRewardDistributor_V1.sol:UpgradableCommunityRewardDistributor_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xfe833d4c3f0e5f5f67850b7225d247c80d5c8fd9ce61290ea99abb5bda206975",
+        "args": []
+      }
+    },
+    "communityVault": {
+      "type": "contract",
+      "name": "communityVault",
+      "address": "0x66fE5043528fe37E325Bd29DBa0fc9D9eC19755d",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedIntervalReleasedTokenVault.sol:TimelockedIntervalReleasedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0x028a1e74d7a8ba5f2af834d93d322d8bf7132d45ec0de7b7a9dc7e63f9644ac5",
+        "args": ["0x451248E7624F5489E9e534718D96aAAd5987ebF8", 346896000, 31536000]
+      }
+    },
+    "seedSaleRound": {
+      "type": "contract",
+      "name": "seedSaleRound",
+      "address": "0xDe42db82eeb5101b7B083fb27dcB9c660798e6b9",
+      "verified": true,
+      "meta": {
+        "src": "contracts/sales/SeedSaleRound.sol:SeedSaleRound",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0x53b0715534225d8ea204a86529216ed6389b212bab9228bbd7679f35f072a264",
+        "args": []
+      }
+    },
+    "strategicSaleVault": {
+      "type": "contract",
+      "name": "strategicSaleVault",
+      "address": "0x6b0c7364720377A6fcBD592e336713444139f28a",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xff4166a149f37d32e79002b0c2977a3f177d3f6932f688db8b5d651c0b0760ac",
+        "args": ["0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6", 5932233]
+      }
+    },
+    "publicSaleDistributorProxy": {
+      "type": "proxy",
+      "name": "publicSaleDistributorProxy",
+      "address": "0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3",
+      "verified": false,
+      "implementation": {
+        "address": "0xf93F589E36507C5f403E38471B019801Ab79816D",
+        "src": "contracts/distributors/UpgradablePublicSaleDistributor_V1.sol:UpgradablePublicSaleDistributor_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0x6cd64f913287ae64117a1d2684b11241a4f3970cb1b02e88b5e31b1b0ba6d5dc",
+        "args": []
+      }
+    },
+    "globalSaleVault1": {
+      "type": "contract",
+      "name": "globalSaleVault1",
+      "address": "0x0Aa3dEf5e7b9eD8eE55fAa23B9F464B64A7d0f04",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0x1dc588f5c137fee93cb915c395c5a79ebdf98c84fd7615d13196fa8ca7fd437d",
+        "args": ["0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3", 19061433]
+      }
+    },
+    "globalSaleVault2": {
+      "type": "contract",
+      "name": "globalSaleVault2",
+      "address": "0x18F061E8F1A977f977286653a4712B8e695f7B05",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xf41cb9b2abf080b6efe98615559c8496a5b0ec5c321bf6a9dec695a552859d85",
+        "args": ["0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3", 50597433]
+      }
+    },
+    "globalSaleVault3": {
+      "type": "contract",
+      "name": "globalSaleVault3",
+      "address": "0x61e85b728F7c0195D2cb993F9f98984F68E72e41",
+      "verified": true,
+      "meta": {
+        "src": "contracts/vaults/TimelockedTokenVault.sol:TimelockedTokenVault",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0xa96a1c2759d231e447048f24768ac8f44af064379f6619660adea465f8463ad4",
+        "args": ["0x30211d7B4Ac9BC92129b7F4813C22574eA47A0a3", 82219833]
+      }
+    },
+    "divTokenProxy": {
+      "type": "proxy",
+      "name": "divTokenProxy",
+      "address": "0x7B3B763Fd29e4E01eFD3A65f9Dea746C44B69d6d",
+      "verified": true,
+      "implementation": {
+        "address": "0xEeF16D511205fAbC1E3490aD4a3314Db0cd4a45E",
+        "src": "contracts/token/UpgradableDiversify_V1.sol:UpgradableDiversify_V1"
+      },
+      "meta": {
+        "src": "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol:TransparentUpgradeableProxy",
+        "owner": "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6",
+        "txHash": "0x9f5670b320e85aef3b3a250088d13db4094bc1468d2bb876ab3d0913fd2a8cf5",
+        "args": [
+          [
+            "0xe9a4C3154Ff6132977F9F3A0834C052e0f88E37F",
+            "0x198c81a4C87A5Edd0a68144Fb2693A953545CC66",
+            "0x66fE5043528fe37E325Bd29DBa0fc9D9eC19755d",
+            "0x0Aa3dEf5e7b9eD8eE55fAa23B9F464B64A7d0f04",
+            "0x18F061E8F1A977f977286653a4712B8e695f7B05",
+            "0x61e85b728F7c0195D2cb993F9f98984F68E72e41",
+            "0x6b0c7364720377A6fcBD592e336713444139f28a",
+            "0xDe42db82eeb5101b7B083fb27dcB9c660798e6b9",
+            "0x92DC957C903D3223Bc4AB3034896FeE47e71c5a6"
+          ],
+          [90000000, 90000000, 175000000, 200000000, 200000000, 100000000, 100000000, 20000000, 25000000],
+          "0xf74c31591Eec496AB02b052E36b678012381F0A0",
+          "0x451248E7624F5489E9e534718D96aAAd5987ebF8"
+        ]
+      }
+    }
+  }
 }
