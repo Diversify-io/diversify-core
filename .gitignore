@@ -10,7 +10,7 @@ coverage.json
 
 # OpenZeppelin
 .openzeppelin/dev-*.json
-.openzeppelin/unknown-*.json
+.openzeppelin/unknown-1337.json
 .openzeppelin/.session
 
 # Dev Setup

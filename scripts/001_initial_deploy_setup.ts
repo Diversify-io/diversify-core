@@ -47,10 +47,12 @@ async function deploy() {
   const TEAM_VAULT_INTERVAL = daysToSeconds(91.25) // every 3 months
   const COMMUNITY_VAULT_DURATION = daysToSeconds(11 * 365) // 11 years (132 monate)
   const COMMUNITY_VAULT_INTERVAL = daysToSeconds(365) // every year
-  const STRATEGIC_SALE_VAULT_DURATION = getSecondsBetweenDates(moment(), '2022-01-01')
   const GLOBAL_SALE_VAULT_1_DURATION = getSecondsBetweenDates(moment(), '2022-06-02')
   const GLOBAL_SALE_VAULT_2_DURATION = getSecondsBetweenDates(moment(), '2023-06-02')
   const GLOBAL_SALE_VAULT_3_DURATION = getSecondsBetweenDates(moment(), '2024-06-02')
+  const STRATEGIC_SALE_VAULT_DURATION = networkName.includes('polygon')
+    ? getSecondsBetweenDates(moment(), '2022-03-01')
+    : getSecondsBetweenDates(moment(), '2022-01-01')
 
   // Start Deployment
   console.log(' 📡 Deploying to network:', networkName)

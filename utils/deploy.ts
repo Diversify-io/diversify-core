@@ -210,7 +210,7 @@ const postDeploy = async (name: string, deployment: Contract) => {
  * @param contract "contracts/Example.sol:ExampleContract"
  */
 const etherscanVerify = async (contractName: string, contractAddress: string, args: any[], contract?: string) => {
-  let tenderlyNetworks = ['kovan', 'goerli', 'mainnet', 'rinkeby', 'ropsten']
+  let tenderlyNetworks = ['kovan', 'goerli', 'mainnet', 'rinkeby', 'ropsten', 'polygon', 'polygonMumbai']
   let targetNetwork = process.env.HARDHAT_NETWORK || config.defaultNetwork
 
   if (tenderlyNetworks.includes(targetNetwork)) {

@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "@nomiclabs/hardhat-etherscan": "^2.1.6",
+    "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts": "4.3.2",
     "@openzeppelin/contracts-upgradeable": "4.3.2",
@@ -68,6 +68,9 @@
     "compile": "hardhat compile",
     "mainnet:deploy": "hardhat --network mainnet run scripts/001_initial_deploy_setup.ts",
     "rinkeby:deploy": "hardhat --network rinkeby run scripts/001_initial_deploy_setup.ts",
+    "goerli:deploy": "hardhat --network goerli run scripts/001_initial_deploy_setup.ts",
+    "polygonMumbai:deploy": "hardhat --network polygonMumbai run scripts/001_initial_deploy_setup.ts",
+    "polygon:deploy": "hardhat --network polygon run scripts/001_initial_deploy_setup.ts",
     "localhost:deploy": "hardhat --network localhost run scripts/001_initial_deploy_setup.ts",
     "test": "hardhat test --verbose",
     "test:coverage": "yarn build && hardhat coverage",
