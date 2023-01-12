@@ -26,6 +26,18 @@ export const calculateCommunityAmount = (amountSent: BigNumber): BigNumber => am
  */
 export const calculateBurnAmount = (amountSent: BigNumber): BigNumber => amountSent.mul(1.0 * 10 ** 2).div(10 ** 4)
 
+export const calculateStakingReward = (
+  stake: BigNumber,
+  intervalStart: number,
+  intervalEnd: number,
+  rate: BigNumber
+): BigNumber => {
+  return stake
+    .mul(intervalEnd - intervalStart)
+    .mul(rate)
+    .div(10 ** 4 * 31536000)
+}
+
 /*
  * This method works like increaseTime, but takes the exact timestamp that you want in the next block, and increases the time accordingly
  */
