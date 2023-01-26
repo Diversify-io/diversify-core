@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity =0.8.4;
+pragma solidity ^0.8.4;
 import '../token/UpgradableDiversify_V1.sol';
 
 // MOCK TOKEN FOR UNIT TESTING
