@@ -89,6 +89,14 @@ contract Staking is Ownable, RetrieveTokensFeature {
     }
 
     /**
+     * @dev     This amount can only be withdrawn if the contract has enough tokens
+     * @return  uint256  Possible current withdraw amount
+     */
+    function rewardAmount() public view returns (uint256) {
+        return _stakedAmount[_msgSender()] + _calculateRewardTotal(block.timestamp);
+    }
+
+    /**
      * @return  uint256  Timestamp of last stake / compound
      */
     function timestampStake() public view returns (uint256) {
@@ -137,20 +145,38 @@ contract Staking is Ownable, RetrieveTokensFeature {
     }
 
     /**
-     * @notice  withdraw stake
-     * @dev     compounds before withdrawing
+     * @notice  Withdraw staked tokens
+     * @dev     If withdrawAmount is set to 0, all possible tokens get withdrawn
+     * @param   withdrawAmount  the amount the stake wants to withdraw
      */
-    function withdrawTokens() public {
+    function withdrawTokens(uint256 withdrawAmount) public {
         require(_stakedAmount[_msgSender()] > 0, 'No tokens to withdraw');
+        require(_stakedAmount[_msgSender()] >= withdrawAmount, 'Not enough tokens to withdraw');
         _compound(block.timestamp);
         uint256 tokensToWithdraw = _stakedAmount[_msgSender()];
-        _stakedAmount[_msgSender()] = 0;
+        if (withdrawAmount != 0) {
+            tokensToWithdraw = withdrawAmount;
+        }
+
+        _stakedAmount[_msgSender()] = _stakedAmount[_msgSender()] - tokensToWithdraw;
         _token.transfer(_msgSender(), tokensToWithdraw);
 
         _totalStakedTokens -= tokensToWithdraw;
 
         emit tokensWithdrawn(_msgSender(), tokensToWithdraw);
     }
+
+    // function withdrawTokens() public {
+    //     require(_stakedAmount[_msgSender()] > 0, 'No tokens to withdraw');
+    //     _compound(block.timestamp);
+    //     uint256 tokensToWithdraw = _stakedAmount[_msgSender()];
+    //     _stakedAmount[_msgSender()] = 0;
+    //     _token.transfer(_msgSender(), tokensToWithdraw);
+
+    //     _totalStakedTokens -= tokensToWithdraw;
+
+    //     emit tokensWithdrawn(_msgSender(), tokensToWithdraw);
+    // }
 
     /**
      * @dev     Rate can be changed only by owner
@@ -173,6 +199,21 @@ contract Staking is Ownable, RetrieveTokensFeature {
     }
 
     /**
+     * @notice  private compound function to update state variables
+     * @dev     compounding is only possible as long the contract has enough tokens left
+     * @param   timestampCompound  current compound timestamp
+     */
+    function _compound(uint256 timestampCompound) private {
+        uint256 reward = _calculateRewardTotal(timestampCompound);
+        require(reward < _totalSupplyReward, 'Contract has not enough tokens left');
+
+        _totalSupplyReward -= reward;
+        _totalStakedTokens += reward;
+        _stakedAmount[_msgSender()] += reward;
+        _timestampStake[_msgSender()] = timestampCompound;
+    }
+
+    /**
      * @dev     the calculation for compounding using the _rateTimestamps and _rateValues array.
      *          1. case: user uses only the latest rate. Only consider the last interval
      *          2. case: user uses multiple rates.
@@ -181,12 +222,10 @@ contract Staking is Ownable, RetrieveTokensFeature {
      *              c) compute in-between intervals
      * @param   timestampCompound  current compound time
      */
-    function _compound(uint256 timestampCompound) private {
+    function _calculateRewardTotal(uint256 timestampCompound) private view returns (uint256) {
         uint256 reward = 0;
-
-        //1. case
         if (_timestampStake[_msgSender()] > _rateTimestamps[_rateTimestamps.length - 1]) {
-            reward += _calculateReward(
+            reward += _calculateRewardForInterval(
                 _stakedAmount[_msgSender()], //stakedAmount
                 _timestampStake[_msgSender()], //intervalStart
                 timestampCompound, //intervalEnd
@@ -195,7 +234,7 @@ contract Staking is Ownable, RetrieveTokensFeature {
             //2. case
         } else {
             // a)
-            reward += _calculateReward(
+            reward += _calculateRewardForInterval(
                 _stakedAmount[_msgSender()], //stakedAmount
                 _rateTimestamps[_rateTimestamps.length - 1], //intervalStart
                 timestampCompound, //intervalEnd
@@ -207,7 +246,7 @@ contract Staking is Ownable, RetrieveTokensFeature {
             for (uint256 i = 1; i < _rateTimestamps.length; i++) {
                 // c)
                 if (startIntervalIscalculated) {
-                    reward += _calculateReward(
+                    reward += _calculateRewardForInterval(
                         _stakedAmount[_msgSender()], //stakedAmount
                         _rateTimestamps[i - 1], //intervalStart
                         _rateTimestamps[i], //intervalEnd
@@ -217,7 +256,7 @@ contract Staking is Ownable, RetrieveTokensFeature {
 
                 // b)
                 if (_timestampStake[_msgSender()] < _rateTimestamps[i] && !startIntervalIscalculated) {
-                    reward += _calculateReward(
+                    reward += _calculateRewardForInterval(
                         _stakedAmount[_msgSender()], //stakedAmount
                         _timestampStake[_msgSender()], //intervalStart
                         _rateTimestamps[i], //intervalEnd
@@ -227,13 +266,7 @@ contract Staking is Ownable, RetrieveTokensFeature {
                 }
             }
         }
-
-        require(reward < _totalSupplyReward, 'Contract has not enough tokens left');
-
-        _totalSupplyReward -= reward;
-        _totalStakedTokens += reward;
-        _stakedAmount[_msgSender()] += reward;
-        _timestampStake[_msgSender()] = timestampCompound;
+        return reward;
     }
 
     /**
@@ -244,7 +277,7 @@ contract Staking is Ownable, RetrieveTokensFeature {
      * @param   rate  rate to use for computation of reward (100% = 10000)
      * @return  uint256  reward
      */
-    function _calculateReward(
+    function _calculateRewardForInterval(
         uint256 stake,
         uint256 intervalStart,
         uint256 intervalEnd,
