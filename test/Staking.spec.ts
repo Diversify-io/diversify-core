@@ -83,9 +83,15 @@ describe('Staking', function () {
       expect(await staking.connect(staker).stakedAmount()).to.be.equal(calculateReceivedAmount(STAKE_AMOUNT_1))
     })
 
+    it('rewardAmount', async function () {
+      const reward = calculateStakingReward(calculateReceivedAmount(STAKE_AMOUNT_1), 0, PASSED_DAYS_1, RATE_1)
+      expect(await staking.connect(staker).rewardAmount()).to.be.least(reward)
+    })
+
     it('timestampStake', async function () {
-      let stakingTimestamp = BigNumber.from((await getCurrentBlockTime()) - PASSED_DAYS_1 - 2)
-      expect(await staking.timestampStake()).to.be.equal
+      let currentTimestamp = BigNumber.from(await getCurrentBlockTime())
+      let stakingTimestamp = currentTimestamp.sub(daysToSeconds(PASSED_DAYS_1)).sub(1)
+      expect(await staking.connect(staker).timestampStake()).to.be.equal(stakingTimestamp)
     })
   })
 
@@ -408,18 +414,31 @@ describe('Staking', function () {
     })
 
     it('should revert when no tokens are staked', async function () {
-      await expect(staking.withdrawTokens()).to.be.revertedWith('No tokens to withdraw')
+      await expect(staking.withdrawTokens(0)).to.be.revertedWith('No tokens to withdraw')
     })
 
-    it('should update _stakedAmount[_msgSender()]', async function () {
-      await staking.connect(staker).withdrawTokens()
+    it('should revert when withdraw amount is too big', async function () {
+      await expect(staking.connect(staker).withdrawTokens(parseEther('2000'))).to.be.revertedWith(
+        'Not enough tokens to withdraw'
+      )
+    })
+
+    it('should update _stakedAmount[_msgSender()] when all tokens are withdrawn', async function () {
+      await staking.connect(staker).withdrawTokens(0)
       expect(await staking.connect(staker).stakedAmount()).to.be.equal(0)
+    })
+
+    it('should update _stakedAmount[_msgSender()] when not all tokens are withdrawn', async function () {
+      const TOKENS_TO_WITHDRAW = parseEther('1000')
+      expect(await staking.connect(staker).stakedAmount()).to.be.at.least(
+        calculateReceivedAmount(STAKE_AMOUNT_1).sub(TOKENS_TO_WITHDRAW)
+      )
     })
 
     it('should transfere tokens from contract to caller', async function () {
       const DIV_BALANCE_STAKING_CONTRACT_BEFORE = await divToken.balanceOf(staking.address)
       const DIV_BALANCE_STAKER_BEFORE = await divToken.balanceOf(staker.address)
-      await staking.connect(staker).withdrawTokens()
+      await staking.connect(staker).withdrawTokens(0)
       const DIV_BALANCE_STAKING_CONTRACT_AFTER = await divToken.balanceOf(staking.address)
       const DIV_BALANCE_STAKER_AFTER = await divToken.balanceOf(staker.address)
 
@@ -430,14 +449,14 @@ describe('Staking', function () {
 
     it('should update _totalStakedTokens', async function () {
       const TOTALSTAKEDTOKENS_BEFORE = await staking.totalStakedTokens()
-      await staking.connect(staker).withdrawTokens()
+      await staking.connect(staker).withdrawTokens(0)
       const TOTALSTAKEDTOKENS_AFTER = await staking.totalStakedTokens()
 
       expect(TOTALSTAKEDTOKENS_BEFORE.sub(TOTALSTAKEDTOKENS_AFTER)).to.be.equal(calculateReceivedAmount(STAKE_AMOUNT_1))
     })
 
     it('should emit the address and withdraw amount', async function () {
-      await expect(staking.connect(staker).withdrawTokens())
+      await expect(staking.connect(staker).withdrawTokens(0))
         .to.be.emit(staking, 'tokensWithdrawn')
         .withArgs(
           staker.address,
