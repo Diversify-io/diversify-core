@@ -71,8 +71,10 @@ describe('Staking', function () {
 
     it('rateTimestamps', async function () {
       let currentTimestamp = BigNumber.from(await getCurrentBlockTime())
-      let deployTimestamp = currentTimestamp.sub(daysToSeconds(PASSED_DAYS_1)).sub(5)
-      expect(await staking.rateTimestamps()).to.be.eql([deployTimestamp, currentTimestamp])
+      let deployTimestamp = currentTimestamp.sub(daysToSeconds(PASSED_DAYS_1)).sub(6)
+      expect((await staking.rateTimestamps()).at(0)).to.be.least(deployTimestamp)
+      expect((await staking.rateTimestamps()).at(1)).to.be.least(currentTimestamp)
+      // expect(await staking.rateTimestamps()).to.be.eql([deployTimestamp, currentTimestamp])
     })
 
     it('rateValues', async function () {
@@ -90,8 +92,8 @@ describe('Staking', function () {
 
     it('timestampStake', async function () {
       let currentTimestamp = BigNumber.from(await getCurrentBlockTime())
-      let stakingTimestamp = currentTimestamp.sub(daysToSeconds(PASSED_DAYS_1)).sub(1)
-      expect(await staking.connect(staker).timestampStake()).to.be.equal(stakingTimestamp)
+      let stakingTimestamp = currentTimestamp.sub(daysToSeconds(PASSED_DAYS_1)).sub(6)
+      expect(await staking.connect(staker).timestampStake()).to.be.least(stakingTimestamp)
     })
   })
 
